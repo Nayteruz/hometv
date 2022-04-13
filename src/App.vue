@@ -1,30 +1,77 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div class="wrapper">
+    <HeaderFilm :key="$route.fullPath" @seachSubmit="onSubmitSearch"/>
+    <GenreList />
+    <RouterView :key="$route.fullPath"/>
+    <ToTop/>
+  </div>
+
 </template>
 
+<script>
+import HeaderFilm from "@/components/HeaderFilm.vue";
+import GenreList from "@/components/GenreList.vue";
+import ToTop from "@/components/ToTop.vue";
+export default {
+  components: {
+    HeaderFilm,
+    GenreList,
+    ToTop
+  }
+}
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
-nav {
-  padding: 30px;
+#app {
+  padding: 20px;
+  @media all and (max-width:1024px){
+    padding: 0;
+  }
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+}
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+body, html {
+  height: 100%;
+  min-height: 100%;
+}
+body {
+  background:#101421;
+}
+
+h1 {
+  color: #fff;
+  font-size: 30px;
+  margin:30px 0;
+}
+
+.wrapper {
+  background:rgba(#5077bf,.3);
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-family: "Roboto", sans-serif;
+  margin:0 auto 0;
+  max-width: 1280px;
+  position: relative;
+  @media all and (max-width:768px){
+    padding: 10px 5px;
+  }
+}
+
+.film__init > div {
+  min-height: 450px !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  #yohoho-iframe {
+    width: 100% !important;
+    height: 100% !important;
   }
 }
 </style>

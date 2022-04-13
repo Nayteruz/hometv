@@ -1,6 +1,18 @@
 import { createApp } from 'vue'
-import App from './App.vue'
-import './registerServiceWorker'
-import router from './router'
+import { createPinia } from 'pinia'
+import VIntersection from "@/directives/VIntersection";
+import VTitle from "@/directives/VTitle";
+import App from '@/App.vue'
+import router from '@/router'
+import mitt from 'mitt';
+import '@/registerServiceWorker'
 
-createApp(App).use(router).mount('#app')
+const emitter = mitt();
+const app = createApp(App);
+app.directive('intersection', VIntersection)
+app.directive('title', VTitle)
+app.use(createPinia())
+app.use(router)
+
+app.config.globalProperties.emitter = emitter;
+app.mount('#app')
