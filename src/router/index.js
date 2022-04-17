@@ -5,7 +5,7 @@ import SearchPage from "@/views/SearchPage.vue";
 import NotFound from "@/components/NotFound.vue";
 
 const router = createRouter({
-  history: createWebHistory('/hometv2'),
+  history: createWebHistory('/hometv'),
   routes: [
     {
       path: '/',
