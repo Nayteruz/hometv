@@ -22,6 +22,7 @@ export default {
 </script>
 
 <style lang="scss">
+//https://gist.github.com/Nayteruz/ea417352f3e21e923f38645a4a4ceffd коммит на отдельную ветку для базового пути
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 * {
