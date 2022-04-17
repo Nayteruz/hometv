@@ -1,36 +1,21 @@
 <template>
-  <div class="film__init" ref="film__init"></div>
+  <ul class="tab-titles">
+    <li :class="{selected:playerNum===1}" @click="playerNum = 1">Плеер 1</li>
+    <li :class="{selected:playerNum===2}" @click="playerNum = 2">Плеер 2</li>
+  </ul>
+  <FilmYohohoTab v-if="playerNum===1" />
+  <FilmKinoTop v-if="playerNum===2" />
 </template>
 
 <script>
+import FilmYohohoTab from "@/components/FilmYohohoTab.vue";
+import FilmKinoTop from "@/components/FilmKinoTop.vue";
 export default {
-  props: ['film_id'],
-  methods: {
-    mountInit(){
-      setTimeout(()=> {
-        let filmElem = document.createElement('div');
-        filmElem.setAttribute('data-resize', '1');
-        filmElem.setAttribute('data-tv', '1');
-        filmElem.setAttribute('data-kinopoisk', this.film_id);
-        filmElem.setAttribute('id', 'yohoho')
-
-        let script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = '//yohoho.cc/yo.js';
-
-        this.$refs.film__init.appendChild(filmElem)
-        this.$refs.film__init.appendChild(script)
-      },10)
+  components: {FilmYohohoTab, FilmKinoTop},
+  data(){
+    return {
+      playerNum:1,
     }
-  },
-  mounted() {
-    this.mountInit();
-  },
-  beforeUpdate() {
-    this.$refs.film__init.innerHTML = '';
-  },
-  updated(){
-    this.mountInit();
   }
 }
 </script>
@@ -50,6 +35,23 @@ export default {
 
   &:hover {
     background: darken(#5077bf, 10%);
+  }
+}
+.tab-titles {
+  display: flex;
+  align-items: center;
+  gap:5px;
+  padding: 0;
+  margin:0 0 10px 0;
+  list-style: none;
+  li {
+    padding: 10px 20px;
+    cursor: pointer;
+    background:#2c4f91;
+    border-radius: 5px;
+    &.selected, &:hover {
+      background:#071f3a;
+    }
   }
 }
 

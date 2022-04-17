@@ -6,7 +6,7 @@
     </div>
     <div class="film__note">
       <div class="film__btns">
-        <FilmPageDialog :film_id="filmInfo.kinopoiskId" />
+        <FilmPageDialog />
       </div>
       <div class="film__description">
         <h3>Описание:</h3>
@@ -34,6 +34,7 @@ import {useFilmStore} from '@/stores/filmStore'
 import axios from "axios";
 import FilmPageDialog from "@/components/FilmPageDialog.vue";
 import FIlmItem from "@/components/FIlmItem.vue";
+
 export default {
   components: {FIlmItem, FilmPageDialog},
   data(){
@@ -41,6 +42,7 @@ export default {
       filmInfo:[],
       filmTitle:'',
       similars: [],
+      sequels:{},
       dialog:false,
       title: this.filmTitle,
     }
@@ -65,6 +67,15 @@ export default {
       });
       this.similars = response.data?.items;
     },
+    getSequels_and_prequels: async function(){
+      const response = await axios.get('https://kinopoiskapiunofficial.tech/api/v2.1/films/' + this.$route.params.id + '/sequels_and_prequels', {
+        headers: {
+          'X-API-KEY': this.apiKey,
+          'Content-Type': 'application/json',
+        }
+      });
+      this.similars = [...response.data, ...this.similars];
+    },
     getNameFilm(){
       this.filmTitle = this.filmInfo?.nameRu || this.filmInfo?.nameEn || this.filmInfo?.nameOriginal || 'Без названия';
       this.filmTitle += ` (${this.filmInfo.year})`;
@@ -74,7 +85,7 @@ export default {
       let genre_id = genres.filter(g=>g.genre === genre_name)[0].id;
       window.scrollTo(0, 0);
       this.$router.push({path:"/film-search", query:{'genres':genre_id}});
-    }
+    },
   },
   computed: {
     ...mapState(useFilmStore, ['apiKey']),
@@ -82,6 +93,7 @@ export default {
   mounted() {
     this.getFilmInfo();
     this.getSimilars();
+    this.getSequels_and_prequels()
   },
 }
 </script>
