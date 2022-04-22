@@ -19,6 +19,7 @@ export default {
   },
   methods:{
     searchSubmit(){
+      this.searchQuery = this.searchQuery.trim();
       this.setPageNum(1);
       this.emitter.emit('searchSubmit');
       this.$router.push({path:"/film-search", query:{'q': this.searchQuery}});
