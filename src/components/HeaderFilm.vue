@@ -2,7 +2,7 @@
   <header>
     <a class="home" @click="redirectToMain" href="#">Home</a>
     <form action="" @submit.prevent="searchSubmit">
-      <input type="text" @keyup.stop.enter="searchSubmit" @keydown.stop.enter="searchSubmit" @change.stop placeholder="Название фильма / ID КиноПоиск" v-model="searchQuery" name="keyword">
+      <input autocomplete="off" type="text" @keyup.stop.enter="searchSubmit" @keydown.stop.enter="searchSubmit" @change.stop placeholder="Название фильма / ID КиноПоиск" v-model="searchQuery" name="keyword">
       <button type="submit">Найти</button>
     </form>
   </header>
