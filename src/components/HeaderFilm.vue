@@ -1,6 +1,7 @@
 <template>
   <header>
     <a class="home" @click="redirectToMain" href="#">Home</a>
+    <a href="#" class="favorites" @click="$router.push('/favorites')">{{ favorites.length }}</a>
     <form action="" @submit.prevent="searchSubmit">
       <input autocomplete="off" type="text" @keyup.stop.enter="searchSubmit" @keydown.stop.enter="searchSubmit" @change.stop placeholder="Название фильма / ID КиноПоиск" v-model="searchQuery" name="keyword">
       <button type="submit">Найти</button>
@@ -15,6 +16,7 @@ export default {
   data(){
     return{
       searchQuery: '',
+      favoriteList : []
     }
   },
   methods:{
@@ -24,19 +26,29 @@ export default {
       this.emitter.emit('searchSubmit');
       this.$router.push({path:"/film-search", query:{'q': this.searchQuery}});
     },
-    ...mapActions(useFilmStore, ['setSearchQueryStore', 'setPageNum']),
+    ...mapActions(useFilmStore, ['setFavorites', 'setPageNum']),
     redirectToMain(){
       this.setPageNum(1);
       this.$router.push(`/`);
+    },
+    getFavorites(){
+      if(localStorage.getItem('favorites')){
+        this.favoriteList = JSON.parse(localStorage.getItem('favorites'));
+      } else {
+        localStorage.setItem('favorites', JSON.stringify(this.favoriteList));
+      }
+      this.setFavorites(this.favoriteList);
     }
+
   },
   mounted() {
+    this.getFavorites();
     this.emitter.on("search-query", val=>{
       this.searchQuery = val;
     });
   },
   computed: {
-    ...mapState(useFilmStore, ['searchQueryStore']),
+    ...mapState(useFilmStore, ['searchQueryStore', 'favorites']),
   },
 
 }
@@ -45,11 +57,11 @@ export default {
 <style scoped lang="scss">
   header {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto auto 1fr;
     align-items: center;
     gap:5px;
   }
-  a.home {
+  a.home, a.favorites {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,4 +115,16 @@ export default {
       }
     }
   }
+  a.favorites {
+
+    &:before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23183153' d='M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z'/%3E%3C/svg%3E");
+    }
+    &:hover {
+      &:before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23cd0000' d='M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z'/%3E%3C/svg%3E");
+      }
+    }
+  }
 </style>
+

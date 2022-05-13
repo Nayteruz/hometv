@@ -7,6 +7,7 @@ export const useFilmStore = defineStore({
 		pageNum: 1,
 		limit:20,
 		searchQueryStore:'',
+		favorites: []
 	}),
 	getters: {},
 	actions: {
@@ -15,6 +16,9 @@ export const useFilmStore = defineStore({
 		},
 		setSearchQueryStore(str){
 			this.searchQueryStore = str;
+		},
+		setFavorites(listFavorites = []){
+			this.favorites = listFavorites;
 		}
 	}
 })
