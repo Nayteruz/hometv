@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {mapActions, mapState} from "pinia/dist/pinia";
+import {mapActions, mapState} from "pinia";
 import {useFilmStore} from "@/stores/filmStore";
 
 export default {

@@ -6,7 +6,7 @@
     </div>
     <div class="film__note">
       <div class="film__btns">
-        <FilmPageDialog />
+        <FilmPageDialog :itemFilm="filmInfo" />
       </div>
       <div class="film__description">
         <h3>Описание:</h3>
