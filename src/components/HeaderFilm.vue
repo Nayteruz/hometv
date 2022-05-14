@@ -24,7 +24,7 @@ export default {
       this.searchQuery = this.searchQuery.trim();
       this.setPageNum(1);
       this.emitter.emit('searchSubmit');
-      this.$router.push({path:"/film-search", query:{'q': this.searchQuery}});
+      this.$router.push({path:"/search", query:{'q': this.searchQuery}});
     },
     ...mapActions(useFilmStore, ['setFavorites', 'setPageNum']),
     redirectToMain(){

@@ -19,8 +19,8 @@ const router = createRouter({
       component:FilmPage,
     },
     {
-      path:'/film-search',
-      name:'search',
+      path:'/search',
+      name:'searchPage',
       component:SearchPage,
     },
     {

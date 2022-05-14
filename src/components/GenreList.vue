@@ -29,7 +29,8 @@ export default {
         qr.genres = genre.id;
       }
       this.setPageNum(1);
-      this.$router.push({path:"/film-search", query:qr});
+      this.activeGenreId = qr.genres;
+      this.$router.push({path:"/search", query:qr});
     },
     getGenreList : async function(){
       if(localStorage.getItem('filters')) {
@@ -76,8 +77,13 @@ export default {
   created() {
     this.getGenreList();
   },
+  mounted() {
+    setTimeout(()=>{
+      this.activeGenreId = this.$route.query.genres;
+    },300)
+  },
   updated() {
-    this.activeGenreId = this.$route.query.genres;
+    //this.activeGenreId = this.$route.query.genres;
   },
 }
 </script>

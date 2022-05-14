@@ -63,7 +63,7 @@ export default {
   mounted() {
     setTimeout(()=>{
       this.checkFavorite();
-    },100)
+    },300)
   }
 }
 </script>
