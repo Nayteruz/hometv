@@ -16,7 +16,7 @@ export default {
   components: {
     HeaderFilm,
     GenreList,
-    ToTop
+    ToTop,
   }
 }
 </script>
@@ -75,4 +75,18 @@ h1 {
     height: 100% !important;
   }
 }
+
+.icon {
+  height: 32px;
+  width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.icon svg {
+  max-height: 80%;
+  max-width: 80%;
+}
+
 </style>
