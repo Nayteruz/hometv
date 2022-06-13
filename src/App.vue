@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <HeaderFilm :key="$route.fullPath" @seachSubmit="onSubmitSearch"/>
+    <HeaderFilm :key="$route.fullPath"/>
     <GenreList />
     <RouterView :key="$route.fullPath"/>
     <ToTop/>
@@ -17,6 +17,9 @@ export default {
     HeaderFilm,
     GenreList,
     ToTop,
+  },
+  methods:{
+
   }
 }
 </script>

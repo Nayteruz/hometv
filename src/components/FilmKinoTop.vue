@@ -1,37 +1,46 @@
 <template>
   <div>
-    <div class="film__init" ref="film__init"></div>
+    <div class="film__init" ref="player_init_item"></div>
   </div>
 </template>
 
 <script>
+import {onMounted, ref} from "vue";
+import {useRoute} from "vue-router";
+
 export default {
-  methods: {
-    kinoTopPlayer() {
-      this.$refs.film__init.innerHTML = '';
+  name: 'FilmYohohoTab',
+  setup() {
+    const route = useRoute();
+    const player_init_item = ref(null);
+
+    function kinoTopPlayer(el) {
+      el.value.innerHTML = '';
       let filmElem = document.createElement('div');
-      filmElem.setAttribute('data-kinopoisk', this.$route.params.id);
-      filmElem.setAttribute('id', 'kinoplayertop')
+      filmElem.setAttribute('data-kinopoisk', route.params.id);
+      filmElem.setAttribute('id', 'kinoplayertop');
 
       let script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = '//kinoplayer.top/top.js';
 
-      this.$refs.film__init.appendChild(filmElem)
-      this.$refs.film__init.appendChild(script)
-      /* eslint-disable */
-      setTimeout(()=>{
-        runKinoplayertop();
-      },500)
+      el.value.appendChild(filmElem)
+      el.value.appendChild(script)
 
-    },
-  },
-  mounted() {
-    this.kinoTopPlayer();
+      /* eslint-disable */
+      setTimeout(() => {
+        runKinoplayertop();
+      }, 500)
+
+    }
+
+    onMounted(() => {
+      kinoTopPlayer(player_init_item);
+    })
+
+    return {
+      player_init_item
+    }
   }
 }
 </script>
-
-<style scoped>
-
-</style>

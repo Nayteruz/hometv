@@ -15,5 +15,5 @@ app.directive('title', VTitle)
 app.use(createPinia())
 app.use(router)
 
-app.config.globalProperties.emitter = emitter;
+app.provide('emitter', emitter);
 app.mount('#app')

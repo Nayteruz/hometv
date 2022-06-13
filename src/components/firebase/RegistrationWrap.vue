@@ -2,7 +2,8 @@
   <div class="registration-wrap">
     <IconUser @click="togglePop"/>
     <div class="registration-wrap--pop" v-if="isVisible">
-      <SignInComponent v-if="formView === 'sign'" @setForm="setForm"/>
+      <LogoutComponent v-if="filmStore.user"/>
+      <SignInComponent v-else-if="formView === 'sign'" @setForm="setForm"/>
       <RegistrationComponent v-else-if="formView === 'reg'" @setForm="setForm"/>
     </div>
   </div>
@@ -13,15 +14,22 @@ import IconUser from '@/components/icons/IconUser.vue'
 import {onMounted, ref} from "vue";
 import RegistrationComponent from "@/components/firebase/RegistrationComponent";
 import SignInComponent from "@/components/firebase/SignInComponent";
+import LogoutComponent from "@/components/firebase/LogoutComponent";
 import {getAuth, onAuthStateChanged} from 'firebase/auth';
+import {inject} from "vue";
+
+import { setDoc, getDoc, doc } from "firebase/firestore";
+import {firebaseDb} from "@/plugins";
+import {useFilmStore} from "@/stores/filmStore";
 
 export default {
   name: "RegistrationWrap",
-  components: {IconUser, RegistrationComponent, SignInComponent},
+  components: {IconUser, RegistrationComponent, SignInComponent, LogoutComponent},
   setup() {
-
+    const filmStore = useFilmStore();
     const isVisible = ref(false);
     const formView = ref('sign');
+    const emitter = inject('emitter');
 
     function togglePop() {
       isVisible.value = !isVisible.value;
@@ -44,15 +52,62 @@ export default {
       })
     }
 
+    async function getUserData(){
+      const docRef = doc(firebaseDb, "users", filmStore.user.uid);
+      const docSnap = await getDoc(docRef);
+      if (await docSnap.exists()) {
+        let data = docSnap.data()
+        console.log("Document data:", docSnap.data());
+        filmStore.user.name = data.name;
+        filmStore.user.email = data.email;
+        filmStore.favorites = data.favorites;
+        emitter.emit('setUserData')
+      } else {
+        alert('Данные не найдены')
+      }
+
+    }
+
+    async function onRegistrationSubmit({action, data}){
+      filmStore.user = await getCurrentUser();
+      if(filmStore.user) {
+        if(action === 'registration'){
+          try {
+            await setDoc(doc(firebaseDb, "users", filmStore.user.uid), {
+              name: data.user_name || '',
+              email: data.email || '',
+              favorites: [],
+            });
+            await getUserData()
+          } catch (e) {
+            alert("Ошибка создания пользователя: " + e);
+          }
+        } else if(action === 'sign'){
+          await getUserData()
+        }
+      } else if(action === 'logout'){
+        console.log('logout')
+        filmStore.user = {};
+        filmStore.favorites = [];
+        formView.value = 'sign';
+      }
+    }
+
+    emitter.on('registrationSubmit', onRegistrationSubmit)
+
     onMounted(async () => {
-      console.log(await getCurrentUser());
+      filmStore.user = await getCurrentUser();
+      if(filmStore.user){
+        await getUserData();
+      }
     })
 
     return {
       isVisible,
       setForm,
       togglePop,
-      formView
+      formView,
+      filmStore,
     }
   }
 }

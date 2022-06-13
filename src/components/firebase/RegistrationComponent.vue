@@ -2,6 +2,7 @@
   <div class="registration--form">
     <h3>Регистрация</h3>
     <p><input type="text" placeholder="Email" v-model="email"></p>
+    <p><input type="text" placeholder="Name" v-model="user_name"></p>
     <p><input type="password" placeholder="Password" v-model="password"></p>
     <p class="err-string" v-if="errMsg.length">{{ errMsg }}</p>
     <div class="btns">
@@ -15,22 +16,22 @@
 <script>
 import {ref} from "vue";
 import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth';
-import {useRouter} from 'vue-router';
 import IconGoogle from "@/components/icons/IconGoogle.vue";
-
+import {inject} from "vue";
 export default {
   name: "RegistrationComponent",
   components: {IconGoogle},
   setup(props, {emit}) {
     const email = ref('');
     const password = ref('');
-    const router = useRouter();
+    const user_name = ref('');
     const errMsg = ref('');
+    const emitter = inject('emitter');
 
     function register() {
       createUserWithEmailAndPassword(getAuth(), email.value, password.value)
         .then(() => {
-          router.push({name: 'home'});
+          emitter.emit('registrationSubmit',{action:'registration', data:{email:email.value, user_name:user_name.value, password:password.value}});
         }).catch((e) => {
           switch (e.code) {
             case 'auth/email-already-in-use':
@@ -56,11 +57,12 @@ export default {
     }
 
     function signWithGoogle() {
-
+      console.log('ok')
     }
 
     return {
       email,
+      user_name,
       password,
       errMsg,
       register,

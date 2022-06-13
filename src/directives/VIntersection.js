@@ -7,7 +7,7 @@ export default {
 		};
 		const callback = (entries)=>{
 			if(entries[0].isIntersecting){
-				bindings.value.getPosts();
+				bindings.value.getMoreFilms();
 			}
 		}
 		const observer = new IntersectionObserver(callback, options);

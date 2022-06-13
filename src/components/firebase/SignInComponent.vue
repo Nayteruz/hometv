@@ -7,7 +7,7 @@
     <div class="btns">
       <button class="sign" @click.prevent="signIn">Войти</button>
       <button class="reg" @click.prevent="setFormView">Регистрация</button>
-      <IconGoogle @click="signWithGoogle"/>
+<!--      <IconGoogle @click="signWithGoogle"/>-->
     </div>
   </div>
 </template>
@@ -15,25 +15,26 @@
 <script>
 import {ref} from "vue";
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
-import {useRouter} from 'vue-router';
-import IconGoogle from "@/components/icons/IconGoogle.vue";
+//import IconGoogle from "@/components/icons/IconGoogle.vue";
+import {inject} from "vue";
+import '@/plugins/index';
 
 export default {
   name: "SignInComponent",
-  components: {IconGoogle},
+  //components: {IconGoogle},
 
   setup(props,{emit}) {
     const email = ref('');
     const password = ref('');
     const errMsg = ref('')
-    const router = useRouter();
+    const emitter = inject('emitter');
 
-    function signIn() {
-      signInWithEmailAndPassword(getAuth(), email.value, password.value)
+    async function signIn() {
+      await signInWithEmailAndPassword(getAuth(), email.value, password.value)
         .then(() => {
           console.log('Sign In Success!');
-          router.push({name: 'home'});
-
+          //router.push({name: 'home'});
+          emitter.emit('registrationSubmit', {action:'sign', data:{email:email.value, password:password.value}});
         }).catch((e) => {
           switch (e.code) {
             case 'auth/invalid-email':

@@ -1,85 +1,57 @@
 <template>
   <div class="genres-wrap">
     <ul class="genres">
-      <li :class="{active: +genre.id === +activeGenreId, }" v-for="genre in genresFiltered" :key="genre.id"><span @click="setGenre(genre)">{{ genre.genre }}</span></li>
+      <li :class="{active: +genre.id === +routeGenreId, }" v-for="genre in filmStore.genreListStore" :key="genre.id"><span @click="setGenre(genre)">{{ genre.genre }}</span></li>
     </ul>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia'
 import { useFilmStore } from '@/stores/filmStore'
-import axios from "axios";
+import {onMounted, computed, watch} from "vue";
+import {useRoute, useRouter} from "vue-router";
+
 export default {
-  data(){
-    return{
-      filters: [],
-      genresFiltered: [],
-      activeGenreId: undefined,
-    }
-  },
-  methods:{
-    ...mapActions(useFilmStore, ['setPageNum']),
-    setGenre(genre){
+  name:'GenreList',
+  setup(){
+    const filmStore = useFilmStore();
+    const route = useRoute();
+    const router = useRouter();
+    const routeGenreId = computed(() => route.query.genres);
+
+    watch(routeGenreId, newRouteGenreId => {
+      filmStore.genreIdStore = newRouteGenreId
+    })
+
+    function setGenre(genre){
       let qr = {};
-      if(this.$route.query.q){
-        qr.q = this.$route.query.q;
+      if(filmStore.searchQueryStore){
+        qr.q = filmStore.searchQueryStore;
       }
-      if(!this.$route.query.genres || +this.$route.query.genres !== +genre.id){
+      if(!filmStore.genreIdStore || +filmStore.genreIdStore !== +genre.id){
         qr.genres = genre.id;
       }
-      this.setPageNum(1);
-      this.$router.push({path:"/film-search", query:qr});
-    },
-    getGenreList : async function(){
-      if(localStorage.getItem('filters')) {
-        this.filters = JSON.parse(localStorage.getItem('filters'));
-      } else {
-        const response = await axios.get('https://kinopoiskapiunofficial.tech/api/v2.2/films/filters', {
-          headers: {
-            'X-API-KEY': this.apiKey,
-            'Content-Type': 'application/json',
-          }
-        });
-        this.filters = response.data;
-        localStorage.setItem('filters', JSON.stringify(this.filters))
-      }
-      this.filterGenres();
-    },
-    filterGenres(){
-      this.genresFiltered = this.filters.genres.filter(x=> {
-        if (
-            x.genre !== ''
-            && x.genre !== 'для взрослых'
-            && x.genre !== 'мюзикл'
-            && x.genre !== 'спорт'
-            && x.genre !== 'церемония'
-            && x.genre !== 'фильм-нуар'
-            && x.genre !== 'биография'
-            && x.genre !== 'вестерн'
-            && x.genre !== 'короткометражка'
-            && x.genre !== 'документальный'
-            && x.genre !== 'реальное ТВ'
-            && x.genre !== 'ток-шоу'
-            && x.genre !== 'концерт'
-            && x.genre !== 'игра'
-            && x.genre !== 'новости'
-        ){
-          return x;
-        }
-      })
+      filmStore.setPageNum(1);
+      filmStore.genreIdStore = qr.genres;
+      router.push({name:'searchPage', query:qr});
     }
-  },
-  computed:{
-    ...mapState(useFilmStore, ['apiKey']),
-  },
-  created() {
-    this.getGenreList();
-  },
-  updated() {
-    this.activeGenreId = this.$route.query.genres;
-  },
+
+    async function getGenreList(){
+      await filmStore.getGenreList();
+    }
+
+    onMounted(async ()=>{
+      await getGenreList();
+    })
+
+    return {
+      filmStore,
+      routeGenreId,
+      setGenre
+    }
+  }
 }
+
 </script>
 
 <style scoped lang="scss">

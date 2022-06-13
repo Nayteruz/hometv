@@ -2,26 +2,31 @@
   <div class="pagination">
     <ul>
       <li v-for="num in total" :key="num">
-        <span :class="{'active':pageNum === num}" @click="emitPage(num)">{{ num }}</span>
+        <span :class="{'active':filmStore.pageNum === num}" @click="emitPage(num)">{{ num }}</span>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import {mapState, mapActions} from 'pinia'
 import {useFilmStore} from '@/stores/filmStore'
+import {inject} from "vue";
+
 export default {
   props:['total'],
-  methods:{
-    ...mapActions(useFilmStore, ['setPageNum']),
-    emitPage(num){
-      this.$emit('clickPage', num);
-      this.setPageNum(num);
+  setup(){
+    const filmStore = useFilmStore();
+    const emitter = inject('emitter');
+
+    function emitPage(num){
+      filmStore.setPageNum(num);
+      emitter.emit('clickPage', num);
     }
-  },
-  computed:{
-    ...mapState(useFilmStore, ['pageNum']),
+
+    return {
+      emitPage,
+      filmStore
+    }
   }
 }
 </script>

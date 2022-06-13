@@ -4,9 +4,12 @@
 
 <script>
 export default {
-  methods:{
-    eventTop(){
+  setup(){
+    function eventTop(){
       window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    return {
+      eventTop
     }
   }
 }
