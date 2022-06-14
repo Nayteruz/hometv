@@ -2,6 +2,7 @@
   <h1 v-title>{{ filmTitle }}</h1>
   <div class="film__wrap">
     <div class="film__image">
+      <FavoriteBtn class="favorite" :itemFilm="filmInfo" />
       <img v-if="filmInfo?.posterUrl" :src="filmInfo?.posterUrl" alt="filmTitle">
     </div>
     <div class="film__note">
@@ -29,17 +30,17 @@
 </template>
 
 <script>
-//import {mapState} from 'pinia'
 import {useFilmStore} from '@/stores/filmStore'
 import axios from "axios";
 import FilmPageDialog from "@/components/FilmPageDialog.vue";
 import FIlmItem from "@/components/FIlmItem.vue";
+import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import {onMounted, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 
 export default {
   name: 'FilmPage',
-  components: {FIlmItem, FilmPageDialog},
+  components: {FIlmItem, FilmPageDialog, FavoriteBtn},
   setup() {
     const filmStore = useFilmStore();
     const route = useRoute();
@@ -141,6 +142,16 @@ export default {
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  position: relative;
+
+  .favorite {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 10;
+    width: 30px;
+    height: 30px;
+  }
 
   img {
     object-fit: cover;

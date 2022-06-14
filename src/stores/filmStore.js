@@ -62,9 +62,6 @@ export const useFilmStore = defineStore({
 		setPageNum(num = 1) {
 			this.pageNum = num;
 		},
-		setFavorites(listFavorites = []) {
-			this.favorites = listFavorites;
-		},
 		checkFavoriteStore(itemFilm){
 			let check = this.favorites.filter(film => {
 				let filterFilmId = film?.kinopoiskId ?? film?.filmId;

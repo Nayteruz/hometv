@@ -1,7 +1,7 @@
 <template>
   <li class="films__item">
     <a href="#" class="item__link" @click="$router.push(`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`)"></a>
-    <a href="#" class="favorites" :class="{'active':isFavorite}" @click.prevent="toggleFavorite(itemFilm)"></a>
+    <FavoriteBtn class="favorite" :itemFilm="itemFilm" />
     <div class="item__image">
       <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"/>
       <img :src="itemFilm.posterUrlPreview" :alt="itemFilm.nameRu">
@@ -18,42 +18,15 @@
 </template>
 
 <script>
-import {useFilmStore} from "@/stores/filmStore";
-import {onMounted, ref} from "vue";
-import {inject} from "vue";
+import FavoriteBtn from "@/components/FavoriteBtn.vue";
+//import {useFilmStore} from "@/stores/filmStore";
+//import {onMounted, ref} from "vue";
+//import {inject} from "vue";
 
 export default {
   name: "FilmItemItem",
   props: ['itemFilm'],
-  setup(props){
-    const isFavorite = ref(false);
-    const filmStore = useFilmStore();
-    const emitter = inject('emitter');
-
-    function checkFavorite(){
-      isFavorite.value = filmStore.checkFavoriteStore(props.itemFilm);
-    }
-
-    async function toggleFavorite(item) {
-      if(!isFavorite.value){
-        await filmStore.addFavorite(item)
-        isFavorite.value = true;
-      } else {
-        await filmStore.removeFavorite(item)
-        isFavorite.value = false;
-      }
-    }
-
-    onMounted(()=>{
-      checkFavorite();
-    })
-    emitter.on('setUserData', checkFavorite);
-
-    return {
-      isFavorite,
-      toggleFavorite
-    }
-  }
+  components: {FavoriteBtn}
 }
 </script>
 
@@ -190,22 +163,11 @@ a.item__link {
   bottom: 0;
   z-index: 2;
 }
-
-a.favorites {
+.favorite {
   position: absolute;
   left: 5px;
   top: 5px;
   z-index: 10;
-  display: block;
-  width: 24px;
-  height: 24px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%234371c6' d='M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z'/%3E%3C/svg%3E");
-  background-size: 100%;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-
-  &:hover, &.active {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23cd0000' d='M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z'/%3E%3C/svg%3E");
-  }
 }
+
 </style>
