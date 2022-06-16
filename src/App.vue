@@ -17,9 +17,6 @@ export default {
     HeaderFilm,
     GenreList,
     ToTop,
-  },
-  methods:{
-
   }
 }
 </script>

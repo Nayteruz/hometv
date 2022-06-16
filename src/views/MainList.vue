@@ -40,7 +40,7 @@ export default {
 
     async function getListFilms(more = false, page) {
       showPreload.value = true;
-      filmStore.setPageNum(page || filmStore.pageNum);
+      filmStore.pageNum = page || filmStore.pageNum;
       const response = await getRequest();
       totalPages.value = response.data?.pagesCount;
       if (more) {

@@ -2,7 +2,7 @@
   <div class="registration-wrap">
     <IconUser @click="togglePop"/>
     <div class="registration-wrap--pop" v-if="isVisible">
-      <LogoutComponent v-if="filmStore.user"/>
+      <LogoutComponent v-if="filmStore.user" @setForm="setForm"/>
       <SignInComponent v-else-if="formView === 'sign'" @setForm="setForm"/>
       <RegistrationComponent v-else-if="formView === 'reg'" @setForm="setForm"/>
     </div>
@@ -11,15 +11,10 @@
 
 <script>
 import IconUser from '@/components/icons/IconUser.vue'
-import {onMounted, ref} from "vue";
-import RegistrationComponent from "@/components/firebase/RegistrationComponent";
-import SignInComponent from "@/components/firebase/SignInComponent";
-import LogoutComponent from "@/components/firebase/LogoutComponent";
-import {getAuth, onAuthStateChanged} from 'firebase/auth';
-import {inject} from "vue";
-
-import { setDoc, getDoc, doc } from "firebase/firestore";
-import {firebaseDb} from "@/plugins";
+import {onMounted, ref, inject} from "vue";
+import RegistrationComponent from "@/components/registration/RegistrationComponent.vue";
+import SignInComponent from "@/components/registration/SignInComponent.vue";
+import LogoutComponent from "@/components/registration/LogoutComponent.vue";
 import {useFilmStore} from "@/stores/filmStore";
 
 export default {
@@ -36,70 +31,17 @@ export default {
     }
 
     function setForm(e) {
+      filmStore.errorMessage = '';
       formView.value = e;
     }
 
-    function getCurrentUser(){
-      return new Promise((resolve, reject)=>{
-        const removeListener = onAuthStateChanged(
-            getAuth(),
-            (user)=>{
-              removeListener();
-              resolve(user);
-            },
-            reject
-        )
-      })
+    function updateFavorite(){
+      emitter.emit('setUserData');
     }
-
-    async function getUserData(){
-      const docRef = doc(firebaseDb, "users", filmStore.user.uid);
-      const docSnap = await getDoc(docRef);
-      if (await docSnap.exists()) {
-        let data = docSnap.data()
-        console.log("Document data:", docSnap.data());
-        filmStore.user.name = data.name;
-        filmStore.user.email = data.email;
-        filmStore.favorites = data.favorites;
-        emitter.emit('setUserData')
-      } else {
-        alert('Данные не найдены')
-      }
-
-    }
-
-    async function onRegistrationSubmit({action, data}){
-      filmStore.user = await getCurrentUser();
-      if(filmStore.user) {
-        if(action === 'registration'){
-          try {
-            await setDoc(doc(firebaseDb, "users", filmStore.user.uid), {
-              name: data.user_name || '',
-              email: data.email || '',
-              favorites: [],
-            });
-            await getUserData()
-          } catch (e) {
-            alert("Ошибка создания пользователя: " + e);
-          }
-        } else if(action === 'sign'){
-          await getUserData()
-        }
-      } else if(action === 'logout'){
-        console.log('logout')
-        filmStore.user = {};
-        filmStore.favorites = [];
-        formView.value = 'sign';
-      }
-    }
-
-    emitter.on('registrationSubmit', onRegistrationSubmit)
 
     onMounted(async () => {
-      filmStore.user = await getCurrentUser();
-      if(filmStore.user){
-        await getUserData();
-      }
+      await filmStore.authChange(updateFavorite);
+      await emitter.emit('setUserData')
     })
 
     return {
@@ -121,7 +63,7 @@ export default {
 }
 
 .registration--form h3 {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: normal;
 }
 
@@ -131,10 +73,13 @@ export default {
   width: 100%;
   height: auto;
   outline: none;
-  color: rgba(57, 57, 57, 0.5);
+  color: rgba(57, 57, 57, 1);
   border: 1px solid rgba(18, 18, 18, 0.15);
   background: #f6fafc;
   font-size: 15px;
+}
+.registration--form input::placeholder {
+  color: rgba(57, 57, 57, 0.5);
 }
 
 .registration--form .btns {

@@ -19,7 +19,7 @@ export default {
     const emitter = inject('emitter');
 
     function emitPage(num){
-      filmStore.setPageNum(num);
+      filmStore.pageNum = num;
       emitter.emit('clickPage', num);
     }
 

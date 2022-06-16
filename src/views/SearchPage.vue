@@ -53,7 +53,7 @@ export default {
 
     async function getListFilms(more = false, page) {
       setPageTitle();
-      filmStore.setPageNum(page || filmStore.pageNum);
+      filmStore.pageNum = page || filmStore.pageNum;
       if (routeGenreId.value || routeSearchQuery.value || more) {
         showPreload.value = true;
         const response = await getRequest();

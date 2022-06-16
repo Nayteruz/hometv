@@ -14,13 +14,12 @@
 
 <script>
 import {useFilmStore} from '@/stores/filmStore'
-import RegistrationWrap from "@/components/firebase/RegistrationWrap";
+import RegistrationWrap from "@/components/registration/RegistrationWrap.vue";
 import {ref, computed, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 
 export default {
   components: {RegistrationWrap},
-
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -40,7 +39,7 @@ export default {
       if(filmStore.genreIdStore){
         qr.genres = filmStore.genreIdStore;
       }
-      filmStore.setPageNum(1);
+      filmStore.pageNum = 1;
       router.push({name: "searchPage", query: qr});
     }
 

@@ -31,7 +31,7 @@ export default {
       if(!filmStore.genreIdStore || +filmStore.genreIdStore !== +genre.id){
         qr.genres = genre.id;
       }
-      filmStore.setPageNum(1);
+      filmStore.pageNum = 1;
       filmStore.genreIdStore = qr.genres;
       router.push({name:'searchPage', query:qr});
     }

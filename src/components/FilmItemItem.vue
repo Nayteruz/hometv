@@ -19,9 +19,6 @@
 
 <script>
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
-//import {useFilmStore} from "@/stores/filmStore";
-//import {onMounted, ref} from "vue";
-//import {inject} from "vue";
 
 export default {
   name: "FilmItemItem",
