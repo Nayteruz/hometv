@@ -22,3 +22,6 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Forse update subtree 
+git push origin `git subtree split --prefix dist master`:gh-pages
