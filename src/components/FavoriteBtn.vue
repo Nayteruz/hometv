@@ -3,7 +3,6 @@
     <span class="loading-round" v-if="isShow"></span>
     <IconFavorite :class="{active:isFavorite}" @click.prevent="toggleFavorite"/>
   </span>
-
 </template>
 
 <script>
@@ -26,6 +25,10 @@ export default {
     }
 
     async function toggleFavorite() {
+      if(!filmStore.user) {
+        alert('Необходима авторизация');
+        return;
+      }
       isShow.value = true;
       if (!isFavorite.value) {
         await filmStore.addFavorite(props.itemFilm)

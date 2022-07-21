@@ -2,12 +2,10 @@ import {defineStore} from 'pinia'
 import axios from "axios";
 import {firebaseDb} from "@/plugins";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged} from "firebase/auth";
-//import { setDoc, updateDoc, getDoc, doc } from "registration/firestore";
 import { updateDoc, doc } from "firebase/firestore";
 import {userDataGet, userDataSet, translateErrorCode, ignore_genre } from "@/plugins/firebaseActions";
 
-export const useFilmStore = defineStore({
-	id: 'filmStore',
+export const useFilmStore = defineStore('filmStore',{
 	state: () => ({
 		user: null,
 		apiKey: '404dc583-7efc-4c93-8f21-a782f977b9e7',
@@ -32,6 +30,10 @@ export const useFilmStore = defineStore({
 		}
 	},
 	actions: {
+		setGenreId(genreId) {
+			console.log(this.genreIdStore)
+			this.genreIdStore = genreId;
+		},
 		async getGenreList(){
 			if(localStorage.getItem('genres')) {
 				this.genreListStore = JSON.parse(localStorage.getItem('genres'));
@@ -48,8 +50,6 @@ export const useFilmStore = defineStore({
 					this.filterGenres;
 					localStorage.setItem('genres', JSON.stringify(this.genreListStore))
 				})
-				// this.genreListStore = this.filterGenres(this.filters?.genres);
-				// localStorage.setItem('genres', JSON.stringify(this.genreListStore))
 				return this.genreListStore;
 			}
 		},
@@ -63,9 +63,9 @@ export const useFilmStore = defineStore({
 				await updateDoc(docRef, {favorites: [...this.favorites, itemFilm]});
 			} catch (e) {
 				if(!this.user){
-					alert("Необходимо авторизоваться");
+					console.log("Необходимо авторизоваться");
 				} else {
-					alert("Ошибка добавления в избранное: " + e);
+					console.log("Ошибка добавления в избранное: " + e);
 				}
 			}
 			this.favorites = [...this.favorites, itemFilm];
@@ -77,9 +77,9 @@ export const useFilmStore = defineStore({
 				await updateDoc(docRef, {favorites: [...check]});
 			} catch (e) {
 				if(!this.user){
-					alert("Необходимо авторизоваться");
+					console.log("Необходимо авторизоваться");
 				} else {
-					alert("Ошибка удаления из избранного: " + e);
+					console.log("Ошибка удаления из избранного: " + e);
 				}
 			}
 			this.favorites = [...check];
@@ -146,6 +146,16 @@ export const useFilmStore = defineStore({
 					return film
 				}
 			})
+		},
+		searchQueryWithGenre() {
+			let qr = {};
+			if (this.searchQueryStore) {
+				qr.q = this.searchQueryStore;
+			}
+			if (this.genreIdStore) {
+				qr.genres = this.genreIdStore;
+			}
+			return qr
 		}
 
 	}
