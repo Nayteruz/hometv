@@ -4,27 +4,28 @@
     <FavoriteBtn class="favorite" :itemFilm="itemFilm" />
     <div class="item__image">
       <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"/>
-      <img :src="itemFilm.posterUrlPreview" :alt="itemFilm.nameRu">
+      <img :src="itemFilm.posterUrlPreview" :alt="props.itemFilm.nameRu">
     </div>
     <span v-if="itemFilm.rating !=='null' && itemFilm.rating !== undefined"
           class="item__rating">{{ itemFilm.rating === 'null' ? 'нет' : itemFilm.rating }}</span>
     <div class="item__options">
       <ul>
-        <li class="name">{{ itemFilm?.nameRu || itemFilm?.nameEn || itemFilm?.nameOriginal || 'Без названия' }}</li>
+        <li class="name">{{ filmName }}</li>
         <li v-if="itemFilm.year" class="year">{{ itemFilm.year }} г.</li>
       </ul>
     </div>
   </li>
 </template>
 
-<script>
+<script setup>
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
+import {computed, defineProps } from "vue";
+const props = defineProps(['itemFilm']);
 
-export default {
-  name: "FilmItemItem",
-  props: ['itemFilm'],
-  components: {FavoriteBtn}
-}
+const filmName = computed(() => {
+  return props.itemFilm?.nameRu || props.itemFilm?.nameEn || props.itemFilm?.nameOriginal || 'Без названия'
+})
+
 </script>
 
 <style scoped lang="scss">
@@ -165,6 +166,30 @@ a.item__link {
   left: 5px;
   top: 5px;
   z-index: 10;
+}
+
+.films__item.loading {
+  &:after {
+    content:"";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    background:rgba(#fff,.1);
+    background: linear-gradient(110deg, rgba(#80b0d9,.6) 8%, rgba(#80b0d9,.9) 18%, rgba(#80b0d9,.6) 33%);
+    background-size: 400% 600%;
+    animation: 2s shine linear infinite;
+    border-radius: 10px;
+  }
+
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -250%;
+  }
 }
 
 </style>

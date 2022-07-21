@@ -1,22 +1,64 @@
 <template>
-  <div class="films__wrap">
+  <div :class="['films__wrap', {'loading' : loading}]">
     <ul class="films__list">
-      <FilmItemItem :itemFilm="film" v-for="(film) in items" :key="film"/>
+      <FilmItemItem :itemFilm="film" v-for="(film) in items" :key="film.filmId || film.kinopoiskId"/>
       <PreloadCards v-if="showPreload"/>
     </ul>
   </div>
 </template>
 
-<script>
+<script setup>
 import FilmItemItem from "@/components/FilmItemItem.vue";
 import PreloadCards from "@/components/PreloadCards.vue";
-export default {
-  components: {PreloadCards, FilmItemItem},
-  props: ['items', 'showPreload'],
-}
+import {inject, ref, defineProps} from "vue";
+
+const emitter = inject('emitter');
+/* eslint-disable */
+const props = defineProps(['showPreload', 'items'])
+const loading = ref(false);
+
+emitter.on('isLoading', emit => {
+  loading.value = emit
+})
+
 </script>
 
 <style scoped lang="scss">
+
+.films__wrap {
+  position: relative;
+
+  &.loading {
+    &:before {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: rgba(#000, .5);
+      z-index: 3;
+      border-radius: 10px;
+    }
+
+    &:after {
+      content: "";
+      display: block;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 12px solid #5497e9;
+      border-top-color: transparent;
+      z-index: 4;
+      animation: 0.5s rorateRound linear infinite;
+    }
+  }
+
+}
 
 .films__list {
   padding: 5px 0;
@@ -37,5 +79,12 @@ export default {
   }
 }
 
-
+@keyframes rorateRound {
+  0% {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 </style>

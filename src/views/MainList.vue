@@ -38,26 +38,32 @@ export default {
       });
     }
 
-    async function getListFilms(more = false, page) {
-      showPreload.value = true;
+    async function getListFilms(page, more = '') {
+      if (more === 'loading'){
+        emitter.emit('isLoading', true);
+      }
+      showPreload.value = more === 'preload';
       filmStore.pageNum = page || filmStore.pageNum;
       const response = await getRequest();
       totalPages.value = response.data?.pagesCount;
-      if (more) {
+      if (more === 'preload') {
         films.value = [...films.value, ...response.data?.films];
       } else {
         films.value = [];
         films.value = response.data?.films;
       }
       showPreload.value = false;
+      if (more === 'loading' && await response.data?.films){
+        emitter.emit('isLoading', false);
+      }
     }
 
     function getMoreFilms() {
-      getListFilms(true, filmStore.pageNum + 1);
+      getListFilms(filmStore.pageNum + 1, 'preload');
     }
 
     function setNextPage() {
-      getListFilms(false, filmStore.pageNum);
+      getListFilms(filmStore.pageNum, 'loading');
     }
 
     emitter.on('clickPage', setNextPage)

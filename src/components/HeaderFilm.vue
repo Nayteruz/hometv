@@ -1,6 +1,6 @@
 <template>
   <header>
-    <a class="home" @click="$router.push({name:'home'})" href="#">Home</a>
+    <a class="home" @click="goHome" href="#">Home</a>
     <a href="#" :class="['favorites', {'disabled': isUser === false}]" @click="$router.push({name:'favorite'})">{{ filmStore.favorites.length }}</a>
     <form action="#" @submit.prevent="searchSubmit">
       <input autocomplete="off" type="text" @keyup.enter="searchSubmit" placeholder="Название фильма / ID КиноПоиск"
@@ -31,12 +31,19 @@ export default {
       router.push({name: "searchPage", query: filmStore.searchQueryWithGenre()});
     }
 
+    function goHome() {
+      filmStore.pageNum = 1;
+      filmStore.genreIdStore = null;
+      router.push({name: "home"});
+    }
+
     onMounted(() => {
       filmStore.searchQueryStore = searchQueryRoute.value
     })
 
     return {
       searchSubmit,
+      goHome,
       filmStore,
       isUser
     }

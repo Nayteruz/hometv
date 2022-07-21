@@ -8,17 +8,10 @@
 
 </template>
 
-<script>
-import HeaderFilm from "@/components/HeaderFilm.vue";
-import GenreList from "@/components/GenreList.vue";
-import ToTop from "@/components/ToTop.vue";
-export default {
-  components: {
-    HeaderFilm,
-    GenreList,
-    ToTop,
-  }
-}
+<script setup>
+  import HeaderFilm from "@/components/HeaderFilm.vue";
+  import GenreList from "@/components/GenreList.vue";
+  import ToTop from "@/components/ToTop.vue";
 </script>
 
 <style lang="scss">
