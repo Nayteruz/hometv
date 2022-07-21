@@ -1,27 +1,13 @@
-# vue-with-pwa
+# Домашний кинотеатр для просмотра фильмов и мультиков с торрентов.
 
-## Project setup
-```
-npm install
-```
+## Vue3, Composition Api, Pinia, Кинопоиск Api, Firebase google
 
-### Compiles and hot-reloads for development
 ```
-npm run serve
+Проект залит на github-pages посмотреть можно по ссылке [ссылка](https://nayteruz.github.io/hometv/)
+Сделана авторизация через гугл для сохранения избранного.
+Используется не официальное api кинопоиска для показа списка фильмов. 
+Для просмотра используется стороннее api, которое работает с IDшками фильмов. Сами фильмы грузятся с торрентов, если на торрентах уже есть фильм, то его можно будет уже посмотреть.
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Forse update subtree 
 ```
