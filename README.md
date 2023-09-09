@@ -17,5 +17,5 @@ git push origin `git subtree split --prefix dist master`:gh-pages
 ```
 ### Попробовать другие плееры
 ```
-Например https://kinobox.tv/  поиск в гугл агрегатор плееров на сайт
+Например https://kinobox.tv/  поиск в гугл агрегатор плееров на сайт  https://pleer.videoplayers.club/player/getCode
 ```
