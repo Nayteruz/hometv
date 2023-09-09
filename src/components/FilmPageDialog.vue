@@ -2,21 +2,24 @@
   <ul class="tab-titles">
     <li :class="{selected:playerNum===1}" @click="playerNum = 1">Плеер 1</li>
     <li :class="{selected:playerNum===2}" @click="playerNum = 2">Плеер 2</li>
+    <li :class="{selected:playerNum===3}" @click="playerNum = 3">Плеер 3</li>
   </ul>
-  <FilmYohohoTab v-if="playerNum===1" />
+  <FilmKinoBoxTab v-if="playerNum===1" />
   <FilmKinoTop v-if="playerNum===2" />
+  <FilmYohohoTab v-if="playerNum===3" />
 </template>
 
 <script>
 import FilmYohohoTab from "@/components/FilmYohohoTab.vue";
 import FilmKinoTop from "@/components/FilmKinoTop.vue";
+import FilmKinoBoxTab from "@/components/FilmKinoboxTab.vue"
 import {useFilmStore} from "@/stores/filmStore";
 import {ref} from "vue";
 
 export default {
   name:'FilmPageDialog',
   props:['itemFilm'],
-  components: {FilmYohohoTab, FilmKinoTop},
+  components: {FilmYohohoTab, FilmKinoTop, FilmKinoBoxTab},
   setup(){
     const filmStore = useFilmStore();
     const playerNum = ref(1);

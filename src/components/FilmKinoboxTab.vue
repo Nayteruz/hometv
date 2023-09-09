@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="film__init" ref="player_init_item"></div>
+    <div class="kinobox_player film__init" ref="player_init_item"></div>
   </div>
 </template>
 
@@ -9,33 +9,26 @@ import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 
 export default {
-  name: 'FilmKinoTopTab',
+  name: 'FilmKinoBoxTab',
   setup() {
     const route = useRoute();
     const player_init_item = ref(null);
 
-    function kinoTopPlayer(el) {
-      el.value.innerHTML = '';
-      let filmElem = document.createElement('div');
-      filmElem.setAttribute('data-kinopoisk', route.params.id);
-      filmElem.setAttribute('id', 'kinoplayertop');
-
+    function kinoBoxPlayer(el) {
       let script = document.createElement('script');
       script.type = 'text/javascript';
-      script.src = '//kinoplayer.top/top.js';
-
-      el.value.appendChild(filmElem)
+      script.src = '//kinobox.tv/kinobox.min.js';
       el.value.appendChild(script)
 
       /* eslint-disable */
       setTimeout(() => {
-        runKinoplayertop();
+        new Kinobox('.kinobox_player', {search: {kinopoisk: route.params.id}}).init();
       }, 500)
 
     }
 
     onMounted(() => {
-      kinoTopPlayer(player_init_item);
+        kinoBoxPlayer(player_init_item);
     })
 
     return {
