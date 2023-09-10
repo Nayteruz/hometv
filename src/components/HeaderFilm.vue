@@ -3,8 +3,11 @@
     <a class="home" @click="goHome" href="#">Home</a>
     <a href="#" :class="['favorites', {'disabled': isUser === false}]" @click="$router.push({name:'favorite'})">{{ filmStore.favorites.length }}</a>
     <form action="#" @submit.prevent="searchSubmit">
-      <input autocomplete="off" type="text" @keyup.enter="searchSubmit" placeholder="Название фильма / ID КиноПоиск"
+      <div class="input-wrap">
+        <input autocomplete="off" type="text" @keyup.enter="searchSubmit" placeholder="Название фильма / ID КиноПоиск"
              v-model.trim="filmStore.searchQueryStore" name="keyword">
+        <span v-if="filmStore.searchQueryStore" @click="clearInput" class="clear-input">×</span>
+      </div>
       <button type="submit">Найти</button>
     </form>
     <RegistrationWrap/>
@@ -31,6 +34,10 @@ export default {
       router.push({name: "searchPage", query: filmStore.searchQueryWithGenre()});
     }
 
+    function clearInput() {
+      filmStore.searchQueryStore = '';
+    }
+
     function goHome() {
       filmStore.pageNum = 1;
       filmStore.genreIdStore = null;
@@ -45,7 +52,8 @@ export default {
       searchSubmit,
       goHome,
       filmStore,
-      isUser
+      isUser,
+      clearInput
     }
   }
 }
@@ -58,6 +66,10 @@ header {
   grid-template-columns: auto auto 1fr 45px;
   align-items: center;
   gap: 5px;
+
+  @media all and (max-width: 500px) {
+    grid-template-columns: 1fr auto auto;
+  }
 }
 
 a.home, a.favorites {
@@ -93,6 +105,11 @@ form {
   gap: 5px;
   width: 100%;
 
+  @media all and (max-width: 500px) {
+    grid-column: 1 / 4;
+    order: 5;
+  }
+
   input, button {
     display: block;
     width: 100%;
@@ -104,6 +121,10 @@ form {
     padding: 5px;
     margin: 0;
     font-size: 16px;
+  }
+
+  input {
+    padding-right: 27px;
   }
 
   input:focus {
@@ -118,7 +139,35 @@ form {
     &:hover {
       background: #5998cd;
     }
+
+    @media all and (max-width: 500px) {
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='1em' viewBox='0 0 512 512'%3E%3Cpath d='M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z'/%3E%3C/svg%3E") 50% 50% no-repeat #80b0d9;
+      font-size: 0;
+      line-height: 0;
+      width: 35px;
+      height: 100%;
+    }
   }
+}
+
+.input-wrap {
+  position: relative;
+}
+
+.clear-input {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  margin-top: -8px;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:rgba(82, 135, 183, 0.5);
+  cursor: pointer;
+  z-index: 99;
 }
 
 a.favorites {
