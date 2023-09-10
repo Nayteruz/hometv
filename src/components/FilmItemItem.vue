@@ -1,6 +1,6 @@
 <template>
   <li class="films__item">
-    <a :href="`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`" class="item__link" @click="$router.push(`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`)"></a>
+    <a href="#" class="item__link" @click="$router.push(`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`)"></a>
     <FavoriteBtn class="favorite" :itemFilm="itemFilm" />
     <div class="item__image">
       <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"/>
