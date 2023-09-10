@@ -67,7 +67,7 @@ export const useFilmStore = defineStore('filmStore',{
 		async addFavorite(itemFilm){
 			try {
 				const docRef = doc(firebaseDb, "users", this.user.uid);
-				await updateDoc(docRef, {favorites: [itemFilm, ...this.favorites]});
+				await updateDoc(docRef, {favorites: [...this.favorites, itemFilm]});
 			} catch (e) {
 				if(!this.user){
 					console.log("Необходимо авторизоваться");
@@ -75,7 +75,7 @@ export const useFilmStore = defineStore('filmStore',{
 					console.log("Ошибка добавления в избранное: " + e);
 				}
 			}
-			this.favorites = [itemFilm, ...this.favorites];
+			this.favorites = [...this.favorites, itemFilm];
 		},
 		async removeFavorite(itemFilm){
 			let check = this.isCheckFilm(false, itemFilm);
@@ -132,7 +132,7 @@ export const useFilmStore = defineStore('filmStore',{
 			let data = await userDataGet(this.user.uid);
 			this.user.name = data?.name || '';
 			this.user.email = data?.email ?? '';
-			this.favorites = data?.favorites.reverse ?? [];
+			this.favorites = data?.favorites.reverse() ?? [];
 			if(data?.api_key){
 				this.apiKey = data.api_key;
 			}
