@@ -1,13 +1,12 @@
 <template>
   <li class="films__item">
-    <a href="#" class="item__link" @click="$router.push(`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`)"></a>
+    <a :href="`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`" class="item__link" @click="$router.push(`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`)"></a>
     <FavoriteBtn class="favorite" :itemFilm="itemFilm" />
     <div class="item__image">
       <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"/>
       <img :src="itemFilm.posterUrlPreview" :alt="props.itemFilm.nameRu">
     </div>
-    <span v-if="itemFilm.rating !=='null' && itemFilm.rating !== undefined"
-          class="item__rating">{{ itemFilm.rating === 'null' ? 'нет' : itemFilm.rating }}</span>
+    <span v-if="filmRating" class="item__rating">{{ filmRating }}</span>
     <div class="item__options">
       <ul>
         <li class="name">{{ filmName }}</li>
@@ -22,9 +21,16 @@ import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import {computed, defineProps } from "vue";
 const props = defineProps(['itemFilm']);
 
+const filmRating = computed(() => {
+  return props.itemFilm?.rating || props.itemFilm?.ratingImdb || null
+})
+
 const filmName = computed(() => {
   return props.itemFilm?.nameRu || props.itemFilm?.nameEn || props.itemFilm?.nameOriginal || 'Без названия'
 })
+
+console.log(props.itemFilm)
+
 
 </script>
 
