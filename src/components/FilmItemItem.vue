@@ -22,7 +22,7 @@ import {computed, defineProps } from "vue";
 const props = defineProps(['itemFilm']);
 
 const filmRating = computed(() => {
-  return props.itemFilm?.rating || props.itemFilm?.ratingImdb || null
+  return props.itemFilm?.rating || props.itemFilm?.ratingImdb || null;
 })
 
 const filmName = computed(() => {
