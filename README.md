@@ -16,3 +16,8 @@
 ```
 git push origin `git subtree split --prefix dist master`:gh-pages
 ```
+
+###Force push
+```
+git push origin `git subtree split --prefix dist master`:gh-pages --force
+```
