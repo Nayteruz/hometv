@@ -1,5 +1,5 @@
 <template>
-  <button class="back-to-list" @click.prevent="goToList"><IconLeftArrow/>Вернуться к списку</button>
+  <button class="back-to-list" @click.prevent="goToList"><IconLeftArrow/>Назад</button>
   <h1 v-title>{{ filmTitle }}</h1>
   <div class="film__wrap">
     <div class="film__image">
@@ -248,11 +248,15 @@ h3 {
   border:none;
   outline: none;
   cursor: pointer;
-  background: #2c4f91;
+  background: #3363bd;
   padding: 10px 15px;
   color: #fff;
   border-radius: 5px;
   user-select: none;
+
+  &:hover {
+    background:darken(#3363bd, 10%);
+  }
 }
 
 </style>
