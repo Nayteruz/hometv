@@ -2,7 +2,11 @@
   <div class="wrapper">
     <HeaderFilm :key="$route.fullPath"/>
     <GenreList />
-    <RouterView :key="$route.fullPath"/>
+    <RouterView v-slot="{ Component }">
+      <KeepAlive include="MainList">
+        <component :is="Component" :key="$route.fullPath"></component>
+      </KeepAlive>
+    </RouterView>
     <ToTop/>
   </div>
 
@@ -43,7 +47,7 @@ body {
 h1 {
   color: #fff;
   font-size: 30px;
-  margin:30px 0;
+  margin:30px 0 30px;
 }
 
 .wrapper {

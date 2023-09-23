@@ -1,9 +1,9 @@
 <template>
   <li class="films__item">
-    <a href="#" class="item__link" @click="$router.push(`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`)"></a>
+    <a :href="`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`" class="item__link" @click.prevent="goToPageFilm"></a>
     <FavoriteBtn class="favorite" :itemFilm="itemFilm" />
     <div class="item__image">
-      <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"/>
+      <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"></svg>
       <img :src="itemFilm.posterUrlPreview" :alt="props.itemFilm.nameRu">
     </div>
     <span v-if="filmRating" class="item__rating">{{ filmRating }}</span>
@@ -19,7 +19,9 @@
 <script setup>
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import {computed, defineProps } from "vue";
+import {useRouter} from "vue-router";
 const props = defineProps(['itemFilm']);
+const router = useRouter();
 
 const filmRating = computed(() => {
   return props.itemFilm?.rating || props.itemFilm?.ratingImdb || null;
@@ -29,8 +31,9 @@ const filmName = computed(() => {
   return props.itemFilm?.nameRu || props.itemFilm?.nameEn || props.itemFilm?.nameOriginal || 'Без названия'
 })
 
-console.log(props.itemFilm)
-
+const goToPageFilm = () => {
+  router.push(`/film/${props.itemFilm.filmId || props.itemFilm.kinopoiskId}`)
+}
 
 </script>
 

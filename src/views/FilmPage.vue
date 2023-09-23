@@ -1,4 +1,5 @@
 <template>
+  <button class="back-to-list" @click.prevent="goToList"><IconLeftArrow/>Вернуться к списку</button>
   <h1 v-title>{{ filmTitle }}</h1>
   <div class="film__wrap">
     <div class="film__image">
@@ -30,6 +31,7 @@
 </template>
 
 <script>
+import IconLeftArrow from '@/components/icons/IconLeftArrow.vue'
 import {useFilmStore} from '@/stores/filmStore'
 import axios from "axios";
 import FilmPageDialog from "@/components/FilmPageDialog.vue";
@@ -40,7 +42,7 @@ import {useRoute, useRouter} from "vue-router";
 
 export default {
   name: 'FilmPage',
-  components: {FIlmItem, FilmPageDialog, FavoriteBtn},
+  components: {FIlmItem, FilmPageDialog, FavoriteBtn, IconLeftArrow},
   setup() {
     const filmStore = useFilmStore();
     const route = useRoute();
@@ -79,7 +81,6 @@ export default {
         .catch(() => {
           return {data: []};
         })
-
     }
 
     function getSequels_and_prequels() {
@@ -109,6 +110,10 @@ export default {
       router.push({name: 'searchPage', query: {'genres': genre_id}});
     }
 
+    const goToList = () => {
+      router.go(-1);
+    }
+
     onMounted(() => {
       getFilmInfo();
       getSimilars();
@@ -120,7 +125,9 @@ export default {
       filmInfo,
       similars,
       setGenre,
-      title
+      title,
+      goToList,
+      IconLeftArrow
     }
   }
 }
@@ -143,6 +150,7 @@ export default {
   align-items: flex-start;
   justify-content: center;
   position: relative;
+  min-width: 0;
 
   .favorite {
     position: absolute;
@@ -221,4 +229,30 @@ h3 {
     }
   }
 }
+
+.back-to-list {
+  & + h1 {
+    margin-top: 10px;
+  }
+
+  svg {
+    max-height: 20px;
+  }
+
+  display: grid;
+  grid-template-columns: 20px auto;
+  align-items: center;
+  gap: 4px;
+
+  margin-top: 30px;
+  border:none;
+  outline: none;
+  cursor: pointer;
+  background: #2c4f91;
+  padding: 10px 15px;
+  color: #fff;
+  border-radius: 5px;
+  user-select: none;
+}
+
 </style>
