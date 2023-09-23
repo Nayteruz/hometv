@@ -31,14 +31,12 @@ export const useFilmStore = defineStore('filmStore',{
 		reverseFavorites(){
 			const list = [...this.favorites];
 			const reverseList = list.reverse();
-			console.log(reverseList);			
 
 			return reverseList;
 		}
 	},
 	actions: {
 		setGenreId(genreId) {
-			console.log(this.genreIdStore)
 			this.genreIdStore = genreId;
 		},
 		async getGenreList(){
