@@ -6,20 +6,20 @@
   </ul>
   <FilmKinoBoxTab v-if="playerNum===1" />
   <FilmKinoTop v-if="playerNum===2" />
-  <FilmYohohoTab v-if="playerNum===3" />
+  <FilmPlayerClub v-if="playerNum===3" />
 </template>
 
 <script>
-import FilmYohohoTab from "@/components/FilmYohohoTab.vue";
-import FilmKinoTop from "@/components/FilmKinoTop.vue";
 import FilmKinoBoxTab from "@/components/FilmKinoboxTab.vue"
+import FilmPlayerClub from "@/components/FilmPlayerClub.vue"
+import FilmKinoTop from "@/components/FilmKinoTop.vue";
 import {useFilmStore} from "@/stores/filmStore";
 import {ref} from "vue";
 
 export default {
   name:'FilmPageDialog',
   props:['itemFilm'],
-  components: {FilmYohohoTab, FilmKinoTop, FilmKinoBoxTab},
+  components: {FilmKinoTop, FilmKinoBoxTab, FilmPlayerClub},
   setup(){
     const filmStore = useFilmStore();
     const playerNum = ref(1);

@@ -23,7 +23,7 @@ export default {
       /* eslint-disable */
       setTimeout(() => {
         new Kinobox('.kinobox_player', {search: {kinopoisk: route.params.id}}).init();
-      }, 500)
+      }, 1000)
 
     }
 
