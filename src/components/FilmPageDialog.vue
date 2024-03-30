@@ -2,11 +2,11 @@
   <ul class="tab-titles">
     <li :class="{selected:playerNum===1}" @click="playerNum = 1">Плеер 1</li>
     <li :class="{selected:playerNum===2}" @click="playerNum = 2">Плеер 2</li>
-    <li :class="{selected:playerNum===3}" @click="playerNum = 3">Плеер 3</li>
+    <li :class="{selected:playerNum===3}" @click="playerNum = 3">Плеер 3 с vpn</li>
   </ul>
   <FilmKinoBoxTab v-if="playerNum===1" />
-  <FilmKinoTop v-if="playerNum===2" />
-  <FilmPlayerClub v-if="playerNum===3" />
+  <FilmPlayerClub v-if="playerNum===2" />
+  <FilmKinoTop v-if="playerNum===3" />
 </template>
 
 <script>
