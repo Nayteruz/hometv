@@ -1,9 +1,9 @@
 import {defineStore} from 'pinia'
 import axios from "axios";
-import {firebaseDb} from "@/plugins";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged} from "firebase/auth";
+import { firebaseDb } from "@/plugins";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { updateDoc, doc } from "firebase/firestore";
-import {userDataGet, userDataSet, translateErrorCode, ignore_genre } from "@/plugins/firebaseActions";
+import { userDataGet, userDataSet, translateErrorCode, ignore_genre } from "@/plugins/firebaseActions";
 
 export const useFilmStore = defineStore('filmStore',{
 	state: () => ({
@@ -17,7 +17,8 @@ export const useFilmStore = defineStore('filmStore',{
 		genreListStore:[],
 		searchQueryStore: '',
 		filters: null,
-		favorites: []
+		filmPageId: 0,
+		favorites: [],
 	}),
 	getters: {
 		filterGenres(){
@@ -38,6 +39,9 @@ export const useFilmStore = defineStore('filmStore',{
 	actions: {
 		setGenreId(genreId) {
 			this.genreIdStore = genreId;
+		},
+		setFilmPageId(value) {
+			this.filmPageId = value;
 		},
 		async getGenreList(){
 			if(localStorage.getItem('genres')) {

@@ -11,7 +11,7 @@ export default {
 	name: 'FilmPlayerClub',
 	setup() {
 		const route = useRoute();
-    const filmId = route.params.id;
+        const filmId = route.params.id;
 
     return {
       filmId

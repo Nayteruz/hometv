@@ -4,7 +4,7 @@
   <div class="film__wrap">
     <div class="film__image">
       <FavoriteBtn class="favorite" :itemFilm="filmInfo" />
-      <img v-if="filmInfo?.posterUrl" :src="filmInfo?.posterUrl" alt="filmTitle">
+      <img v-if="filmInfo?.posterUrl" :src="filmInfo?.posterUrl" alt="filmTitle" />
     </div>
     <div class="film__note">
       <div class="film__btns">
@@ -111,6 +111,10 @@ export default {
     }
 
     const goToList = () => {
+      if(filmStore.filmPageId === route.params.id){
+        filmStore.setFilmPageId(0);
+        router.go(-2);
+      }
       router.go(-1);
     }
 
