@@ -9,7 +9,9 @@
     >
     <form
       action="#"
-      :class="{ show: isSearchVisible }"
+      :class="{
+        show: isSearchVisible,
+      }"
       @submit.prevent="searchSubmit"
     >
       <div class="input-wrap">
@@ -37,7 +39,7 @@
       @click="toggleSearch"
       :class="{
         'search-popup-btn': true,
-        opened: isSearchVisible | filmStore.searchQueryStore,
+        opened: isSearchVisible,
       }"
     ></button>
   </header>
@@ -57,7 +59,9 @@ export default {
     const filmStore = useFilmStore();
     const isUser = computed(() => (filmStore.user !== null ? true : false));
     const searchQueryRoute = computed(() => route.query.q);
-    const isSearchVisible = ref(false);
+    const isSearchVisible = ref(
+      searchQueryRoute.value | (route.name === "searchPage") ? true : false
+    );
     const searchInput = ref(null);
 
     function searchSubmit() {
