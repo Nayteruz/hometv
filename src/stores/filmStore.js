@@ -30,7 +30,7 @@ export const useFilmStore = defineStore('filmStore',{
 		filters: null,
 		filmPageId: 0,
 		favorites: [],
-		currentFocus: 2,
+		currentFocus: -1,
 	}),
 	getters: {
 		filterGenres(){

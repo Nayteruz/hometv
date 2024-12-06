@@ -27,7 +27,7 @@ const handleKeyDown = (e) => {
 			e.preventDefault();
 			break;
 		case 'ArrowUp':
-			filmStore.currentFocus -= 1;
+			filmStore.currentFocus = Math.max(0, filmStore.currentFocus - 1);
 			e.preventDefault();
 			break;
 		case 'ArrowRight':
@@ -35,7 +35,7 @@ const handleKeyDown = (e) => {
 			e.preventDefault();
 			break;
 		case 'ArrowLeft':
-			filmStore.currentFocus -= 1;
+			filmStore.currentFocus = Math.max(0, filmStore.currentFocus - 1);
 			e.preventDefault();
 			break;
 	}
