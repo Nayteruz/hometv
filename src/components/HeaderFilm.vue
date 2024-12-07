@@ -26,6 +26,7 @@
 			<button type="submit">Найти</button>
 		</form>
 		<RegistrationWrap />
+		<button class="reload-page" @click="reloadPage"></button>
 		<button
 			type="button"
 			@click="toggleSearch"
@@ -77,6 +78,10 @@ export default {
 			filmStore.searchQueryStore = searchQueryRoute.value;
 		});
 
+		const reloadPage = () => {
+			document.location.reload();
+		};
+
 		function toggleSearch() {
 			isSearchVisible.value = !isSearchVisible.value;
 		}
@@ -90,6 +95,7 @@ export default {
 			toggleSearch,
 			isSearchVisible,
 			searchInput,
+			reloadPage,
 		};
 	},
 };
@@ -98,7 +104,7 @@ export default {
 <style scoped lang="scss">
 header {
 	display: grid;
-	grid-template-columns: auto auto 1fr 45px;
+	grid-template-columns: auto auto 1fr 45px 45px;
 	align-items: center;
 	gap: 5px;
 	position: sticky;
@@ -106,12 +112,13 @@ header {
 	top: 1px;
 
 	@media all and (max-width: 500px) {
-		grid-template-columns: 1fr auto auto 35px;
+		grid-template-columns: 1fr auto auto 35px 35px;
 	}
 }
 
 a.home,
-a.favorites {
+a.favorites,
+.reload-page {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -246,6 +253,21 @@ a.favorites {
 		&:before {
 			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23cd0000' d='M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z'/%3E%3C/svg%3E");
 		}
+	}
+}
+
+.reload-page {
+	border: none;
+	cursor: pointer;
+
+	@media all and (max-width: 500px) {
+		order: 5;
+	}
+
+	&:before {
+		width: 20px;
+		height: 20px;
+		background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M142.9 142.9c-17.5 17.5-30.1 38-37.8 59.8c-5.9 16.7-24.2 25.4-40.8 19.5s-25.4-24.2-19.5-40.8C55.6 150.7 73.2 122 97.6 97.6c87.2-87.2 228.3-87.5 315.8-1L455 55c6.9-6.9 17.2-8.9 26.2-5.2s14.8 12.5 14.8 22.2l0 128c0 13.3-10.7 24-24 24l-8.4 0c0 0 0 0 0 0L344 224c-9.7 0-18.5-5.8-22.2-14.8s-1.7-19.3 5.2-26.2l41.1-41.1c-62.6-61.5-163.1-61.2-225.3 1zM16 312c0-13.3 10.7-24 24-24l7.6 0 .7 0L168 288c9.7 0 18.5 5.8 22.2 14.8s1.7 19.3-5.2 26.2l-41.1 41.1c62.6 61.5 163.1 61.2 225.3-1c17.5-17.5 30.1-38 37.8-59.8c5.9-16.7 24.2-25.4 40.8-19.5s25.4 24.2 19.5 40.8c-10.8 30.6-28.4 59.3-52.9 83.8c-87.2 87.2-228.3 87.5-315.8 1L57 457c-6.9 6.9-17.2 8.9-26.2 5.2S16 449.7 16 440l0-119.6 0-.7 0-7.6z"/></svg>');
 	}
 }
 </style>

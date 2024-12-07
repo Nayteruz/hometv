@@ -1,6 +1,6 @@
 <template>
 	<div :class="['films__wrap', { loading: loading }]">
-		<ul class="films__list" ref="listRef">
+		<ul class="films__list">
 			<FilmItemItem
 				:itemFilm="film"
 				v-for="(film, index) in items"
@@ -13,13 +13,10 @@
 </template>
 
 <script setup>
-import { useFilmStore } from '@/stores/filmStore';
 import FilmItemItem from '@/components/FilmItemItem.vue';
 import PreloadCards from '@/components/PreloadCards.vue';
-import { inject, ref, defineProps, onMounted } from 'vue';
+import { inject, ref, defineProps } from 'vue';
 
-const filmStore = useFilmStore();
-const listRef = ref(null);
 const emitter = inject('emitter');
 /* eslint-disable */
 const props = defineProps(['showPreload', 'items']);
@@ -27,10 +24,6 @@ const loading = ref(false);
 
 emitter.on('isLoading', (emit) => {
 	loading.value = emit;
-});
-
-onMounted(() => {
-	filmStore.listWidth = listRef.value.clientWidth;
 });
 </script>
 

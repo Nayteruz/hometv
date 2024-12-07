@@ -17,7 +17,7 @@ import HeaderFilm from '@/components/HeaderFilm.vue';
 import GenreList from '@/components/GenreList.vue';
 import ToTop from '@/components/ToTop.vue';
 import { useRouter } from 'vue-router';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 const wrapperRef = ref(null);
 const filmStore = useFilmStore();
@@ -30,6 +30,12 @@ const keys = {
 	ArrowLeft: 'ArrowLeft',
 	Enter: 'Enter',
 	NumpadEnter: 'Enter',
+};
+
+const breakpoints = {
+	desktop: 1024,
+	tablet: 768,
+	mobile: 480,
 };
 
 const onDown = () => {
@@ -87,23 +93,27 @@ const handleKeyDown = (e) => {
 	}
 };
 
+const setCountByLine = () => {
+	if (window.innerWidth > breakpoints.desktop) {
+		filmStore.countByLine = 5;
+	} else if (window.innerWidth > breakpoints.tablet) {
+		filmStore.countByLine = 4;
+	} else if (window.innerWidth > breakpoints.mobile) {
+		filmStore.countByLine = 3;
+	} else {
+		filmStore.countByLine = 2;
+	}
+};
+
 onMounted(() => {
 	window.addEventListener('keydown', handleKeyDown);
 	filmStore.currentFocusIndex = -1;
+	setCountByLine();
 });
 
 onBeforeUnmount(() => {
 	window.removeEventListener('keydown', handleKeyDown);
 	filmStore.currentFocusIndex = -1;
-});
-
-watch([() => filmStore.listWidth, () => filmStore.itemWidth], ([listWidth, itemWidth]) => {
-	if (listWidth <= 0 || itemWidth <= 0) {
-		filmStore.countByLine = 0;
-		return;
-	}
-
-	filmStore.countByLine = Math.floor(listWidth / itemWidth);
 });
 </script>
 

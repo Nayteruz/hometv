@@ -1,5 +1,11 @@
 <template>
-	<li :class="{ films__item: true, focused: isFocused }" tabindex="0" ref="itemRef">
+	<li
+		:class="{ films__item: true, focused: isFocused | isFocusedOnHover }"
+		@mouseover="onOver"
+		@mouseleave="onLeave"
+		tabindex="0"
+		ref="itemRef"
+	>
 		<a :href="`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`" class="item__link" @click.prevent="goToPageFilm"></a>
 		<FavoriteBtn class="favorite" :itemFilm="itemFilm" />
 		<div class="item__image">
@@ -19,13 +25,14 @@
 <script setup>
 import { useFilmStore } from '@/stores/filmStore';
 import FavoriteBtn from '@/components/FavoriteBtn.vue';
-import { computed, defineProps, onMounted, ref, watch } from 'vue';
+import { computed, defineProps, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 const props = defineProps(['itemFilm', 'currentIndex']);
 const router = useRouter();
 const filmStore = useFilmStore();
 const itemRef = ref(null);
 const isFocused = computed(() => props.currentIndex === filmStore.currentFocusIndex);
+const isFocusedOnHover = ref(false);
 
 const filmRating = computed(() => {
 	return props.itemFilm?.rating || props.itemFilm?.ratingKinopoisk || props.itemFilm?.ratingImdb || null;
@@ -39,11 +46,14 @@ const goToPageFilm = () => {
 	router.push(`/film/${props.itemFilm.filmId || props.itemFilm.kinopoiskId}`);
 };
 
-onMounted(() => {
-	if (itemRef.value && filmStore.itemWidth <= 0) {
-		filmStore.itemWidth = itemRef.value.clientWidth;
-	}
-});
+const onOver = () => {
+	filmStore.currentFocusIndex = props.currentIndex;
+	isFocusedOnHover.value = true;
+};
+
+const onLeave = () => {
+	isFocusedOnHover.value = false;
+};
 
 watch(isFocused, () => {
 	if (isFocused.value && itemRef.value) {
