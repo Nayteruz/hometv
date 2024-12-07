@@ -99,7 +99,7 @@ watch(isFocused, () => {
 	overflow: hidden;
 	border-radius: 10px;
 	flex: 1 1 auto;
-	max-height: 400px;
+	max-height: max(400px, 45vh);
 	position: relative;
 
 	img,
