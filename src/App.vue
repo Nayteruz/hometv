@@ -1,5 +1,5 @@
 <template>
-	<div class="wrapper">
+	<div class="wrapper" ref="wrapperRef">
 		<HeaderFilm :key="$route.fullPath" />
 		<GenreList />
 		<RouterView v-slot="{ Component }">
@@ -16,42 +16,98 @@ import { useFilmStore } from '@/stores/filmStore';
 import HeaderFilm from '@/components/HeaderFilm.vue';
 import GenreList from '@/components/GenreList.vue';
 import ToTop from '@/components/ToTop.vue';
-import { onBeforeUnmount, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
+const wrapperRef = ref(null);
 const filmStore = useFilmStore();
+const router = useRouter();
+
+const keys = {
+	ArrowDown: 'ArrowDown',
+	ArrowUp: 'ArrowUp',
+	ArrowRight: 'ArrowRight',
+	ArrowLeft: 'ArrowLeft',
+	Enter: 'Enter',
+	NumpadEnter: 'Enter',
+};
+
+const onDown = () => {
+	if (filmStore.currentFocusIndex === -1) {
+		filmStore.currentFocusIndex = 0;
+	} else {
+		filmStore.currentFocusIndex += filmStore.countByLine;
+	}
+};
+const onUp = () => {
+	filmStore.currentFocusIndex = Math.max(0, filmStore.currentFocusIndex - filmStore.countByLine);
+};
+const onRight = () => {
+	filmStore.currentFocusIndex += 1;
+};
+const onLeft = () => {
+	filmStore.currentFocusIndex = Math.max(0, filmStore.currentFocusIndex - 1);
+};
+
+const onEnter = () => {
+	const index = filmStore.currentFocusIndex;
+	if (index === -1) {
+		return;
+	}
+
+	const filmId = filmStore.films[index].filmId || filmStore.films[index].kinopoiskId;
+
+	router.push(`/film/${filmId}`);
+};
 
 const handleKeyDown = (e) => {
+	const keyDown = keys[e.key];
+
+	if (keyDown) {
+		e.preventDefault();
+	}
+
 	switch (e.key) {
-		case 'ArrowDown':
-			filmStore.currentFocus += 1;
-			e.preventDefault();
+		case keys.ArrowDown:
+			onDown();
 			break;
-		case 'ArrowUp':
-			filmStore.currentFocus = Math.max(0, filmStore.currentFocus - 1);
-			e.preventDefault();
+		case keys.ArrowUp:
+			onUp();
 			break;
-		case 'ArrowRight':
-			filmStore.currentFocus += 1;
-			e.preventDefault();
+		case keys.ArrowRight:
+			onRight();
 			break;
-		case 'ArrowLeft':
-			filmStore.currentFocus = Math.max(0, filmStore.currentFocus - 1);
-			e.preventDefault();
+		case keys.ArrowLeft:
+			onLeft();
+			break;
+		case keys.Enter:
+		case keys.NumpadEnter:
+			onEnter();
 			break;
 	}
 };
 
 onMounted(() => {
 	window.addEventListener('keydown', handleKeyDown);
+	filmStore.currentFocusIndex = -1;
 });
 
 onBeforeUnmount(() => {
 	window.removeEventListener('keydown', handleKeyDown);
+	filmStore.currentFocusIndex = -1;
+});
+
+watch([() => filmStore.listWidth, () => filmStore.itemWidth], ([listWidth, itemWidth]) => {
+	if (listWidth <= 0 || itemWidth <= 0) {
+		filmStore.countByLine = 0;
+		return;
+	}
+
+	filmStore.countByLine = Math.floor(listWidth / itemWidth);
 });
 </script>
 
 <style lang="scss">
-//https://gist.github.com/Nayteruz/ea417352f3e21e923f38645a4a4ceffd коммит на отдельную ветку для базового пути
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 * {

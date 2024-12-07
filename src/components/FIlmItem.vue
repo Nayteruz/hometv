@@ -1,13 +1,11 @@
 <template>
 	<div :class="['films__wrap', { loading: loading }]">
-		<ul class="films__list">
+		<ul class="films__list" ref="listRef">
 			<FilmItemItem
 				:itemFilm="film"
 				v-for="(film, index) in items"
 				:key="film.filmId || film.kinopoiskId"
-				@focus="currentFocus === index"
-				:class="{ focused: currentFocus === index }"
-				:data-index="currentFocus"
+				:currentIndex="index"
 			/>
 			<PreloadCards v-if="showPreload" />
 		</ul>
@@ -15,28 +13,30 @@
 </template>
 
 <script setup>
+import { useFilmStore } from '@/stores/filmStore';
 import FilmItemItem from '@/components/FilmItemItem.vue';
 import PreloadCards from '@/components/PreloadCards.vue';
-import { inject, ref, defineProps } from 'vue';
+import { inject, ref, defineProps, onMounted } from 'vue';
 
+const filmStore = useFilmStore();
+const listRef = ref(null);
 const emitter = inject('emitter');
 /* eslint-disable */
-const props = defineProps(['showPreload', 'items', 'currentFocus']);
+const props = defineProps(['showPreload', 'items']);
 const loading = ref(false);
 
 emitter.on('isLoading', (emit) => {
 	loading.value = emit;
+});
+
+onMounted(() => {
+	filmStore.listWidth = listRef.value.clientWidth;
 });
 </script>
 
 <style scoped lang="scss">
 .films__wrap {
 	position: relative;
-
-	.focused {
-		border: 2px solid #5077bf;
-		box-shadow: 0 0 10px 6px #5077bf;
-	}
 
 	&.loading {
 		&:before {

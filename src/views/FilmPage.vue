@@ -5,6 +5,7 @@
 		<div class="film__image">
 			<FavoriteBtn class="favorite" :itemFilm="filmInfo" />
 			<img v-if="filmInfo?.posterUrl" :src="filmInfo?.posterUrl" alt="filmTitle" />
+			<span v-if="filmRating" class="film__rating">{{ filmRating }}</span>
 		</div>
 		<div class="film__note">
 			<div class="film__btns">
@@ -37,7 +38,7 @@ import axios from 'axios';
 import FilmPageDialog from '@/components/FilmPageDialog.vue';
 import FIlmItem from '@/components/FIlmItem.vue';
 import FavoriteBtn from '@/components/FavoriteBtn.vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 export default {
@@ -51,6 +52,10 @@ export default {
 		const filmTitle = ref('');
 		const similars = ref([]);
 		const title = ref(filmTitle.value);
+
+		const filmRating = computed(() => {
+			return filmInfo.value?.rating || filmInfo.value?.ratingKinopoisk || filmInfo.value?.ratingImdb || null;
+		});
 
 		function getFilmInfo() {
 			axios
@@ -132,6 +137,7 @@ export default {
 			title,
 			goToList,
 			IconLeftArrow,
+			filmRating,
 		};
 	},
 };
@@ -175,6 +181,38 @@ export default {
 			height: auto;
 			max-height: 100%;
 		}
+	}
+}
+
+.film__rating {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	z-index: 10;
+	background: #ffa800;
+	border-radius: 5px;
+	font-size: 13px;
+	padding: 2px 4px;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2px;
+	color: #2c5e95;
+	@media all and (max-width: 768px) {
+		font-size: 11px;
+		top: 0;
+		right: 0;
+	}
+
+	&:before {
+		content: '';
+		display: block;
+		width: 13px;
+		height: 15px;
+		background-image: url("data:image/svg+xml;utf8,<svg fill='%232c5e95' height='16' viewBox='0 0 16 16' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z' class='star' /></svg>");
+		background-size: 100%;
+		background-repeat: no-repeat;
 	}
 }
 

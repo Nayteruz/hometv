@@ -30,7 +30,11 @@ export const useFilmStore = defineStore('filmStore',{
 		filters: null,
 		filmPageId: 0,
 		favorites: [],
-		currentFocus: -1,
+		currentFocusIndex: -1,
+		films: [],
+		listWidth: 0,
+		itemWidth: 0,
+		countByLine: 0,
 	}),
 	getters: {
 		filterGenres(){
@@ -40,12 +44,6 @@ export const useFilmStore = defineStore('filmStore',{
 					return x;
 				}
 			})
-		},
-		reverseFavorites(){
-			const list = [...this.favorites];
-			const reverseList = list.reverse();
-
-			return reverseList;
 		}
 	},
 	actions: {
@@ -179,14 +177,14 @@ export const useFilmStore = defineStore('filmStore',{
 			return qr
 		},
 		incrementFocus(){
-			this.currentFocus += 1;
+			this.currentFocusIndex += 1;
 		},
 		decrementFocus(){
 			this.setCurrentFocus(0);
-			this.currentFocus -= 1;
+			this.currentFocusIndex -= 1;
 		},
 		setCurrentFocus(index){
-			this.currentFocus = index;
+			this.currentFocusIndex = index;
 		}
 	}
 })

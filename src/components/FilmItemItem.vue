@@ -1,5 +1,5 @@
 <template>
-	<li :class="{ films__item: true }" tabindex="0">
+	<li :class="{ films__item: true, focused: isFocused }" tabindex="0" ref="itemRef">
 		<a :href="`/film/${itemFilm.filmId || itemFilm.kinopoiskId}`" class="item__link" @click.prevent="goToPageFilm"></a>
 		<FavoriteBtn class="favorite" :itemFilm="itemFilm" />
 		<div class="item__image">
@@ -17,14 +17,18 @@
 </template>
 
 <script setup>
+import { useFilmStore } from '@/stores/filmStore';
 import FavoriteBtn from '@/components/FavoriteBtn.vue';
-import { computed, defineProps } from 'vue';
+import { computed, defineProps, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-const props = defineProps(['itemFilm']);
+const props = defineProps(['itemFilm', 'currentIndex']);
 const router = useRouter();
+const filmStore = useFilmStore();
+const itemRef = ref(null);
+const isFocused = computed(() => props.currentIndex === filmStore.currentFocusIndex);
 
 const filmRating = computed(() => {
-	return props.itemFilm?.rating || props.itemFilm?.ratingImdb || null;
+	return props.itemFilm?.rating || props.itemFilm?.ratingKinopoisk || props.itemFilm?.ratingImdb || null;
 });
 
 const filmName = computed(() => {
@@ -34,6 +38,25 @@ const filmName = computed(() => {
 const goToPageFilm = () => {
 	router.push(`/film/${props.itemFilm.filmId || props.itemFilm.kinopoiskId}`);
 };
+
+onMounted(() => {
+	if (itemRef.value && filmStore.itemWidth <= 0) {
+		filmStore.itemWidth = itemRef.value.clientWidth;
+	}
+});
+
+watch(isFocused, () => {
+	if (isFocused.value && itemRef.value) {
+		const offsets = itemRef.value.getBoundingClientRect();
+		const scrollTop = document.documentElement.scrollTop;
+		const scrollBottom = scrollTop + window.innerHeight;
+		const elementDocumentBottom = offsets.bottom + scrollTop;
+
+		if (offsets.top < 0 || elementDocumentBottom > scrollBottom) {
+			window.scrollTo(0, scrollTop + offsets.top - 50);
+		}
+	}
+});
 </script>
 
 <style scoped lang="scss">
@@ -48,6 +71,15 @@ const goToPageFilm = () => {
 
 		.item__options {
 			display: flex;
+		}
+	}
+
+	&.focused {
+		box-shadow: 0 0 10px 6px #5077bf;
+
+		a.item__link {
+			box-shadow: inset 0 0 1px 3px #c4d9ff;
+			border-radius: 8px;
 		}
 	}
 }

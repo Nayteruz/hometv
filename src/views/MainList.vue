@@ -1,7 +1,7 @@
 <template>
 	<h1 v-title>Список последних новинок</h1>
 	<PaginationList :total="totalPages" />
-	<FIlmItem :items="films" :currentFocus="filmStore.currentFocus" :showPreload="showPreload" />
+	<FIlmItem :items="films" :showPreload="showPreload" />
 	<PaginationList :total="totalPages" />
 	<div v-if="filmStore.pageNum < totalPages" v-intersection="{ getMoreFilms }" ref="observer" class="observer"></div>
 </template>
@@ -11,7 +11,7 @@ import FIlmItem from '@/components/FIlmItem.vue';
 import { useFilmStore } from '@/stores/filmStore';
 import axios from 'axios';
 import PaginationList from '@/components/PaginationList.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { inject } from 'vue';
 
 export default {
@@ -39,11 +39,6 @@ export default {
 		}
 
 		async function getListFilms(page, more = '') {
-			// if (!more && (page > 1 || filmStore.pageNum > 1)) {
-			//   console.log(more, page)
-			//   return;
-			// }
-
 			if (more === 'loading') {
 				emitter.emit('isLoading', true);
 			}
@@ -73,8 +68,16 @@ export default {
 
 		emitter.on('clickPage', setNextPage);
 
+		watch(
+			() => films.value,
+			(list) => {
+				filmStore.films = list;
+			}
+		);
+
 		onMounted(() => {
 			getListFilms();
+			filmStore.currentFocusIndex = -1;
 		});
 
 		return {
