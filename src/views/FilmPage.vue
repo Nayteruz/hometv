@@ -133,7 +133,6 @@ export default {
 			getFilmInfo();
 			getSimilars();
 			getSequels_and_prequels();
-			filmStore.isKeyboardNavigation = false;
 		});
 
 		return {

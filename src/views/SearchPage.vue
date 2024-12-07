@@ -3,7 +3,6 @@
 	<PaginationList :total="totalPages" @clickPage="getListFilms" />
 	<FIlmItem :items="films" :showPreload="showPreload" />
 	<PaginationList :total="totalPages" @clickPage="getListFilms" />
-	<NavigationByKeys />
 	<div v-if="filmStore.pageNum < totalPages" v-intersection="{ getMoreFilms }" ref="observer" class="observer"></div>
 </template>
 
@@ -12,7 +11,6 @@ import { useFilmStore } from '@/stores/filmStore';
 import axios from 'axios';
 import FIlmItem from '@/components/FIlmItem.vue';
 import PaginationList from '@/components/PaginationList.vue';
-import NavigationByKeys from '@/components/NavigationByKeys.vue';
 import { onMounted, ref, computed, inject } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -20,7 +18,6 @@ export default {
 	components: {
 		FIlmItem,
 		PaginationList,
-		NavigationByKeys,
 	},
 	setup() {
 		const route = useRoute();

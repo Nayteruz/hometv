@@ -8,6 +8,7 @@
 			</KeepAlive>
 		</RouterView>
 		<ToTop />
+		<NavigationByKeys :key="$route.fullPath" />
 	</div>
 </template>
 
@@ -15,6 +16,7 @@
 import HeaderFilm from '@/components/HeaderFilm.vue';
 import GenreList from '@/components/GenreList.vue';
 import ToTop from '@/components/ToTop.vue';
+import NavigationByKeys from './components/NavigationByKeys.vue';
 </script>
 
 <style lang="scss">

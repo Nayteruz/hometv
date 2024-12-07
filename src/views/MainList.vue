@@ -3,13 +3,11 @@
 	<PaginationList :total="totalPages" />
 	<FIlmItem :items="films" :showPreload="showPreload" />
 	<PaginationList :total="totalPages" />
-	<NavigationByKeys />
 	<div v-if="filmStore.pageNum < totalPages" v-intersection="{ getMoreFilms }" ref="observer" class="observer"></div>
 </template>
 
 <script>
 import FIlmItem from '@/components/FIlmItem.vue';
-import NavigationByKeys from '@/components/NavigationByKeys.vue';
 import { useFilmStore } from '@/stores/filmStore';
 import axios from 'axios';
 import PaginationList from '@/components/PaginationList.vue';
@@ -18,7 +16,7 @@ import { inject } from 'vue';
 
 export default {
 	name: 'MainList',
-	components: { PaginationList, FIlmItem, NavigationByKeys },
+	components: { PaginationList, FIlmItem },
 	setup() {
 		const filmStore = useFilmStore();
 		const emitter = inject('emitter');
