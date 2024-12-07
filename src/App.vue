@@ -1,5 +1,5 @@
 <template>
-	<div class="wrapper" ref="wrapperRef">
+	<div class="wrapper">
 		<HeaderFilm :key="$route.fullPath" />
 		<GenreList />
 		<RouterView v-slot="{ Component }">
@@ -12,109 +12,9 @@
 </template>
 
 <script setup>
-import { useFilmStore } from '@/stores/filmStore';
 import HeaderFilm from '@/components/HeaderFilm.vue';
 import GenreList from '@/components/GenreList.vue';
 import ToTop from '@/components/ToTop.vue';
-import { useRouter } from 'vue-router';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
-
-const wrapperRef = ref(null);
-const filmStore = useFilmStore();
-const router = useRouter();
-
-const keys = {
-	ArrowDown: 'ArrowDown',
-	ArrowUp: 'ArrowUp',
-	ArrowRight: 'ArrowRight',
-	ArrowLeft: 'ArrowLeft',
-	Enter: 'Enter',
-	NumpadEnter: 'Enter',
-};
-
-const breakpoints = {
-	desktop: 1024,
-	tablet: 768,
-	mobile: 480,
-};
-
-const onDown = () => {
-	if (filmStore.currentFocusIndex === -1) {
-		filmStore.currentFocusIndex = 0;
-	} else {
-		filmStore.currentFocusIndex += filmStore.countByLine;
-	}
-};
-const onUp = () => {
-	filmStore.currentFocusIndex = Math.max(0, filmStore.currentFocusIndex - filmStore.countByLine);
-};
-const onRight = () => {
-	filmStore.currentFocusIndex += 1;
-};
-const onLeft = () => {
-	filmStore.currentFocusIndex = Math.max(0, filmStore.currentFocusIndex - 1);
-};
-
-const onEnter = () => {
-	const index = filmStore.currentFocusIndex;
-	if (index === -1) {
-		return;
-	}
-
-	const filmId = filmStore.films[index].filmId || filmStore.films[index].kinopoiskId;
-
-	router.push(`/film/${filmId}`);
-};
-
-const handleKeyDown = (e) => {
-	const keyDown = keys[e.key];
-
-	if (keyDown) {
-		e.preventDefault();
-	}
-
-	switch (e.key) {
-		case keys.ArrowDown:
-			onDown();
-			break;
-		case keys.ArrowUp:
-			onUp();
-			break;
-		case keys.ArrowRight:
-			onRight();
-			break;
-		case keys.ArrowLeft:
-			onLeft();
-			break;
-		case keys.Enter:
-		case keys.NumpadEnter:
-			onEnter();
-			break;
-	}
-};
-
-const setCountByLine = () => {
-	if (window.innerWidth > breakpoints.desktop) {
-		filmStore.countByLine = 5;
-	} else if (window.innerWidth > breakpoints.tablet) {
-		filmStore.countByLine = 4;
-	} else if (window.innerWidth > breakpoints.mobile) {
-		filmStore.countByLine = 3;
-	} else {
-		filmStore.countByLine = 2;
-	}
-};
-
-onMounted(() => {
-	window.addEventListener('keydown', handleKeyDown);
-	filmStore.currentFocusIndex = -1;
-	setCountByLine();
-});
-
-onBeforeUnmount(() => {
-	window.removeEventListener('keydown', handleKeyDown);
-	filmStore.currentFocusIndex = -1;
-});
 </script>
 
 <style lang="scss">

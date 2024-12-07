@@ -32,9 +32,6 @@ export const useFilmStore = defineStore('filmStore',{
 		favorites: [],
 		currentFocusIndex: -1,
 		films: [],
-		listWidth: 0,
-		itemWidth: 0,
-		countByLine: 0,
 	}),
 	getters: {
 		filterGenres(){

@@ -13,10 +13,12 @@
 </template>
 
 <script setup>
+import { useFilmStore } from '@/stores/filmStore';
 import FilmItemItem from '@/components/FilmItemItem.vue';
 import PreloadCards from '@/components/PreloadCards.vue';
-import { inject, ref, defineProps } from 'vue';
+import { inject, ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
 
+const filmStore = useFilmStore();
 const emitter = inject('emitter');
 /* eslint-disable */
 const props = defineProps(['showPreload', 'items']);
@@ -24,6 +26,14 @@ const loading = ref(false);
 
 emitter.on('isLoading', (emit) => {
 	loading.value = emit;
+});
+
+onMounted(() => {
+	filmStore.hasFilmList = true;
+});
+
+onBeforeUnmount(() => {
+	filmStore.hasFilmList = false;
 });
 </script>
 

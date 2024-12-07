@@ -54,7 +54,13 @@ export default {
 		const title = ref(filmTitle.value);
 
 		const filmRating = computed(() => {
-			return filmInfo.value?.rating || filmInfo.value?.ratingKinopoisk || filmInfo.value?.ratingImdb || null;
+			const rating = filmInfo.value?.rating || filmInfo.value?.ratingKinopoisk || filmInfo.value?.ratingImdb || null;
+
+			if (rating) {
+				return rating.toFixed(1);
+			}
+
+			return rating;
 		});
 
 		function getFilmInfo() {
@@ -127,6 +133,7 @@ export default {
 			getFilmInfo();
 			getSimilars();
 			getSequels_and_prequels();
+			filmStore.isKeyboardNavigation = false;
 		});
 
 		return {
