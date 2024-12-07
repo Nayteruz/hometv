@@ -7,7 +7,7 @@
 <script>
 import { useFilmStore } from '@/stores/filmStore';
 import FIlmItem from '@/components/FIlmItem';
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 export default {
 	name: 'FavoritePage',
@@ -15,11 +15,6 @@ export default {
 	setup() {
 		const filmStore = useFilmStore();
 		const showPreload = ref(false);
-
-		onMounted(() => {
-			filmStore.currentFocusIndex = -1;
-			filmStore.isKeyboardNavigator = true;
-		});
 
 		watch(
 			() => filmStore.favorites,

@@ -93,8 +93,6 @@ export default {
 			emitter.on('searchSubmit', () => {
 				getListFilms(false, 1);
 			});
-
-			filmStore.currentFocusIndex = -1;
 		});
 
 		return {

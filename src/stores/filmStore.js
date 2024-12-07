@@ -32,6 +32,7 @@ export const useFilmStore = defineStore('filmStore',{
 		favorites: [],
 		currentFocusIndex: -1,
 		films: [],
+		focusIds: {},
 	}),
 	getters: {
 		filterGenres(){
@@ -173,15 +174,17 @@ export const useFilmStore = defineStore('filmStore',{
 			}
 			return qr
 		},
-		incrementFocus(){
-			this.currentFocusIndex += 1;
-		},
-		decrementFocus(){
-			this.setCurrentFocus(0);
-			this.currentFocusIndex -= 1;
-		},
 		setCurrentFocus(index){
 			this.currentFocusIndex = index;
+		},
+		setFocusIds(href) {
+			this.focusIds = {
+				...this.focusIds,
+				[href]: this.currentFocusIndex,
+			}
+		},
+		setMountedCurrentFocus(href) {
+			this.setCurrentFocus(this.focusIds[href]);
 		}
 	}
 })

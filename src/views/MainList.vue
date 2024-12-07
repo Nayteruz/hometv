@@ -7,12 +7,11 @@
 </template>
 
 <script>
-import FIlmItem from '@/components/FIlmItem.vue';
-import { useFilmStore } from '@/stores/filmStore';
+import { onMounted, ref, watch, inject } from 'vue';
 import axios from 'axios';
+import { useFilmStore } from '@/stores/filmStore';
+import FIlmItem from '@/components/FIlmItem.vue';
 import PaginationList from '@/components/PaginationList.vue';
-import { onMounted, ref, watch } from 'vue';
-import { inject } from 'vue';
 
 export default {
 	name: 'MainList',
@@ -70,14 +69,13 @@ export default {
 
 		watch(
 			() => films.value,
-			(list) => {
-				filmStore.films = list;
+			() => {
+				filmStore.films = films.value;
 			}
 		);
 
 		onMounted(() => {
 			getListFilms();
-			filmStore.currentFocusIndex = -1;
 		});
 
 		return {

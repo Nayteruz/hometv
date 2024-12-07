@@ -4,7 +4,7 @@
 
 <script setup>
 import { useFilmStore } from '@/stores/filmStore';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { breakpoints, keyboardKeyList } from './const';
 
@@ -12,6 +12,7 @@ const router = useRouter();
 const filmStore = useFilmStore();
 const countByLine = ref(0);
 const maxCountFilms = ref(filmStore.films.length);
+const pageHref = ref(router.currentRoute.value.href || document.location.pathname);
 
 const onDown = () => {
 	if (filmStore.currentFocusIndex === -1) {
@@ -88,12 +89,18 @@ onMounted(() => {
 	}
 
 	window.addEventListener('keydown', handleKeyDown);
-	filmStore.currentFocusIndex = -1;
+	filmStore.currentFocusIndex = filmStore.focusIds[pageHref.value] || -1;
 	setCountByLine();
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
 	window.removeEventListener('keydown', handleKeyDown);
-	filmStore.currentFocusIndex = -1;
+
+	if (router.currentRoute.value) {
+		filmStore.focusIds = {
+			...filmStore.focusIds,
+			[pageHref.value]: filmStore.currentFocusIndex,
+		};
+	}
 });
 </script>
