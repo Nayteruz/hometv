@@ -47,7 +47,6 @@ const goToPageFilm = () => {
 };
 
 const onOver = () => {
-	filmStore.currentFocusIndex = props.currentIndex;
 	isFocusedOnHover.value = true;
 };
 
