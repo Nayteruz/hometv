@@ -9,6 +9,7 @@
 <script>
 import { onMounted, ref, watch, inject } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 import { useFilmStore } from '@/stores/filmStore';
 import FIlmItem from '@/components/FIlmItem.vue';
 import PaginationList from '@/components/PaginationList.vue';
@@ -19,6 +20,7 @@ export default {
 	setup() {
 		const filmStore = useFilmStore();
 		const emitter = inject('emitter');
+		const router = useRouter();
 		const films = ref([]);
 		const default_type = ref('TOP_100_POPULAR_FILMS');
 		const totalPages = ref(0);
@@ -69,6 +71,13 @@ export default {
 
 		watch(
 			() => films.value,
+			() => {
+				filmStore.films = films.value;
+			}
+		);
+
+		watch(
+			() => router.currentRoute.value.href,
 			() => {
 				filmStore.films = films.value;
 			}

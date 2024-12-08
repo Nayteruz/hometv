@@ -62,7 +62,7 @@ watch(isFocused, () => {
 		const elementDocumentBottom = offsets.bottom + scrollTop;
 
 		if (offsets.top < 0 || elementDocumentBottom > scrollBottom) {
-			window.scrollTo(0, scrollTop + offsets.top - 50);
+			window.scrollTo(0, scrollTop + offsets.top - 80);
 		}
 	}
 });
@@ -99,7 +99,7 @@ watch(isFocused, () => {
 	overflow: hidden;
 	border-radius: 10px;
 	flex: 1 1 auto;
-	max-height: max(400px, 45vh);
+	max-height: min(400px, 45vh);
 	position: relative;
 
 	img,

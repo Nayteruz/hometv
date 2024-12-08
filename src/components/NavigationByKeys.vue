@@ -89,7 +89,21 @@ onMounted(() => {
 	}
 
 	window.addEventListener('keydown', handleKeyDown);
-	filmStore.currentFocusIndex = filmStore.focusIds[pageHref.value] || -1;
+	setTimeout(() => {
+		if (router.currentRoute.value.name !== 'filmPage') {
+			if (window.scrollY === 0) {
+				const href = router.currentRoute.value.href || document.location.pathname;
+				filmStore.focusIds = {
+					...filmStore.focusIds,
+					[href]: -1,
+				};
+				filmStore.currentFocusIndex = -1;
+			} else {
+				filmStore.currentFocusIndex = filmStore.focusIds[pageHref.value] || -1;
+			}
+			console.log(filmStore.currentFocusIndex, filmStore.focusIds);
+		}
+	}, 1);
 	setCountByLine();
 });
 
