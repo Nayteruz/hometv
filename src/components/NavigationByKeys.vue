@@ -101,7 +101,6 @@ onMounted(() => {
 			} else {
 				filmStore.currentFocusIndex = filmStore.focusIds[pageHref.value] || -1;
 			}
-			console.log(filmStore.currentFocusIndex, filmStore.focusIds);
 		}
 	}, 1);
 	setCountByLine();
