@@ -13,14 +13,14 @@
 </template>
 
 <script setup>
-import HeaderFilm from '@/components/HeaderFilm.vue';
-import GenreList from '@/components/GenreList.vue';
-import ToTop from '@/components/ToTop.vue';
-import NavigationByKeys from './components/NavigationByKeys.vue';
+import HeaderFilm from "@/components/HeaderFilm.vue";
+import GenreList from "@/components/GenreList.vue";
+import ToTop from "@/components/ToTop.vue";
+import NavigationByKeys from "./components/NavigationByKeys.vue";
 </script>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
 
 * {
 	padding: 0;
@@ -47,19 +47,25 @@ body {
 h1 {
 	color: #fff;
 	font-size: 30px;
-	margin: 30px 0 30px;
+	margin: 30px 15px 30px;
+
+	@media all and (max-width: 500px) {
+		margin-left: 5px;
+		margin-right: 5px;
+	}
 }
 
 .wrapper {
-	background: rgba(#5077bf, 0.3);
+	background: #163060;
 	border-radius: 10px;
-	padding: 10px 15px;
-	font-family: 'Roboto', sans-serif;
+	padding: 0;
+	font-family: "Roboto", sans-serif;
 	margin: 0 auto 0;
 	max-width: 1280px;
 	position: relative;
-	@media all and (max-width: 768px) {
-		padding: 10px 5px;
+
+	@media all and (max-width: 1024px) {
+		border-radius: 0;
 	}
 }
 

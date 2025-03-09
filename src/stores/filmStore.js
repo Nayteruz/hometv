@@ -56,17 +56,23 @@ export const useFilmStore = defineStore('filmStore',{
 				this.genreListStore = JSON.parse(localStorage.getItem('genres'));
 				return this.genreListStore;
 			} else {
-				await axios.get('https://kinopoiskapiunofficial.tech/api/v2.2/films/filters', {
+				const response = await axios.get('https://kinopoiskapiunofficial.tech/api/v2.2/films/filters', {
 					headers: {
 						'X-API-KEY': this.apiKey,
 						'Content-Type': 'application/json',
 					}
-				}).then(req=>{
-					this.filters = req.data;
-					this.genreListStore = req.data.genres;
-					this.filterGenres;
-					localStorage.setItem('genres', JSON.stringify(this.genreListStore))
-				})
+				});
+
+				if (response.status !== 200) {
+					throw new Error('error get genres');
+				}
+
+				const data = response.data;
+				this.filters = data;
+				this.genreListStore = data.genres;
+				this.filterGenres;
+				localStorage.setItem('genres', JSON.stringify(this.genreListStore))
+			
 				return this.genreListStore;
 			}
 		},
@@ -75,9 +81,10 @@ export const useFilmStore = defineStore('filmStore',{
 			return !!check.length;
 		},
 		async addFavorite(itemFilm){
+			const itemFilmWithSortTime = {...itemFilm, sortTime: Date.now()};
 			try {
 				const docRef = doc(firebaseDb, "users", this.user.uid);
-				await updateDoc(docRef, {favorites: [...this.favorites, itemFilm]});
+				await updateDoc(docRef, {favorites: [...this.favorites, itemFilmWithSortTime]});
 			} catch (e) {
 				if(!this.user){
 					console.log("Необходимо авторизоваться");
@@ -85,7 +92,7 @@ export const useFilmStore = defineStore('filmStore',{
 					console.log("Ошибка добавления в избранное: " + e);
 				}
 			}
-			this.favorites = [...this.favorites, itemFilm];
+			this.favorites = [...this.favorites, itemFilmWithSortTime];
 		},
 		async removeFavorite(itemFilm){
 			let check = this.isCheckFilm(false, itemFilm);
@@ -142,10 +149,15 @@ export const useFilmStore = defineStore('filmStore',{
 			let data = await userDataGet(this.user.uid);
 			this.user.name = data?.name || '';
 			this.user.email = data?.email ?? '';
-			this.favorites = data?.favorites.reverse() ?? [];
+
+			const favorites = data?.favorites ?? [];
+			const sortedFavorites = favorites.sort((a, b) => (b.sortTime ?? 0) - (a.sortTime ?? 0));
+			this.favorites = sortedFavorites;
+
 			if(data?.api_key){
 				this.apiKey = data.api_key;
 			}
+			
 			typeof(callback) === 'function' ? callback() : '';
 		},
 		removeUserData(callback){

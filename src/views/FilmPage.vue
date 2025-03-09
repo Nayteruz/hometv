@@ -25,31 +25,31 @@
 			</div>
 			<div class="film__similar" v-if="similars.length > 0">
 				<h3>Похожие фильмы</h3>
-				<FIlmItem :items="similars" />
+				<FilmList :items="similars" />
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import IconLeftArrow from '@/components/icons/IconLeftArrow.vue';
-import { useFilmStore } from '@/stores/filmStore';
-import axios from 'axios';
-import FilmPageDialog from '@/components/FilmPageDialog.vue';
-import FIlmItem from '@/components/FIlmItem.vue';
-import FavoriteBtn from '@/components/FavoriteBtn.vue';
-import { computed, onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import IconLeftArrow from "@/components/icons/IconLeftArrow.vue";
+import { useFilmStore } from "@/stores/filmStore";
+import axios from "axios";
+import FilmPageDialog from "@/components/FilmPageDialog.vue";
+import FilmList from "@/components/FilmList.vue";
+import FavoriteBtn from "@/components/FavoriteBtn.vue";
+import { computed, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 export default {
-	name: 'FilmPage',
-	components: { FIlmItem, FilmPageDialog, FavoriteBtn, IconLeftArrow },
+	name: "FilmPage",
+	components: { FilmList, FilmPageDialog, FavoriteBtn, IconLeftArrow },
 	setup() {
 		const filmStore = useFilmStore();
 		const route = useRoute();
 		const router = useRouter();
 		const filmInfo = ref([]);
-		const filmTitle = ref('');
+		const filmTitle = ref("");
 		const similars = ref([]);
 		const title = ref(filmTitle.value);
 
@@ -65,10 +65,10 @@ export default {
 
 		function getFilmInfo() {
 			axios
-				.get('https://kinopoiskapiunofficial.tech/api/v2.2/films/' + route.params.id, {
+				.get("https://kinopoiskapiunofficial.tech/api/v2.2/films/" + route.params.id, {
 					headers: {
-						'X-API-KEY': filmStore.apiKey,
-						'Content-Type': 'application/json',
+						"X-API-KEY": filmStore.apiKey,
+						"Content-Type": "application/json",
 					},
 				})
 				.then((req) => {
@@ -82,10 +82,10 @@ export default {
 
 		function getSimilars() {
 			axios
-				.get('https://kinopoiskapiunofficial.tech/api/v2.2/films/' + route.params.id + '/similars', {
+				.get("https://kinopoiskapiunofficial.tech/api/v2.2/films/" + route.params.id + "/similars", {
 					headers: {
-						'X-API-KEY': filmStore.apiKey,
-						'Content-Type': 'application/json',
+						"X-API-KEY": filmStore.apiKey,
+						"Content-Type": "application/json",
 					},
 				})
 				.then((req) => {
@@ -98,10 +98,10 @@ export default {
 
 		function getSequels_and_prequels() {
 			axios
-				.get('https://kinopoiskapiunofficial.tech/api/v2.1/films/' + route.params.id + '/sequels_and_prequels', {
+				.get("https://kinopoiskapiunofficial.tech/api/v2.1/films/" + route.params.id + "/sequels_and_prequels", {
 					headers: {
-						'X-API-KEY': filmStore.apiKey,
-						'Content-Type': 'application/json',
+						"X-API-KEY": filmStore.apiKey,
+						"Content-Type": "application/json",
 					},
 				})
 				.then((req) => {
@@ -114,15 +114,15 @@ export default {
 
 		function getNameFilm() {
 			filmTitle.value =
-				filmInfo.value?.nameRu || filmInfo.value?.nameEn || filmInfo.value?.nameOriginal || 'Без названия';
+				filmInfo.value?.nameRu || filmInfo.value?.nameEn || filmInfo.value?.nameOriginal || "Без названия";
 			filmTitle.value += ` (${filmInfo.value.year})`;
 		}
 
 		function setGenre(genre_name) {
-			let genres = JSON.parse(localStorage.getItem('genres'));
+			let genres = JSON.parse(localStorage.getItem("genres"));
 			let genre_id = genres.filter((g) => g.genre === genre_name)[0].id;
 			window.scrollTo(0, 0);
-			router.push({ name: 'searchPage', query: { genres: genre_id } });
+			router.push({ name: "searchPage", query: { genres: genre_id } });
 		}
 
 		const goToList = () => {
@@ -154,8 +154,13 @@ export default {
 	display: grid;
 	grid-template-columns: minmax(250px, 350px) 1fr;
 	gap: 20px;
+	margin: 0 15px;
 	@media all and (max-width: 1024px) {
 		grid-template-columns: 1fr;
+	}
+
+	@media all and (max-width: 500px) {
+		margin: 0 5px;
 	}
 }
 
@@ -212,7 +217,7 @@ export default {
 	}
 
 	&:before {
-		content: '';
+		content: "";
 		display: block;
 		width: 13px;
 		height: 15px;
@@ -245,6 +250,10 @@ h3 {
 
 .film__similar {
 	margin-top: 20px;
+
+	:global(.film__list) {
+		padding: 0;
+	}
 }
 
 .film__genres {
@@ -298,6 +307,11 @@ h3 {
 	color: #fff;
 	border-radius: 5px;
 	user-select: none;
+	margin-left: 15px;
+
+	@media all and (max-width: 500px) {
+		margin-left: 5px;
+	}
 
 	&:hover {
 		background: darken(#3363bd, 10%);

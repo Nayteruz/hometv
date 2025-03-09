@@ -13,18 +13,18 @@
 </template>
 
 <script setup>
-import { useFilmStore } from '@/stores/filmStore';
-import FilmItemItem from '@/components/FilmItemItem.vue';
-import PreloadCards from '@/components/PreloadCards.vue';
-import { inject, ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
+import { useFilmStore } from "@/stores/filmStore";
+import FilmItemItem from "@/components/FilmItemItem.vue";
+import PreloadCards from "@/components/PreloadCards.vue";
+import { inject, ref, defineProps, onMounted, onBeforeUnmount } from "vue";
 
 const filmStore = useFilmStore();
-const emitter = inject('emitter');
+const emitter = inject("emitter");
 /* eslint-disable */
-const props = defineProps(['showPreload', 'items']);
+const props = defineProps(["showPreload", "items"]);
 const loading = ref(false);
 
-emitter.on('isLoading', (emit) => {
+emitter.on("isLoading", (emit) => {
 	loading.value = emit;
 });
 
@@ -43,7 +43,7 @@ onBeforeUnmount(() => {
 
 	&.loading {
 		&:before {
-			content: '';
+			content: "";
 			display: block;
 			position: absolute;
 			left: 0;
@@ -56,7 +56,7 @@ onBeforeUnmount(() => {
 		}
 
 		&:after {
-			content: '';
+			content: "";
 			display: block;
 			position: fixed;
 			left: 50%;
@@ -85,6 +85,7 @@ onBeforeUnmount(() => {
 	}
 	@media all and (max-width: 768px) {
 		grid-template-columns: repeat(3, 1fr);
+		gap: 4px;
 	}
 	@media all and (max-width: 480px) {
 		grid-template-columns: repeat(2, 1fr);

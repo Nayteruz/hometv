@@ -39,10 +39,10 @@
 </template>
 
 <script>
-import { useFilmStore } from '@/stores/filmStore';
-import RegistrationWrap from '@/components/registration/RegistrationWrap.vue';
-import { useRouter, useRoute } from 'vue-router';
-import { computed, onMounted, ref } from 'vue';
+import { useFilmStore } from "@/stores/filmStore";
+import RegistrationWrap from "@/components/registration/RegistrationWrap.vue";
+import { useRouter, useRoute } from "vue-router";
+import { computed, onMounted, ref } from "vue";
 
 export default {
 	components: { RegistrationWrap },
@@ -52,26 +52,26 @@ export default {
 		const filmStore = useFilmStore();
 		const isUser = computed(() => (filmStore.user !== null ? true : false));
 		const searchQueryRoute = computed(() => route.query.q);
-		const isSearchVisible = ref(searchQueryRoute.value | (route.name === 'searchPage') ? true : false);
+		const isSearchVisible = ref(searchQueryRoute.value | (route.name === "searchPage") ? true : false);
 		const searchInput = ref(null);
 
 		function searchSubmit() {
 			filmStore.pageNum = 1;
 			router.push({
-				name: 'searchPage',
+				name: "searchPage",
 				query: filmStore.searchQueryWithGenre(),
 			});
 		}
 
 		function clearInput() {
-			filmStore.searchQueryStore = '';
+			filmStore.searchQueryStore = "";
 			searchInput.value.focus();
 		}
 
 		function goHome() {
 			filmStore.pageNum = 1;
 			filmStore.genreIdStore = null;
-			router.push({ name: 'home' });
+			router.push({ name: "home" });
 		}
 
 		onMounted(() => {
@@ -109,7 +109,14 @@ header {
 	gap: 5px;
 	position: sticky;
 	z-index: 999;
-	top: 1px;
+	top: -9px;
+	padding: 10px 15px 5px;
+
+	@media all and (max-width: 768px) {
+		padding: 5px;
+		background-color: #163060;
+		top: 0;
+	}
 
 	@media all and (max-width: 500px) {
 		grid-template-columns: 1fr auto auto 35px 35px;
@@ -134,7 +141,7 @@ a.favorites,
 	border-radius: 5px;
 
 	&:before {
-		content: '';
+		content: "";
 		display: block;
 		width: 16px;
 		height: 16px;
@@ -154,6 +161,11 @@ a.favorites,
 	width: 35px;
 	height: 100%;
 	background-size: 60%;
+	display: none;
+
+	@media all and (max-width: 500px) {
+		display: block;
+	}
 
 	&.opened {
 		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="%23032746" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM136 184c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0z"/></svg>');
@@ -168,7 +180,7 @@ form {
 	width: 100%;
 
 	@media all and (max-width: 500px) {
-		grid-column: 1 / 5;
+		grid-column: 1 / 6;
 		order: 5;
 		display: none;
 	}
@@ -261,7 +273,7 @@ a.favorites {
 	cursor: pointer;
 
 	@media all and (max-width: 500px) {
-		order: 5;
+		order: 4;
 	}
 
 	&:before {
