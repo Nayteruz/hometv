@@ -1,28 +1,31 @@
 <template>
   <ul class="tab-titles">
+    <li :class="{selected:playerNum===3}" @click="playerNum = 3">KinoBD</li>
     <li :class="{selected:playerNum===1}" @click="playerNum = 1">Плеер 1</li>
     <li :class="{selected:playerNum===2}" @click="playerNum = 2">Плеер 2</li>
-    <li :class="{selected:playerNum===3}" @click="playerNum = 3">Плеер 3 с vpn</li>
+    <li :class="{selected:playerNum===4}" @click="playerNum = 4">Плеер 4 с vpn</li>
   </ul>
+  <FilmKinoBD v-if="playerNum===3" />
   <FilmKinoBoxTab v-if="playerNum===1" />
   <FilmPlayerClub v-if="playerNum===2" />
-  <FilmKinoTop v-if="playerNum===3" />
+  <FilmKinoTop v-if="playerNum===4" />
 </template>
 
 <script>
 import FilmKinoBoxTab from "@/components/FilmKinoboxTab.vue"
 import FilmPlayerClub from "@/components/FilmPlayerClub.vue"
 import FilmKinoTop from "@/components/FilmKinoTop.vue";
+import FilmKinoBD from "@/components/FilmKinoBD.vue";
 import {useFilmStore} from "@/stores/filmStore";
 import {ref} from "vue";
 
 export default {
   name:'FilmPageDialog',
   props:['itemFilm'],
-  components: {FilmKinoTop, FilmKinoBoxTab, FilmPlayerClub},
+  components: {FilmKinoTop, FilmKinoBoxTab, FilmPlayerClub, FilmKinoBD},
   setup(){
     const filmStore = useFilmStore();
-    const playerNum = ref(1);
+    const playerNum = ref(3);
     return {
       filmStore,
       playerNum,
@@ -60,6 +63,7 @@ export default {
     cursor: pointer;
     background:#2c4f91;
     border-radius: 5px;
+    user-select: none;
     &.selected, &:hover {
       background:#071f3a;
     }
