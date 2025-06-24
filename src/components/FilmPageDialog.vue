@@ -1,9 +1,9 @@
 <template>
   <ul class="tab-titles">
     <li :class="{selected:playerNum===3}" @click="playerNum = 3">KinoBD</li>
-    <li :class="{selected:playerNum===1}" @click="playerNum = 1">Плеер 1</li>
-    <li :class="{selected:playerNum===2}" @click="playerNum = 2">Плеер 2</li>
-    <li :class="{selected:playerNum===4}" @click="playerNum = 4">Плеер 4 с vpn</li>
+    <li :class="{selected:playerNum===1}" @click="playerNum = 1">KinoBox</li>
+    <li :class="{selected:playerNum===2}" @click="playerNum = 2">Lumex</li>
+    <!-- <li :class="{selected:playerNum===4}" @click="playerNum = 4">Kinotop</li> -->
   </ul>
   <FilmKinoBD v-if="playerNum===3" />
   <FilmKinoBoxTab v-if="playerNum===1" />
@@ -54,6 +54,7 @@ export default {
 .tab-titles {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap:5px;
   padding: 0;
   margin:0 0 10px 0;

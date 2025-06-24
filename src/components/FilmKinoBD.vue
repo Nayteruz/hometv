@@ -8,6 +8,7 @@
   import { onMounted, ref, onBeforeUnmount } from "vue";
   import { useRoute } from "vue-router";
   import { useFilmStore } from '@/stores/filmStore'
+  // https://kinobd.net/dashboard 
   
   export default {
     name: 'FilmKinoBD',
