@@ -6,18 +6,18 @@
 </template>
 
 <script>
-import IconFavorite from '@/components/icons/IconFavorite';
-import { inject, onMounted, ref } from 'vue';
-import { useFilmStore } from '@/stores/filmStore';
+import IconFavorite from "@/components/icons/IconFavorite";
+import { inject, onMounted, ref } from "vue";
+import { useFilmStore } from "@/stores/filmStore";
 
 export default {
-	name: 'FavoriteBtn',
+	name: "FavoriteBtn",
 	components: { IconFavorite },
-	props: ['itemFilm'],
+	props: ["itemFilm"],
 	setup(props) {
 		const isFavorite = ref(false);
 		const isShow = ref(false);
-		const emitter = inject('emitter');
+		const emitter = inject("emitter");
 		const filmStore = useFilmStore();
 
 		function checkFavorite() {
@@ -26,7 +26,7 @@ export default {
 
 		async function toggleFavorite() {
 			if (!filmStore.user) {
-				alert('Необходима авторизация');
+				alert("Необходима авторизация");
 				return;
 			}
 			isShow.value = true;
@@ -44,7 +44,7 @@ export default {
 			checkFavorite();
 		});
 
-		emitter.on('setUserData', checkFavorite);
+		emitter.on("setUserData", checkFavorite);
 
 		return {
 			isFavorite,

@@ -3,10 +3,10 @@
 </template>
 
 <script setup>
-import { useFilmStore } from '@/stores/filmStore';
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { breakpoints, keyboardKeyList } from './const';
+import { useFilmStore } from "@/stores/filmStore";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { breakpoints, keyboardKeyList } from "./const";
 
 const router = useRouter();
 const filmStore = useFilmStore();
@@ -82,15 +82,15 @@ watch(
 );
 
 onMounted(() => {
-	window.removeEventListener('keydown', handleKeyDown);
+	window.removeEventListener("keydown", handleKeyDown);
 
-	if (router.currentRoute.value.name === 'filmPage') {
+	if (router.currentRoute.value.name === "filmPage") {
 		return;
 	}
 
-	window.addEventListener('keydown', handleKeyDown);
+	window.addEventListener("keydown", handleKeyDown);
 	setTimeout(() => {
-		if (router.currentRoute.value.name !== 'filmPage') {
+		if (router.currentRoute.value.name !== "filmPage") {
 			if (window.scrollY === 0) {
 				const href = router.currentRoute.value.href || document.location.pathname;
 				filmStore.focusIds = {
@@ -107,7 +107,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	window.removeEventListener('keydown', handleKeyDown);
+	window.removeEventListener("keydown", handleKeyDown);
 
 	if (router.currentRoute.value) {
 		filmStore.focusIds = {

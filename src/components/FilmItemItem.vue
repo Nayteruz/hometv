@@ -23,11 +23,11 @@
 </template>
 
 <script setup>
-import { useFilmStore } from '@/stores/filmStore';
-import FavoriteBtn from '@/components/FavoriteBtn.vue';
-import { computed, defineProps, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
-const props = defineProps(['itemFilm', 'currentIndex']);
+import { useFilmStore } from "@/stores/filmStore";
+import FavoriteBtn from "@/components/FavoriteBtn.vue";
+import { computed, defineProps, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+const props = defineProps(["itemFilm", "currentIndex"]);
 const router = useRouter();
 const filmStore = useFilmStore();
 const itemRef = ref(null);
@@ -39,7 +39,7 @@ const filmRating = computed(() => {
 });
 
 const filmName = computed(() => {
-	return props.itemFilm?.nameRu || props.itemFilm?.nameEn || props.itemFilm?.nameOriginal || 'Без названия';
+	return props.itemFilm?.nameRu || props.itemFilm?.nameEn || props.itemFilm?.nameOriginal || "Без названия";
 });
 
 const goToPageFilm = () => {
@@ -99,6 +99,7 @@ watch(isFocused, () => {
 	overflow: hidden;
 	border-radius: 10px;
 	flex: 1 1 auto;
+	min-height: 300px;
 	max-height: min(400px, 45vh);
 	position: relative;
 
@@ -141,7 +142,7 @@ watch(isFocused, () => {
 	}
 
 	&:before {
-		content: '';
+		content: "";
 		display: block;
 		width: 13px;
 		height: 15px;
@@ -220,7 +221,7 @@ a.item__link {
 
 .films__item.loading {
 	&:after {
-		content: '';
+		content: "";
 		position: absolute;
 		left: 0;
 		right: 0;

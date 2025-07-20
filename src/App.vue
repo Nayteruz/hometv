@@ -73,10 +73,6 @@ h1 {
 	min-height: 450px !important;
 	max-width: 100% !important;
 	width: 100% !important;
-	#yohoho-iframe {
-		width: 100% !important;
-		height: 100% !important;
-	}
 }
 
 .icon {

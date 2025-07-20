@@ -10,7 +10,6 @@
 
 <script>
 import { onMounted, ref, watch, inject } from "vue";
-import axios from "axios";
 import { useRouter } from "vue-router";
 import { useFilmStore } from "@/stores/filmStore";
 import FilmList from "@/components/FilmList.vue";
@@ -29,16 +28,22 @@ export default {
 		const showPreload = ref(false);
 
 		async function getRequest() {
-			return await axios.get("https://kinopoiskapiunofficial.tech/api/v2.2/films/top", {
-				headers: {
-					"X-API-KEY": filmStore.apiKey,
-					"Content-Type": "application/json",
-				},
-				params: {
-					type: default_type.value,
-					page: filmStore.pageNum,
-				},
-			});
+			try {
+				const url =
+					"https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=" +
+					default_type.value +
+					"&page=" +
+					filmStore.pageNum;
+				const response = await fetch(url, {
+					headers: {
+						"X-API-KEY": filmStore.apiKey,
+						"Content-Type": "application/json",
+					},
+				});
+				return response.json();
+			} catch (error) {
+				console.error("Error load films", error);
+			}
 		}
 
 		async function getListFilms(page, more = "") {
@@ -48,15 +53,15 @@ export default {
 			showPreload.value = more === "preload";
 			filmStore.pageNum = page || filmStore.pageNum;
 			const response = await getRequest();
-			totalPages.value = response.data?.pagesCount;
+			totalPages.value = response.pagesCount;
 			if (more === "preload") {
-				films.value = [...films.value, ...response.data?.films];
+				films.value = [...films.value, ...response.films];
 			} else {
 				films.value = [];
-				films.value = response.data?.films;
+				films.value = response.films;
 			}
 			showPreload.value = false;
-			if (more === "loading" && (await response.data?.films)) {
+			if (more === "loading" && (await response.films)) {
 				emitter.emit("isLoading", false);
 			}
 		}

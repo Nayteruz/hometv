@@ -1,32 +1,28 @@
 import { defineStore } from "pinia";
-import axios from "axios";
 import { firebaseDb } from "@/plugins";
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
+	getAuth,
+	signInWithEmailAndPassword,
+	createUserWithEmailAndPassword,
+	signOut,
+	onAuthStateChanged,
 } from "firebase/auth";
 import { updateDoc, doc } from "firebase/firestore";
-import {
-  userDataGet,
-  userDataSet,
-  translateErrorCode,
-  ignore_genre,
-} from "@/plugins/firebaseActions";
+import { userDataGet, userDataSet, translateErrorCode, ignore_genre } from "@/plugins/firebaseActions";
 
-export const useFilmStore = defineStore('filmStore',{
+export const useFilmStore = defineStore("filmStore", {
 	state: () => ({
 		user: null,
-		apiKey: '404dc583-7efc-4c93-8f21-a782f977b9e7',
+		apiKey: "404dc583-7efc-4c93-8f21-a782f977b9e7",
+		apiAloha: "e7b61f129f4a392ac4bf6726a9dd6a",
+		apiHDBV: "8a22f8e7684404c3815e3ffa940f00a0",
 		auth: getAuth(),
-		errorMessage: '',
+		errorMessage: "",
 		pageNum: 1,
 		limit: 20,
 		genreIdStore: null,
-		genreListStore:[],
-		searchQueryStore: '',
+		genreListStore: [],
+		searchQueryStore: "",
 		filters: null,
 		filmPageId: 0,
 		favorites: [],
@@ -35,14 +31,14 @@ export const useFilmStore = defineStore('filmStore',{
 		focusIds: {},
 	}),
 	getters: {
-		filterGenres(){
+		filterGenres() {
 			if (!this.genreListStore.length) return [];
-			this.genreListStore = this.genreListStore.filter(x=> {
-				if (ignore_genre.indexOf(x.genre) === -1){
+			this.genreListStore = this.genreListStore.filter((x) => {
+				if (ignore_genre.indexOf(x.genre) === -1) {
 					return x;
 				}
-			})
-		}
+			});
+		},
 	},
 	actions: {
 		setGenreId(genreId) {
@@ -51,42 +47,42 @@ export const useFilmStore = defineStore('filmStore',{
 		setFilmPageId(value) {
 			this.filmPageId = value;
 		},
-		async getGenreList(){
-			if(localStorage.getItem('genres')) {
-				this.genreListStore = JSON.parse(localStorage.getItem('genres'));
+		async getGenreList() {
+			if (localStorage.getItem("genres")) {
+				this.genreListStore = JSON.parse(localStorage.getItem("genres"));
 				return this.genreListStore;
 			} else {
-				const response = await axios.get('https://kinopoiskapiunofficial.tech/api/v2.2/films/filters', {
-					headers: {
-						'X-API-KEY': this.apiKey,
-						'Content-Type': 'application/json',
-					}
-				});
+				try {
+					const response = await fetch("https://kinopoiskapiunofficial.tech/api/v2.2/films/filters", {
+						headers: {
+							"X-API-KEY": this.apiKey,
+							"Content-Type": "application/json",
+						},
+					});
 
-				if (response.status !== 200) {
-					throw new Error('error get genres');
+					const data = await response.json();
+					this.filters = data;
+					this.genreListStore = data.genres;
+					this.filterGenres;
+					localStorage.setItem("genres", JSON.stringify(this.genreListStore));
+
+					return this.genreListStore;
+				} catch (error) {
+					console.error("Error load genres", error);
 				}
-
-				const data = response.data;
-				this.filters = data;
-				this.genreListStore = data.genres;
-				this.filterGenres;
-				localStorage.setItem('genres', JSON.stringify(this.genreListStore))
-			
-				return this.genreListStore;
 			}
 		},
-		checkFavoriteStore(itemFilm){
+		checkFavoriteStore(itemFilm) {
 			let check = this.isCheckFilm(true, itemFilm);
 			return !!check.length;
 		},
-		async addFavorite(itemFilm){
-			const itemFilmWithSortTime = {...itemFilm, sortTime: Date.now()};
+		async addFavorite(itemFilm) {
+			const itemFilmWithSortTime = { ...itemFilm, sortTime: Date.now() };
 			try {
 				const docRef = doc(firebaseDb, "users", this.user.uid);
-				await updateDoc(docRef, {favorites: [...this.favorites, itemFilmWithSortTime]});
+				await updateDoc(docRef, { favorites: [...this.favorites, itemFilmWithSortTime] });
 			} catch (e) {
-				if(!this.user){
+				if (!this.user) {
 					console.log("Необходимо авторизоваться");
 				} else {
 					console.log("Ошибка добавления в избранное: " + e);
@@ -94,13 +90,13 @@ export const useFilmStore = defineStore('filmStore',{
 			}
 			this.favorites = [...this.favorites, itemFilmWithSortTime];
 		},
-		async removeFavorite(itemFilm){
+		async removeFavorite(itemFilm) {
 			let check = this.isCheckFilm(false, itemFilm);
 			try {
 				const docRef = doc(firebaseDb, "users", this.user.uid);
-				await updateDoc(docRef, {favorites: [...check]});
+				await updateDoc(docRef, { favorites: [...check] });
 			} catch (e) {
-				if(!this.user){
+				if (!this.user) {
 					console.log("Необходимо авторизоваться");
 				} else {
 					console.log("Ошибка удаления из избранного: " + e);
@@ -108,7 +104,7 @@ export const useFilmStore = defineStore('filmStore',{
 			}
 			this.favorites = [...check];
 		},
-		async authWithEmailAndPassword(data){
+		async authWithEmailAndPassword(data) {
 			await signInWithEmailAndPassword(this.auth, data.email, data.password)
 				.then(() => {
 					this.getUserData();
@@ -117,7 +113,7 @@ export const useFilmStore = defineStore('filmStore',{
 					this.errorMessage = translateErrorCode(error.code);
 				});
 		},
-		async createAuthWithEmailAndPassword(data){
+		async createAuthWithEmailAndPassword(data) {
 			await createUserWithEmailAndPassword(this.auth, data.email, data.password)
 				.then(async (userCredential) => {
 					this.user = await userCredential.user;
@@ -128,14 +124,16 @@ export const useFilmStore = defineStore('filmStore',{
 					this.errorMessage = translateErrorCode(error.code);
 				});
 		},
-		async authLogout(){
-			signOut(this.auth).then(async () => {
-				this.removeUserData();
-			}).catch((error) => {
-				alert('Ошибка logout: ' + error);
-			});
+		async authLogout() {
+			signOut(this.auth)
+				.then(async () => {
+					this.removeUserData();
+				})
+				.catch((error) => {
+					alert("Ошибка logout: " + error);
+				});
 		},
-		async authChange(callback){
+		async authChange(callback) {
 			onAuthStateChanged(this.auth, async (user) => {
 				if (user) {
 					this.user = user;
@@ -145,36 +143,36 @@ export const useFilmStore = defineStore('filmStore',{
 				}
 			});
 		},
-		async getUserData(callback){
+		async getUserData(callback) {
 			let data = await userDataGet(this.user.uid);
-			this.user.name = data?.name || '';
-			this.user.email = data?.email ?? '';
+			this.user.name = data?.name || "";
+			this.user.email = data?.email ?? "";
 
 			const favorites = data?.favorites ?? [];
 			const sortedFavorites = favorites.sort((a, b) => (b.sortTime ?? 0) - (a.sortTime ?? 0));
 			this.favorites = sortedFavorites;
 
-			if(data?.api_key){
+			if (data?.api_key) {
 				this.apiKey = data.api_key;
 			}
-			
-			typeof(callback) === 'function' ? callback() : '';
+
+			typeof callback === "function" ? callback() : "";
 		},
-		removeUserData(callback){
+		removeUserData(callback) {
 			this.user = null;
 			this.favorites = [];
-			typeof(callback) === 'function' ? callback() : '';
+			typeof callback === "function" ? callback() : "";
 		},
-		isCheckFilm(check, itemFilm){
-			return this.favorites.filter(film => {
+		isCheckFilm(check, itemFilm) {
+			return this.favorites.filter((film) => {
 				let filterFilmId = film?.kinopoiskId ?? film?.filmId;
 				let itemFilmId = itemFilm?.kinopoiskId ?? itemFilm?.filmId;
-				if (filterFilmId === itemFilmId && check){
+				if (filterFilmId === itemFilmId && check) {
 					return film;
-				} else if (filterFilmId !== itemFilmId && !check){
-					return film
+				} else if (filterFilmId !== itemFilmId && !check) {
+					return film;
 				}
-			})
+			});
 		},
 		searchQueryWithGenre() {
 			let qr = {};
@@ -184,19 +182,19 @@ export const useFilmStore = defineStore('filmStore',{
 			if (this.genreIdStore) {
 				qr.genres = this.genreIdStore;
 			}
-			return qr
+			return qr;
 		},
-		setCurrentFocus(index){
+		setCurrentFocus(index) {
 			this.currentFocusIndex = index;
 		},
 		setFocusIds(href) {
 			this.focusIds = {
 				...this.focusIds,
 				[href]: this.currentFocusIndex,
-			}
+			};
 		},
 		setMountedCurrentFocus(href) {
 			this.setCurrentFocus(this.focusIds[href]);
-		}
-	}
-})
+		},
+	},
+});

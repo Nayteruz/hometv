@@ -34,7 +34,6 @@
 <script>
 import IconLeftArrow from "@/components/icons/IconLeftArrow.vue";
 import { useFilmStore } from "@/stores/filmStore";
-import axios from "axios";
 import FilmPageDialog from "@/components/FilmPageDialog.vue";
 import FilmList from "@/components/FilmList.vue";
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
@@ -63,53 +62,62 @@ export default {
 			return rating;
 		});
 
-		function getFilmInfo() {
-			axios
-				.get("https://kinopoiskapiunofficial.tech/api/v2.2/films/" + route.params.id, {
+		async function getFilmInfo() {
+			try {
+				const response = await fetch("https://kinopoiskapiunofficial.tech/api/v2.2/films/" + route.params.id, {
 					headers: {
 						"X-API-KEY": filmStore.apiKey,
 						"Content-Type": "application/json",
 					},
-				})
-				.then((req) => {
-					filmInfo.value = req.data;
-					getNameFilm();
-				})
-				.catch(() => {
-					return { data: [] };
 				});
+
+				const data = response.json();
+				filmInfo.value = await data;
+				getNameFilm();
+			} catch (error) {
+				console.error("Error load film info", error);
+				filmInfo.value = [];
+			}
 		}
 
-		function getSimilars() {
-			axios
-				.get("https://kinopoiskapiunofficial.tech/api/v2.2/films/" + route.params.id + "/similars", {
-					headers: {
-						"X-API-KEY": filmStore.apiKey,
-						"Content-Type": "application/json",
-					},
-				})
-				.then((req) => {
-					similars.value = req.data?.items;
-				})
-				.catch(() => {
-					return { data: [] };
-				});
+		async function getSimilars() {
+			try {
+				const response = await fetch(
+					"https://kinopoiskapiunofficial.tech/api/v2.2/films/" + route.params.id + "/similars",
+					{
+						headers: {
+							"X-API-KEY": filmStore.apiKey,
+							"Content-Type": "application/json",
+						},
+					}
+				);
+
+				const data = await response.json();
+				const items = data.items || [];
+				similars.value = items;
+			} catch (error) {
+				console.error("Error load similars", error);
+				similars.value = [];
+			}
 		}
 
-		function getSequels_and_prequels() {
-			axios
-				.get("https://kinopoiskapiunofficial.tech/api/v2.1/films/" + route.params.id + "/sequels_and_prequels", {
-					headers: {
-						"X-API-KEY": filmStore.apiKey,
-						"Content-Type": "application/json",
-					},
-				})
-				.then((req) => {
-					similars.value = [...req?.data, ...similars.value];
-				})
-				.catch(() => {
-					return { data: [] };
-				});
+		async function getSequels_and_prequels() {
+			try {
+				const response = await fetch(
+					"https://kinopoiskapiunofficial.tech/api/v2.1/films/" + route.params.id + "/sequels_and_prequels",
+					{
+						headers: {
+							"X-API-KEY": filmStore.apiKey,
+							"Content-Type": "application/json",
+						},
+					}
+				);
+
+				const data = await response.json();
+				similars.value = [...data, ...similars.value];
+			} catch (error) {
+				console.error("Error load sequels and prequels", error);
+			}
 		}
 
 		function getNameFilm() {

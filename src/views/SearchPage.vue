@@ -10,7 +10,7 @@
 
 <script>
 import { useFilmStore } from "@/stores/filmStore";
-import axios from "axios";
+// import axios from "axios";
 import FilmList from "@/components/FilmList.vue";
 import PaginationList from "@/components/PaginationList.vue";
 import { onMounted, ref, computed, inject } from "vue";
@@ -33,17 +33,28 @@ export default {
 		const genreIdRoute = computed(() => route.query.genres);
 
 		async function getRequest() {
-			return await axios.get("https://kinopoiskapiunofficial.tech/api/v2.2/films", {
-				headers: {
-					"X-API-KEY": filmStore.apiKey,
-					"Content-Type": "application/json",
-				},
-				params: {
-					keyword: filmStore.searchQueryStore,
-					genres: filmStore.genreIdStore,
-					page: filmStore.pageNum,
-				},
-			});
+			let url = "https://kinopoiskapiunofficial.tech/api/v2.2/films";
+			if (filmStore.searchQueryStore) {
+				url += `?keyword=${filmStore.searchQueryStore}`;
+			}
+			if (filmStore.genreIdStore) {
+				url += `&genres=${filmStore.genreIdStore}`;
+			}
+			if (filmStore.pageNum) {
+				url += `&page=${filmStore.pageNum}`;
+			}
+			try {
+				const response = await fetch(url, {
+					headers: {
+						"X-API-KEY": filmStore.apiKey,
+						"Content-Type": "application/json",
+					},
+				});
+
+				return response.json();
+			} catch (error) {
+				console.error("Error load films", error);
+			}
 		}
 
 		async function getListFilms(more = false, page) {
@@ -52,12 +63,12 @@ export default {
 			if (filmStore.genreIdStore || filmStore.searchQueryStore || more) {
 				showPreload.value = true;
 				const response = await getRequest();
-				totalPages.value = response.data?.totalPages;
+				totalPages.value = response.totalPages;
 				if (more) {
-					films.value = [...films.value, ...response.data?.items];
+					films.value = [...films.value, ...response.items];
 				} else {
 					films.value = [];
-					films.value = response.data?.items;
+					films.value = response.items;
 				}
 				showPreload.value = false;
 			}

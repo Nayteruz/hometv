@@ -9,7 +9,6 @@
     "deploy": "npm run build && gh-pages -d dist -m 'deploy'"
   },
   "dependencies": {
-    "axios": "^0.26.1",
     "core-js": "^3.8.3",
     "firebase": "^9.8.3",
     "mitt": "^3.0.0",
