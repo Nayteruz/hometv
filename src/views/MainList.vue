@@ -23,14 +23,14 @@ export default {
 		const emitter = inject("emitter");
 		const router = useRouter();
 		const films = ref([]);
-		const default_type = ref("TOP_100_POPULAR_FILMS");
+		const default_type = ref("TOP_POPULAR_ALL");
 		const totalPages = ref(0);
 		const showPreload = ref(false);
 
 		async function getRequest() {
 			try {
 				const url =
-					"https://kinopoiskapiunofficial.tech/api/v2.2/films/top?type=" +
+					"https://kinopoiskapiunofficial.tech/api/v2.2/films/collections?type=" +
 					default_type.value +
 					"&page=" +
 					filmStore.pageNum;
@@ -53,15 +53,15 @@ export default {
 			showPreload.value = more === "preload";
 			filmStore.pageNum = page || filmStore.pageNum;
 			const response = await getRequest();
-			totalPages.value = response.pagesCount;
+			totalPages.value = response.totalPages;
 			if (more === "preload") {
-				films.value = [...films.value, ...response.films];
+				films.value = [...films.value, ...response.items];
 			} else {
 				films.value = [];
-				films.value = response.films;
+				films.value = response.items;
 			}
 			showPreload.value = false;
-			if (more === "loading" && (await response.films)) {
+			if (more === "loading" && (await response.items)) {
 				emitter.emit("isLoading", false);
 			}
 		}
