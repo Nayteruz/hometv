@@ -116,16 +116,13 @@ export const useFilmStore = defineStore("filmStore", {
 				return;
 			}
 
-			const isValue = this.lastSearchList.find((item) => item.value.toLowerCase() === searchValue.toLowerCase());
-
-			if (isValue) {
-				return;
-			}
+			const filtered = this.lastSearchList.filter((item) => item.value.toLowerCase() !== searchValue.toLowerCase());
 
 			try {
 				if (this.user) {
 					const docRef = doc(firebaseDb, "users", this.user.uid);
-					const list = [{ id: Date.now(), value: searchValue }, ...this.lastSearchList];
+					const list = [{ id: Date.now(), value: searchValue }, ...filtered];
+
 					if (list.length > 30) {
 						list.pop();
 					}
@@ -144,15 +141,11 @@ export const useFilmStore = defineStore("filmStore", {
 			}
 
 			const itemFilmWithSortTime = { ...itemFilm, sortTime: Date.now() };
-			const isValue = this.lastViews.some((item) => Number(item?.kinopoiskId) === Number(itemFilm?.kinopoiskId));
-
-			if (isValue) {
-				return;
-			}
+			const filtered = this.lastViews.filter((item) => Number(item?.kinopoiskId) !== Number(itemFilm?.kinopoiskId));
 
 			try {
 				const docRef = doc(firebaseDb, "users", this.user.uid);
-				const list = [itemFilmWithSortTime, ...this.lastViews];
+				const list = [itemFilmWithSortTime, ...filtered];
 
 				if (list.length > 40) {
 					list.pop();
