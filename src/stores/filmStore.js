@@ -31,6 +31,7 @@ export const useFilmStore = defineStore("filmStore", {
 		focusIds: {},
 		isShowLastSearchList: false,
 		lastSearchList: [],
+		lastViews: [],
 	}),
 	getters: {
 		filterGenres() {
@@ -128,10 +129,40 @@ export const useFilmStore = defineStore("filmStore", {
 					if (list.length > 30) {
 						list.pop();
 					}
-					await updateDoc(docRef, { lastSearchList: [...list] });
+
+					this.lastSearchList = list;
+					await updateDoc(docRef, { lastSearchList: list });
 				}
 			} catch (e) {
 				console.log("Ошибка добавления в поиск: " + e);
+			}
+		},
+
+		async addLastViews(itemFilm) {
+			if (!itemFilm) {
+				return;
+			}
+
+			const itemFilmWithSortTime = { ...itemFilm, sortTime: Date.now() };
+			const isValue = this.lastViews.some((item) => Number(item?.kinopoiskId) === Number(itemFilm?.kinopoiskId));
+
+			if (isValue) {
+				return;
+			}
+
+			try {
+				const docRef = doc(firebaseDb, "users", this.user.uid);
+				const list = [itemFilmWithSortTime, ...this.lastViews];
+
+				if (list.length > 40) {
+					list.pop();
+				}
+
+				this.lastViews = list;
+
+				await updateDoc(docRef, { lastViews: list });
+			} catch (e) {
+				console.log("Ошибка добавления в последнее просмотренное: " + e);
 			}
 		},
 
@@ -180,10 +211,14 @@ export const useFilmStore = defineStore("filmStore", {
 			this.user.email = data?.email ?? "";
 
 			const favorites = data?.favorites ?? [];
-			const sortedFavorites = favorites.sort((a, b) => (b.sortTime ?? 0) - (a.sortTime ?? 0));
+			const sortedFavorites = favorites.sort((a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0));
 			this.favorites = sortedFavorites;
 
 			this.lastSearchList = data?.lastSearchList || [];
+
+			const lastViews = data?.lastViews ?? [];
+			const sortedLastViews = lastViews.sort((a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0));
+			this.lastViews = sortedLastViews;
 
 			if (data?.api_key) {
 				this.apiKey = data.api_key;

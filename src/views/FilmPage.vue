@@ -71,8 +71,13 @@ export default {
 					},
 				});
 
+				if (!response.ok) {
+					throw new Error("Error load film info");
+				}
+
 				const data = response.json();
 				filmInfo.value = await data;
+				filmStore.addLastViews(await data);
 				getNameFilm();
 			} catch (error) {
 				console.error("Error load film info", error);
@@ -91,6 +96,10 @@ export default {
 						},
 					}
 				);
+
+				if (!response.ok) {
+					throw new Error("Not found");
+				}
 
 				const data = await response.json();
 				const items = data.items || [];
@@ -113,8 +122,13 @@ export default {
 					}
 				);
 
+				if (!response.ok) {
+					throw new Error("Not found");
+				}
+
 				const data = await response.json();
-				similars.value = [...data, ...similars.value];
+				const sequels = data.items || [];
+				similars.value = [...sequels, ...similars.value];
 			} catch (error) {
 				console.error("Error load sequels and prequels", error);
 			}
