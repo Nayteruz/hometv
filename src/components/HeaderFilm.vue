@@ -7,7 +7,8 @@
 		<form
 			action="#"
 			:class="{
-				show: isSearchVisible,
+				'show': isSearchVisible,
+				'search-form': true,
 			}"
 			@submit.prevent="searchSubmit"
 		>
@@ -17,13 +18,25 @@
 					autocomplete="off"
 					type="text"
 					@keyup.enter="searchSubmit"
+					@focus="showLastList"
 					placeholder="Название фильма / ID КиноПоиск"
 					v-model.trim="filmStore.searchQueryStore"
 					name="keyword"
 				/>
-				<span v-if="filmStore.searchQueryStore" @click="clearInput" class="clear-input">×</span>
+				<span @click.prevent="clearInput" :class="{ 'clear-input': true, 'show': filmStore.searchQueryStore }">×</span>
 			</div>
 			<button type="submit">Найти</button>
+			<div
+				:class="{ 'search-popup': true, 'opened': filmStore.isShowLastSearchList }"
+				v-if="filmStore.lastSearchList.length"
+			>
+				<button type="button" class="close-list" @click="hideLastList">×</button>
+				<ul>
+					<li v-for="item in filmStore.lastSearchList" :key="item.id">
+						<span @click="clickLastSearch(item.value)">{{ item.value }}</span>
+					</li>
+				</ul>
+			</div>
 		</form>
 		<RegistrationWrap />
 		<button class="reload-page" @click="reloadPage"></button>
@@ -55,13 +68,15 @@ export default {
 		const isSearchVisible = ref(searchQueryRoute.value | (route.name === "searchPage") ? true : false);
 		const searchInput = ref(null);
 
-		function searchSubmit() {
+		const searchSubmit = async () => {
+			filmStore.addLastSearchList(filmStore.searchQueryStore);
 			filmStore.pageNum = 1;
 			router.push({
 				name: "searchPage",
 				query: filmStore.searchQueryWithGenre(),
 			});
-		}
+			filmStore.setShowLastSearchList(false);
+		};
 
 		function clearInput() {
 			filmStore.searchQueryStore = "";
@@ -82,9 +97,27 @@ export default {
 			document.location.reload();
 		};
 
-		function toggleSearch() {
+		const toggleSearch = () => {
 			isSearchVisible.value = !isSearchVisible.value;
-		}
+		};
+
+		const clickLastSearch = (value) => {
+			filmStore.pageNum = 1;
+			filmStore.searchQueryStore = value;
+			router.push({
+				name: "searchPage",
+				query: { q: filmStore.searchQueryStore },
+			});
+			filmStore.setShowLastSearchList(false);
+		};
+
+		const showLastList = () => {
+			filmStore.setShowLastSearchList(true);
+		};
+
+		const hideLastList = () => {
+			filmStore.setShowLastSearchList(false);
+		};
 
 		return {
 			searchSubmit,
@@ -96,6 +129,9 @@ export default {
 			isSearchVisible,
 			searchInput,
 			reloadPage,
+			clickLastSearch,
+			showLastList,
+			hideLastList,
 		};
 	},
 };
@@ -178,6 +214,7 @@ form {
 	align-items: center;
 	gap: 5px;
 	width: 100%;
+	position: relative;
 
 	@media all and (max-width: 500px) {
 		grid-column: 1 / 6;
@@ -243,12 +280,16 @@ form {
 	height: 16px;
 	width: 16px;
 	border-radius: 50%;
-	display: flex;
+	display: none;
 	align-items: center;
 	justify-content: center;
 	background: rgba(82, 135, 183, 0.5);
 	cursor: pointer;
 	z-index: 99;
+
+	&.show {
+		display: flex;
+	}
 }
 
 a.favorites {
@@ -280,6 +321,70 @@ a.favorites {
 		width: 20px;
 		height: 20px;
 		background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M142.9 142.9c-17.5 17.5-30.1 38-37.8 59.8c-5.9 16.7-24.2 25.4-40.8 19.5s-25.4-24.2-19.5-40.8C55.6 150.7 73.2 122 97.6 97.6c87.2-87.2 228.3-87.5 315.8-1L455 55c6.9-6.9 17.2-8.9 26.2-5.2s14.8 12.5 14.8 22.2l0 128c0 13.3-10.7 24-24 24l-8.4 0c0 0 0 0 0 0L344 224c-9.7 0-18.5-5.8-22.2-14.8s-1.7-19.3 5.2-26.2l41.1-41.1c-62.6-61.5-163.1-61.2-225.3 1zM16 312c0-13.3 10.7-24 24-24l7.6 0 .7 0L168 288c9.7 0 18.5 5.8 22.2 14.8s1.7 19.3-5.2 26.2l-41.1 41.1c62.6 61.5 163.1 61.2 225.3-1c17.5-17.5 30.1-38 37.8-59.8c5.9-16.7 24.2-25.4 40.8-19.5s25.4 24.2 19.5 40.8c-10.8 30.6-28.4 59.3-52.9 83.8c-87.2 87.2-228.3 87.5-315.8 1L57 457c-6.9 6.9-17.2 8.9-26.2 5.2S16 449.7 16 440l0-119.6 0-.7 0-7.6z"/></svg>');
+	}
+}
+
+.close-list {
+	cursor: pointer;
+	position: sticky;
+	left: calc(100% - 20px);
+	top: 1px;
+	width: 25px;
+	height: 25px;
+	background: rgba(255, 0, 0, 0.2);
+	border: none;
+	font-size: 20px;
+	color: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+}
+
+.search-popup {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	transform: translate(0, 5px);
+	z-index: 99;
+	width: 100%;
+	max-height: calc(100vh - 80px);
+	overflow: auto;
+	background: rgba(22, 48, 97, 0.9);
+	border-radius: 5px;
+	display: none;
+
+	&.opened {
+		display: block;
+	}
+
+	ul {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 3px 5px;
+		margin-top: -20px;
+
+		li {
+			span {
+				display: block;
+				cursor: pointer;
+				padding: 5px 10px;
+				color: #fff;
+				border-radius: 5px;
+				font-size: 18px;
+				user-select: none;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+
+				&:hover {
+					background: #2c4f91;
+				}
+			}
+		}
 	}
 }
 </style>

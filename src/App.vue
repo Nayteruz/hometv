@@ -1,5 +1,5 @@
 <template>
-	<div class="wrapper">
+	<div class="wrapper" @click="clickOutside">
 		<HeaderFilm :key="$route.fullPath" />
 		<GenreList />
 		<RouterView v-slot="{ Component }">
@@ -13,10 +13,19 @@
 </template>
 
 <script setup>
+import { useFilmStore } from "@/stores/filmStore";
 import HeaderFilm from "@/components/HeaderFilm.vue";
 import GenreList from "@/components/GenreList.vue";
 import ToTop from "@/components/ToTop.vue";
 import NavigationByKeys from "./components/NavigationByKeys.vue";
+const filmStore = useFilmStore();
+
+const clickOutside = (e) => {
+	if (e.target.closest(".search-form")) {
+		return;
+	}
+	filmStore.setShowLastSearchList(false);
+};
 </script>
 
 <style lang="scss">
