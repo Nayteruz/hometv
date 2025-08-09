@@ -4,6 +4,7 @@ import FilmPage from "@/views/FilmPage.vue";
 import SearchPage from "@/views/SearchPage.vue";
 import NotFound from "@/components/NotFound.vue";
 import FavoritePage from "@/views/FavoritePage.vue";
+import LastViews from "@/views/LastViews.vue";
 
 const router = createRouter({
 	history: createWebHistory("/hometv"),
@@ -27,6 +28,11 @@ const router = createRouter({
 			path: "/favorites",
 			name: "favorite",
 			component: FavoritePage,
+		},
+		{
+			path: "/last-views",
+			name: "lastViews",
+			component: LastViews,
 		},
 		{
 			path: "/:pathMatch(.*)*",
