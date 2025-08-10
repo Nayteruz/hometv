@@ -45,6 +45,8 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+@use "sass:color";
+
 .genres-wrap {
 	margin: 0px 15px 5px;
 
@@ -72,13 +74,13 @@ onMounted(async () => {
 			user-select: none;
 
 			&:hover {
-				background: lighten(#2c4f91, 15%);
+				background: color.adjust(#2c4f91, $lightness: 15%);
 			}
 		}
 
 		li.active {
 			span {
-				background: lighten(#2c4f91, 15%);
+				background: color.adjust(#2c4f91, $lightness: 15%);
 			}
 		}
 	}

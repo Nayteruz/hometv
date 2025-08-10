@@ -38,6 +38,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@use "sass:color";
+
 .film__show {
 	background: #5077bf;
 	outline: none;
@@ -50,7 +52,7 @@ export default {
 	cursor: pointer;
 
 	&:hover {
-		background: darken(#5077bf, 10%);
+		background: color.adjust(#5077bf, $lightness: -10%);
 	}
 }
 .tab-titles {

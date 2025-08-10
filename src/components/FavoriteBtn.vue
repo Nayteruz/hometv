@@ -62,6 +62,7 @@ export default {
 	display: block;
 	cursor: pointer;
 	position: relative;
+	color: #80b0d9;
 }
 
 .loading-round {
@@ -79,17 +80,16 @@ export default {
 }
 
 .favorite-icon svg {
-	fill: #80b0d9;
 	width: 100%;
 	height: 100%;
 }
 
-.favorite-icon svg:hover {
-	fill: #2c4f91;
+.favorite-icon:hover {
+	color: #2c4f91;
 }
 
 .favorite-icon svg.active {
-	fill: #cf0000;
+	color: #cf0000;
 }
 
 @keyframes spinner-border {

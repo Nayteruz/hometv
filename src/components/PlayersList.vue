@@ -106,6 +106,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@use "sass:color";
+
 .player-container {
 	display: flex;
 	flex-direction: column;
@@ -137,7 +139,7 @@ export default {
 	cursor: pointer;
 
 	&:hover {
-		background: darken(#5077bf, 10%);
+		background: color.adjust(#5077bf, $lightness: -10%);
 	}
 
 	&.active {

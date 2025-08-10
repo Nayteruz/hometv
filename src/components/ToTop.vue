@@ -1,22 +1,15 @@
 <template>
-	<div class="event__top" @click="onTop"></div>
+	<button class="button" @click="onTop"></button>
 </template>
 
-<script>
-export default {
-	setup() {
-		function onTop() {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		}
-		return {
-			onTop,
-		};
-	},
+<script setup>
+const onTop = () => {
+	window.scrollTo({ top: 0, behavior: "smooth" });
 };
 </script>
 
 <style scoped lang="scss">
-.event__top {
+.button {
 	position: fixed;
 	right: 50%;
 	margin-right: -690px;
@@ -27,14 +20,16 @@ export default {
 	background: rgba(#2c4f91, 0.8);
 	cursor: pointer;
 	z-index: 99;
-	@media all and(max-width:1400px) {
+	border: none;
+
+	@media all and (max-width: 1400px) {
 		margin-right: 0;
 		right: 10px;
 	}
 
 	&:before,
 	&:after {
-		content: '';
+		content: "";
 		position: absolute;
 		left: 50%;
 		top: 50%;
@@ -42,10 +37,12 @@ export default {
 		width: 17px;
 		background: #fff;
 	}
+
 	&:before {
 		margin: -2px 0 0 -3px;
 		transform: rotate(45deg);
 	}
+
 	&:after {
 		margin: -2px 0 0 -14px;
 		transform: rotate(-45deg);

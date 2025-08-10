@@ -134,6 +134,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@use "sass:color";
+
 .film__wrap {
 	display: grid;
 	grid-template-columns: minmax(250px, 350px) 1fr;
@@ -298,7 +300,7 @@ h3 {
 	}
 
 	&:hover {
-		background: darken(#3363bd, 10%);
+		background: color.adjust(#3363bd, $lightness: -10%);
 	}
 }
 </style>
