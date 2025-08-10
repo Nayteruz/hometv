@@ -14,7 +14,7 @@
 
 <script setup>
 import { useFilmStore } from "@/stores/filmStore";
-import HeaderFilm from "@/components/HeaderFilm.vue";
+import HeaderFilm from "@/components/Header/HeaderFilm.vue";
 import GenreList from "@/components/GenreList.vue";
 import ToTop from "@/components/ToTop.vue";
 import NavigationByKeys from "./components/NavigationByKeys.vue";

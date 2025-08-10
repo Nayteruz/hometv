@@ -14,6 +14,7 @@ import { useRouter } from "vue-router";
 import { useFilmStore } from "@/stores/filmStore";
 import FilmList from "@/components/FilmList.vue";
 import PaginationList from "@/components/PaginationList.vue";
+import { getCollections } from "@/components/api";
 
 export default {
 	name: "MainList",
@@ -23,24 +24,12 @@ export default {
 		const emitter = inject("emitter");
 		const router = useRouter();
 		const films = ref([]);
-		const default_type = ref("TOP_POPULAR_ALL");
 		const totalPages = ref(0);
 		const showPreload = ref(false);
 
 		async function getRequest() {
 			try {
-				const url =
-					"https://kinopoiskapiunofficial.tech/api/v2.2/films/collections?type=" +
-					default_type.value +
-					"&page=" +
-					filmStore.pageNum;
-				const response = await fetch(url, {
-					headers: {
-						"X-API-KEY": filmStore.apiKey,
-						"Content-Type": "application/json",
-					},
-				});
-				return response.json();
+				return getCollections(filmStore.pageNum);
 			} catch (error) {
 				console.error("Error load films", error);
 			}

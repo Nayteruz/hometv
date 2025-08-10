@@ -14,45 +14,34 @@
 	</div>
 </template>
 
-<script>
+<script setup>
 import { useFilmStore } from "@/stores/filmStore";
 import { onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-export default {
-	name: "GenreList",
-	setup() {
-		const route = useRoute();
-		const router = useRouter();
-		const filmStore = useFilmStore();
-		const routeGenre = computed(() => route.query.genres);
+const route = useRoute();
+const router = useRouter();
+const filmStore = useFilmStore();
+const routeGenre = computed(() => route.query.genres);
 
-		const setGenre = (genreId) => {
-			if (+filmStore.genreIdStore === +genreId) {
-				filmStore.genreIdStore = null;
-			} else {
-				filmStore.genreIdStore = genreId;
-			}
-			filmStore.pageNum = 1;
-			router.push({ name: "searchPage", query: filmStore.searchQueryWithGenre() });
-		};
-
-		async function getGenreList() {
-			await filmStore.getGenreList();
-		}
-
-		onMounted(async () => {
-			filmStore.genreIdStore = routeGenre.value;
-			await getGenreList();
-		});
-
-		return {
-			filmStore,
-			setGenre,
-			routeGenre,
-		};
-	},
+const setGenre = (genreId) => {
+	if (+filmStore.genreIdStore === +genreId) {
+		filmStore.genreIdStore = null;
+	} else {
+		filmStore.genreIdStore = genreId;
+	}
+	filmStore.pageNum = 1;
+	router.push({ name: "searchPage", query: filmStore.searchQueryWithGenre() });
 };
+
+async function getGenreList() {
+	await filmStore.getGenreList();
+}
+
+onMounted(async () => {
+	filmStore.genreIdStore = routeGenre.value;
+	await getGenreList();
+});
 </script>
 
 <style scoped lang="scss">

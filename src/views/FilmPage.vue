@@ -39,6 +39,7 @@ import FilmList from "@/components/FilmList.vue";
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { getFilmInfo, getSequelsAndPrequels, getSimilars } from "@/components/api";
 
 export default {
 	name: "FilmPage",
@@ -62,20 +63,9 @@ export default {
 			return rating;
 		});
 
-		async function getFilmInfo() {
+		async function loadFilm() {
 			try {
-				const response = await fetch("https://kinopoiskapiunofficial.tech/api/v2.2/films/" + route.params.id, {
-					headers: {
-						"X-API-KEY": filmStore.apiKey,
-						"Content-Type": "application/json",
-					},
-				});
-
-				if (!response.ok) {
-					throw new Error("Error load film info");
-				}
-
-				const data = response.json();
+				const data = getFilmInfo(route.params.id);
 				filmInfo.value = await data;
 				filmStore.addLastViews(await data);
 				getNameFilm();
@@ -85,23 +75,9 @@ export default {
 			}
 		}
 
-		async function getSimilars() {
+		async function loadSimilars() {
 			try {
-				const response = await fetch(
-					"https://kinopoiskapiunofficial.tech/api/v2.2/films/" + route.params.id + "/similars",
-					{
-						headers: {
-							"X-API-KEY": filmStore.apiKey,
-							"Content-Type": "application/json",
-						},
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error("Not found");
-				}
-
-				const data = await response.json();
+				const data = await getSimilars(route.params.id);
 				const items = data.items || [];
 				similars.value = items;
 			} catch (error) {
@@ -110,23 +86,9 @@ export default {
 			}
 		}
 
-		async function getSequels_and_prequels() {
+		async function loadSequelsAndPrequels() {
 			try {
-				const response = await fetch(
-					"https://kinopoiskapiunofficial.tech/api/v2.1/films/" + route.params.id + "/sequels_and_prequels",
-					{
-						headers: {
-							"X-API-KEY": filmStore.apiKey,
-							"Content-Type": "application/json",
-						},
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error("Not found");
-				}
-
-				const data = await response.json();
+				const data = await getSequelsAndPrequels(route.params.id);
 				const sequels = data.items || [];
 				similars.value = [...sequels, ...similars.value];
 			} catch (error) {
@@ -152,9 +114,9 @@ export default {
 		};
 
 		onMounted(() => {
-			getFilmInfo();
-			getSimilars();
-			getSequels_and_prequels();
+			loadFilm();
+			loadSimilars();
+			loadSequelsAndPrequels();
 		});
 
 		return {

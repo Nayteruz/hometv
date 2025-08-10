@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 import { updateDoc, doc } from "firebase/firestore";
 import { userDataGet, userDataSet, translateErrorCode, ignore_genre } from "@/plugins/firebaseActions";
+import { getFilters } from "@/components/api";
 
 export const useFilmStore = defineStore("filmStore", {
 	state: () => ({
@@ -59,14 +60,7 @@ export const useFilmStore = defineStore("filmStore", {
 				return this.genreListStore;
 			} else {
 				try {
-					const response = await fetch("https://kinopoiskapiunofficial.tech/api/v2.2/films/filters", {
-						headers: {
-							"X-API-KEY": this.apiKey,
-							"Content-Type": "application/json",
-						},
-					});
-
-					const data = await response.json();
+					const data = await getFilters();
 					this.filters = data;
 					this.genreListStore = data.genres;
 					this.filterGenres;

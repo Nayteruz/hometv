@@ -10,11 +10,11 @@
 
 <script>
 import { useFilmStore } from "@/stores/filmStore";
-// import axios from "axios";
 import FilmList from "@/components/FilmList.vue";
 import PaginationList from "@/components/PaginationList.vue";
 import { onMounted, ref, computed, inject } from "vue";
 import { useRoute } from "vue-router";
+import { getSearchFilms } from "@/components/api";
 
 export default {
 	components: {
@@ -33,25 +33,20 @@ export default {
 		const genreIdRoute = computed(() => route.query.genres);
 
 		async function getRequest() {
-			let url = "https://kinopoiskapiunofficial.tech/api/v2.2/films";
+			const params = {};
+
 			if (filmStore.searchQueryStore) {
-				url += `?keyword=${filmStore.searchQueryStore}`;
+				params.keyword = filmStore.searchQueryStore;
 			}
 			if (filmStore.genreIdStore) {
-				url += `&genres=${filmStore.genreIdStore}`;
+				params.genres = filmStore.genreIdStore;
 			}
 			if (filmStore.pageNum) {
-				url += `&page=${filmStore.pageNum}`;
+				params.page = filmStore.pageNum;
 			}
-			try {
-				const response = await fetch(url, {
-					headers: {
-						"X-API-KEY": filmStore.apiKey,
-						"Content-Type": "application/json",
-					},
-				});
 
-				return response.json();
+			try {
+				return getSearchFilms(params);
 			} catch (error) {
 				console.error("Error load films", error);
 			}
