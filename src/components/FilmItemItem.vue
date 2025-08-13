@@ -12,7 +12,7 @@
 			<svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"></svg>
 			<img :src="itemFilm.posterUrlPreview" :alt="props.itemFilm.nameRu" />
 		</div>
-		<span v-if="filmRating" class="item__rating">{{ filmRating }}</span>
+		<span v-if="filmRating" class="item__rating"><IconStar class="star" />{{ filmRating }}</span>
 		<div class="item__options">
 			<ul>
 				<li class="name">{{ filmName }}</li>
@@ -27,6 +27,8 @@ import { useFilmStore } from "@/stores/filmStore";
 import FavoriteBtn from "@/components/FavoriteBtn.vue";
 import { computed, defineProps, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import IconStar from "@/components/icons/IconStar.vue";
+
 const props = defineProps(["itemFilm", "currentIndex"]);
 const router = useRouter();
 const filmStore = useFilmStore();
@@ -35,11 +37,18 @@ const isFocused = computed(() => props.currentIndex === filmStore.currentFocusIn
 const isFocusedOnHover = ref(false);
 
 const filmRating = computed(() => {
-	return props.itemFilm?.rating || props.itemFilm?.ratingKinopoisk || props.itemFilm?.ratingImdb || null;
+	const rating = props.itemFilm?.rating || props.itemFilm?.ratingKinopoisk || props.itemFilm?.ratingImdb;
+
+	if (typeof rating === "number") {
+		return rating.toFixed(1);
+	}
+
+	return "∞";
 });
 
 const filmName = computed(() => {
-	return props.itemFilm?.nameRu || props.itemFilm?.nameEn || props.itemFilm?.nameOriginal || "Без названия";
+	const name = props.itemFilm?.nameRu || props.itemFilm?.nameEn || props.itemFilm?.nameOriginal || "Без названия";
+	return `${name} (${props.itemFilm?.year || ""})`;
 });
 
 const goToPageFilm = () => {
@@ -135,20 +144,16 @@ watch(isFocused, () => {
 	justify-content: center;
 	gap: 2px;
 	color: #2c5e95;
+	line-height: 0;
+
 	@media all and (max-width: 768px) {
 		font-size: 11px;
 		top: 0;
 		right: 0;
 	}
 
-	&:before {
-		content: "";
-		display: block;
-		width: 13px;
-		height: 15px;
-		background-image: url("data:image/svg+xml;utf8,<svg fill='%232c5e95' height='16' viewBox='0 0 16 16' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z' class='star' /></svg>");
-		background-size: 100%;
-		background-repeat: no-repeat;
+	.star {
+		width: 12px;
 	}
 }
 

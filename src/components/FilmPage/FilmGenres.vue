@@ -22,8 +22,6 @@ const props = defineProps({
 
 const genreList = computed(() => props.genres.map((g) => g.genre));
 
-console.log(props.genres);
-
 const changeGenre = (name) => {
 	const genres = JSON.parse(localStorage.getItem("genres"));
 	const id = genres.filter((g) => g.genre === name)[0].id;

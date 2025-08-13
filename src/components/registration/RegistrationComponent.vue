@@ -45,7 +45,7 @@ export default {
 		}
 
 		function signWithGoogle() {
-			console.log("ok");
+			console.warn("ok");
 		}
 
 		return {

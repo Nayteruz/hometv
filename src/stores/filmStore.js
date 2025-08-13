@@ -83,9 +83,9 @@ export const useFilmStore = defineStore("filmStore", {
 				await updateDoc(docRef, { favorites: [...this.favorites, itemFilmWithSortTime] });
 			} catch (e) {
 				if (!this.user) {
-					console.log("Необходимо авторизоваться");
+					console.warn("Необходимо авторизоваться");
 				} else {
-					console.log("Ошибка добавления в избранное: " + e);
+					console.warn("Ошибка добавления в избранное: " + e);
 				}
 			}
 			this.favorites = [...this.favorites, itemFilmWithSortTime];
@@ -97,9 +97,9 @@ export const useFilmStore = defineStore("filmStore", {
 				await updateDoc(docRef, { favorites: [...check] });
 			} catch (e) {
 				if (!this.user) {
-					console.log("Необходимо авторизоваться");
+					console.warn("Необходимо авторизоваться");
 				} else {
-					console.log("Ошибка удаления из избранного: " + e);
+					console.warn("Ошибка удаления из избранного: " + e);
 				}
 			}
 			this.favorites = [...check];
@@ -125,7 +125,7 @@ export const useFilmStore = defineStore("filmStore", {
 					await updateDoc(docRef, { lastSearchList: list });
 				}
 			} catch (e) {
-				console.log("Ошибка добавления в поиск: " + e);
+				console.error("Ошибка добавления в поиск: " + e);
 			}
 		},
 
@@ -151,7 +151,7 @@ export const useFilmStore = defineStore("filmStore", {
 					await updateDoc(docRef, { lastViews: list });
 				}
 			} catch (e) {
-				console.log("Ошибка добавления в последнее просмотренное: " + e);
+				console.error("Ошибка добавления в последнее просмотренное: " + e);
 			}
 		},
 
