@@ -1,29 +1,19 @@
 <template>
 	<div class="list">
-		<h1>Недавно просмотренные</h1>
+		<h1>{{ pagesTitle.LAST_VIEWS }}</h1>
 		<FilmList :items="filmStore.lastViews" :showPreload="showPreload" />
 		<h3 v-if="filmStore.lastViews.length === 0">Список пуст</h3>
 	</div>
 </template>
 
-<script>
+<script setup>
 import { useFilmStore } from "@/stores/filmStore";
 import { ref } from "vue";
 import FilmList from "@/components/FilmList.vue";
+import { pagesTitle } from "@/components/const";
 
-export default {
-	name: "LastViewsPage",
-	components: { FilmList },
-	setup() {
-		const filmStore = useFilmStore();
-		const showPreload = ref(false);
-
-		return {
-			filmStore,
-			showPreload,
-		};
-	},
-};
+const filmStore = useFilmStore();
+const showPreload = ref(false);
 </script>
 
 <style scoped lang="scss">

@@ -14,10 +14,9 @@
 </template>
 
 <script setup>
-import { useFilmStore } from "@/stores/filmStore";
 import RegistrationWrap from "@/components/registration/RegistrationWrap.vue";
 import { useRoute } from "vue-router";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import HomeButton from "./HomeButton.vue";
 import LastViewButton from "./LastViewButton.vue";
 import FavoriteButton from "./FavoriteButton.vue";
@@ -28,13 +27,8 @@ import IconSearchPlus from "../icons/IconSearchPlus.vue";
 import IconSearchMinus from "../icons/IconSearchMinus.vue";
 
 const route = useRoute();
-const filmStore = useFilmStore();
 const searchQueryRoute = computed(() => route.query.q);
 const isSearchVisible = ref(searchQueryRoute.value | (route.name === "searchPage") ? true : false);
-
-onMounted(() => {
-	filmStore.searchQueryStore = searchQueryRoute.value;
-});
 
 const toggleSearch = () => {
 	isSearchVisible.value = !isSearchVisible.value;

@@ -11,17 +11,10 @@
 				v-model.trim="filmStore.searchQueryStore"
 				name="keyword"
 			/>
-			<span @click.prevent="clearInput" :class="['clear-input', { show: filmStore.searchQueryStore }]">×</span>
+			<ButtonBlue :class="['clear-input', { show: filmStore.searchQueryStore }]" @click="clearInput">×</ButtonBlue>
 		</div>
 		<ButtonBlue type="submit" :border="true">Найти</ButtonBlue>
-		<div :class="['search-popup', { opened: filmStore.isShowLastSearchList }]" v-if="filmStore.lastSearchList.length">
-			<button type="button" class="close-list" @click="hideLastList">×</button>
-			<ul>
-				<li v-for="item in filmStore.lastSearchList" :key="item.id">
-					<span @click="clickLastSearch(item.value)">{{ item.value }}</span>
-				</li>
-			</ul>
-		</div>
+		<SearchPopup />
 	</form>
 </template>
 
@@ -30,6 +23,7 @@ import { useFilmStore } from "@/stores/filmStore";
 import { computed, onMounted, ref, defineProps } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ButtonBlue from "../ButtonBlue.vue";
+import SearchPopup from "./SearchPopup.vue";
 
 const props = defineProps({
 	visibleSearch: {
@@ -63,28 +57,14 @@ const showLastList = () => {
 	filmStore.setShowLastSearchList(true);
 };
 
-const hideLastList = () => {
-	filmStore.setShowLastSearchList(false);
-};
-
 const clearInput = () => {
 	filmStore.searchQueryStore = "";
 	searchInput.value.focus();
 };
-
-const clickLastSearch = (value) => {
-	filmStore.pageNum = 1;
-	filmStore.searchQueryStore = value;
-	router.push({
-		name: "searchPage",
-		query: { q: filmStore.searchQueryStore },
-	});
-	filmStore.setShowLastSearchList(false);
-};
 </script>
 
 <style scoped lang="scss">
-form.search-form {
+.search-form {
 	display: grid;
 	grid-template-columns: 1fr auto;
 	align-items: center;
@@ -121,23 +101,6 @@ form.search-form {
 	}
 }
 
-button.close-list {
-	cursor: pointer;
-	position: sticky;
-	left: calc(100% - 20px);
-	top: 1px;
-	width: 25px;
-	height: 25px;
-	background: rgba(255, 0, 0, 0.2);
-	border: none;
-	font-size: 20px;
-	color: #fff;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border-radius: 50%;
-}
-
 .clear-input {
 	position: absolute;
 	right: 5px;
@@ -155,53 +118,6 @@ button.close-list {
 
 	&.show {
 		display: flex;
-	}
-}
-
-.search-popup {
-	position: absolute;
-	top: 100%;
-	left: 0;
-	transform: translate(0, 5px);
-	z-index: 99;
-	width: 100%;
-	max-height: calc(100vh - 80px);
-	overflow: auto;
-	background: rgba(22, 48, 97, 0.9);
-	border-radius: 5px;
-	display: none;
-
-	&.opened {
-		display: block;
-	}
-
-	ul {
-		padding: 0;
-		margin: 0;
-		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: 3px 5px;
-		margin-top: -20px;
-
-		li {
-			span {
-				display: block;
-				cursor: pointer;
-				padding: 5px 10px;
-				color: #fff;
-				border-radius: 5px;
-				font-size: 18px;
-				user-select: none;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				white-space: nowrap;
-
-				&:hover {
-					background: #2c4f91;
-				}
-			}
-		}
 	}
 }
 

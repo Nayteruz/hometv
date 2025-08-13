@@ -138,16 +138,18 @@ export const useFilmStore = defineStore("filmStore", {
 			const filtered = this.lastViews.filter((item) => Number(item?.kinopoiskId) !== Number(itemFilm?.kinopoiskId));
 
 			try {
-				const docRef = doc(firebaseDb, "users", this.user.uid);
-				const list = [itemFilmWithSortTime, ...filtered];
+				if (this.user) {
+					const docRef = doc(firebaseDb, "users", this.user.uid);
+					const list = [itemFilmWithSortTime, ...filtered];
 
-				if (list.length > 40) {
-					list.pop();
+					if (list.length > 40) {
+						list.pop();
+					}
+
+					this.lastViews = list;
+
+					await updateDoc(docRef, { lastViews: list });
 				}
-
-				this.lastViews = list;
-
-				await updateDoc(docRef, { lastViews: list });
 			} catch (e) {
 				console.log("Ошибка добавления в последнее просмотренное: " + e);
 			}
@@ -250,6 +252,20 @@ export const useFilmStore = defineStore("filmStore", {
 		},
 		setMountedCurrentFocus(href) {
 			this.setCurrentFocus(this.focusIds[href]);
+		},
+		async searchPageTitle() {
+			let genre_name = this.genreIdStore
+				? await this.genreListStore.filter((genre) => +genre.id === +this.genreIdStore)[0].genre
+				: null;
+			if (this.searchQueryStore && this.genreIdStore) {
+				return `Поиск по слову "${this.searchQueryStore}", жанр "${genre_name}"`;
+			} else if (this.searchQueryStore && !this.genreIdStore) {
+				return `Поиск по слову "${this.searchQueryStore}"`;
+			} else if (this.genreIdStore && !this.searchQueryStore) {
+				return `Поиск по жанру "${genre_name}"`;
+			} else {
+				return "Ничего не указано для поиска";
+			}
 		},
 	},
 });

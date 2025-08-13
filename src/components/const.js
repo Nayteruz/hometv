@@ -33,3 +33,9 @@ export const players = {
 	Kodik: (id) => `https:////kodik.cc/find-player?kinopoiskID=${id}`,
 	Трейлер: (id) => `https://api.atomics.ws/embed/trailer-kp/${id}`,
 };
+
+export const pagesTitle = {
+	MAIN: "Список последних новинок",
+	LAST_VIEWS: "Последние просмотренные",
+	FAVORITE: "Избранные фильмы/мультики и тд",
+};

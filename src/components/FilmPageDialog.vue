@@ -13,28 +13,15 @@
 	<FilmPlayerClub v-if="playerNum === 5" />
 </template>
 
-<script>
+<script setup>
+import { ref } from "vue";
 import FilmKinoBoxTab from "@/components/FilmKinoboxTab.vue";
 import FilmPlayerClub from "@/components/FilmPlayerClub.vue";
 import FilmKinoTop from "@/components/FilmKinoTop.vue";
 import FilmKinoBD from "@/components/FilmKinoBD.vue";
 import PlayersList from "@/components/PlayersList.vue";
-import { useFilmStore } from "@/stores/filmStore";
-import { ref } from "vue";
 
-export default {
-	name: "FilmPageDialog",
-	props: ["itemFilm"],
-	components: { FilmKinoTop, FilmKinoBoxTab, FilmPlayerClub, FilmKinoBD, PlayersList },
-	setup() {
-		const filmStore = useFilmStore();
-		const playerNum = ref(0);
-		return {
-			filmStore,
-			playerNum,
-		};
-	},
-};
+const playerNum = ref(0);
 </script>
 
 <style scoped lang="scss">
