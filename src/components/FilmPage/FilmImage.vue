@@ -1,13 +1,9 @@
 <template>
-  <div class="image">
-    <FavoriteBtn class="favorite" :itemFilm="props.filmInfo" />
-    <img
-      v-if="filmInfo?.posterUrl"
-      :src="filmInfo?.posterUrl"
-      alt="filmTitle"
-    />
-    <FilmRating :filmInfo="props.filmInfo" />
-  </div>
+	<div class="image">
+		<FavoriteBtn class="favorite" :filmId="filmId" />
+		<img v-if="filmInfo?.posterUrl" :src="filmInfo?.posterUrl" alt="filmTitle" />
+		<FilmRating :filmInfo="props.filmInfo" />
+	</div>
 </template>
 
 <script setup>
@@ -16,41 +12,42 @@ import FavoriteBtn from "../FavoriteBtn.vue";
 import FilmRating from "../FilmRating.vue";
 
 const props = defineProps({
-  filmInfo: Object,
+	filmInfo: Object,
 });
 
 const filmInfo = computed(() => props.filmInfo);
+const filmId = filmInfo.value.filmId || filmInfo.value.kinopoiskId;
 </script>
 
 <style lang="scss" scoped>
 .image {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  position: relative;
-  min-width: 0;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	position: relative;
+	min-width: 0;
 
-  img {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    min-height: 170px;
-    max-height: 500px;
-    border-radius: 10px;
-    border: 2px solid #5077bf;
-    @media all and (max-width: 768px) {
-      height: auto;
-      max-height: 100%;
-    }
-  }
+	img {
+		object-fit: cover;
+		width: 100%;
+		height: 100%;
+		min-height: 170px;
+		max-height: 500px;
+		border-radius: 10px;
+		border: 2px solid #5077bf;
+		@media all and (max-width: 768px) {
+			height: auto;
+			max-height: 100%;
+		}
+	}
 }
 
 .favorite {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  z-index: 10;
-  width: 30px;
-  height: 30px;
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	z-index: 10;
+	width: 30px;
+	height: 30px;
 }
 </style>
