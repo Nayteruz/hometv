@@ -108,8 +108,9 @@ export const useFilmStore = defineStore('filmStore', {
     },
     async removeFavorite(filmId) {
       const updatedFavorites = this.favorites.filter(
-        (film) => film?.kinopoiskId ?? film?.filmId !== filmId
+        (film) => Number(film?.kinopoiskId ?? film?.filmId) !== Number(filmId)
       );
+
       try {
         const docRef = doc(firebaseDb, 'users', this.user.uid);
         await updateDoc(docRef, { favorites: [...updatedFavorites] });

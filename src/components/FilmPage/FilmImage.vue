@@ -20,7 +20,9 @@
   });
 
   const filmInfo = computed(() => props.filmInfo);
-  const filmId = filmInfo.value.filmId || filmInfo.value.kinopoiskId;
+  const filmId = computed(
+    () => props.filmInfo?.kinopoiskId ?? props.filmInfo?.filmId
+  );
 </script>
 
 <style lang="scss" scoped>
