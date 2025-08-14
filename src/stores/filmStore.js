@@ -1,20 +1,20 @@
-import { defineStore } from 'pinia'
-import { firebaseDb } from '@/plugins'
+import { defineStore } from 'pinia';
+import { firebaseDb } from '@/plugins';
 import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-} from 'firebase/auth'
-import { updateDoc, doc } from 'firebase/firestore'
+} from 'firebase/auth';
+import { updateDoc, doc } from 'firebase/firestore';
 import {
   userDataGet,
   userDataSet,
   translateErrorCode,
   ignore_genre,
-} from '@/plugins/firebaseActions'
-import { getFilters } from '@/components/api'
+} from '@/plugins/firebaseActions';
+import { getFilters } from '@/components/api';
 
 export const useFilmStore = defineStore('filmStore', {
   state: () => ({
@@ -41,245 +41,241 @@ export const useFilmStore = defineStore('filmStore', {
   }),
   getters: {
     filterGenres() {
-      if (!this.genreListStore.length) return []
+      if (!this.genreListStore.length) return [];
       this.genreListStore = this.genreListStore.filter((x) => {
         if (ignore_genre.indexOf(x.genre) === -1) {
-          return x
+          return x;
         }
-      })
+      });
     },
     favoriteList() {
-      return this.favorites
+      return this.favorites;
     },
   },
   actions: {
     setGenreId(genreId) {
-      this.genreIdStore = genreId
+      this.genreIdStore = genreId;
     },
     setFilmPageId(value) {
-      this.filmPageId = value
+      this.filmPageId = value;
     },
     setShowLastSearchList(value) {
-      this.isShowLastSearchList = value
+      this.isShowLastSearchList = value;
     },
     async getGenreList() {
       if (localStorage.getItem('genres')) {
-        this.genreListStore = JSON.parse(localStorage.getItem('genres'))
-        return this.genreListStore
+        this.genreListStore = JSON.parse(localStorage.getItem('genres'));
+        return this.genreListStore;
       } else {
         try {
-          const data = await getFilters()
-          this.filters = data
-          this.genreListStore = data.genres
-          this.filterGenres
-          localStorage.setItem('genres', JSON.stringify(this.genreListStore))
+          const data = await getFilters();
+          this.filters = data;
+          this.genreListStore = data.genres;
+          this.filterGenres;
+          localStorage.setItem('genres', JSON.stringify(this.genreListStore));
 
-          return this.genreListStore
+          return this.genreListStore;
         } catch (error) {
-          console.error('Error load genres', error)
+          console.error('Error load genres', error);
         }
       }
     },
     checkIsFavorite(filmId) {
-      return Boolean(
-        this.favorites.find(
-          (film) => film?.kinopoiskId ?? film?.filmId === filmId
-        )
-      )
+      const favoriteMap = new Map(
+        this.favorites.map((film) => [
+          Number(film?.kinopoiskId ?? film?.filmId),
+          film,
+        ])
+      );
+
+      return favoriteMap.has(filmId);
     },
     async addFavorite(itemFilm) {
-      const itemFilmWithSortTime = { ...itemFilm, sortTime: Date.now() }
+      const itemFilmWithSortTime = { ...itemFilm, sortTime: Date.now() };
       try {
-        const docRef = doc(firebaseDb, 'users', this.user.uid)
+        const docRef = doc(firebaseDb, 'users', this.user.uid);
         await updateDoc(docRef, {
           favorites: [...this.favorites, itemFilmWithSortTime],
-        })
+        });
       } catch (e) {
         if (!this.user) {
-          console.warn('Необходимо авторизоваться')
+          console.warn('Необходимо авторизоваться');
         } else {
-          console.warn('Ошибка добавления в избранное: ' + e)
+          console.warn('Ошибка добавления в избранное: ' + e);
         }
       }
-      this.favorites = [...this.favorites, itemFilmWithSortTime]
+      this.favorites = [...this.favorites, itemFilmWithSortTime];
     },
     async removeFavorite(filmId) {
       const updatedFavorites = this.favorites.filter(
         (film) => film?.kinopoiskId ?? film?.filmId !== filmId
-      )
+      );
       try {
-        const docRef = doc(firebaseDb, 'users', this.user.uid)
-        await updateDoc(docRef, { favorites: [...updatedFavorites] })
+        const docRef = doc(firebaseDb, 'users', this.user.uid);
+        await updateDoc(docRef, { favorites: [...updatedFavorites] });
       } catch (e) {
         if (!this.user) {
-          console.warn('Необходимо авторизоваться')
+          console.warn('Необходимо авторизоваться');
         } else {
-          console.warn('Ошибка удаления из избранного: ' + e)
+          console.warn('Ошибка удаления из избранного: ' + e);
         }
       }
-      this.favorites = [...updatedFavorites]
+      this.favorites = [...updatedFavorites];
     },
 
     async addLastSearchList(searchValue) {
       if (!searchValue) {
-        return
+        return;
       }
 
       const filtered = this.lastSearchList.filter(
         (item) => item.value.toLowerCase() !== searchValue.toLowerCase()
-      )
+      );
 
       try {
         if (this.user) {
-          const docRef = doc(firebaseDb, 'users', this.user.uid)
-          const list = [{ id: Date.now(), value: searchValue }, ...filtered]
+          const docRef = doc(firebaseDb, 'users', this.user.uid);
+          const list = [{ id: Date.now(), value: searchValue }, ...filtered];
+          const trimmedList = list.length > 30 ? list.slice(0, 30) : list;
 
-          if (list.length > 30) {
-            list.pop()
-          }
-
-          this.lastSearchList = list
-          await updateDoc(docRef, { lastSearchList: list })
+          this.lastSearchList = trimmedList;
+          await updateDoc(docRef, { lastSearchList: trimmedList });
         }
       } catch (e) {
-        console.error('Ошибка добавления в поиск: ' + e)
+        console.error('Ошибка добавления в поиск: ' + e);
       }
     },
 
     async addLastViews(itemFilm) {
       if (!itemFilm) {
-        return
+        return;
       }
 
-      const itemFilmWithSortTime = { ...itemFilm, sortTime: Date.now() }
+      const itemFilmWithSortTime = { ...itemFilm, sortTime: Date.now() };
       const filtered = this.lastViews.filter(
-        (item) => Number(item?.kinopoiskId) !== Number(itemFilm?.kinopoiskId)
-      )
+        (item) =>
+          Number(item?.kinopoiskId ?? item?.filmId) !==
+          Number(itemFilm?.kinopoiskId ?? itemFilm?.filmId)
+      );
 
       try {
         if (this.user) {
-          const docRef = doc(firebaseDb, 'users', this.user.uid)
-          const list = [itemFilmWithSortTime, ...filtered]
+          const docRef = doc(firebaseDb, 'users', this.user.uid);
+          const list = [itemFilmWithSortTime, ...filtered];
+          const trimmedList = list.length > 40 ? list.slice(0, 40) : list;
 
-          if (list.length > 40) {
-            list.pop()
-          }
+          this.lastViews = trimmedList;
 
-          this.lastViews = list
-
-          await updateDoc(docRef, { lastViews: list })
+          await updateDoc(docRef, { lastViews: trimmedList });
         }
       } catch (e) {
-        console.error('Ошибка добавления в последнее просмотренное: ' + e)
+        console.error('Ошибка добавления в последнее просмотренное: ' + e);
       }
     },
 
     async authWithEmailAndPassword(data) {
       await signInWithEmailAndPassword(this.auth, data.email, data.password)
         .then(() => {
-          this.getUserData()
+          this.getUserData();
         })
         .catch((error) => {
-          this.errorMessage = translateErrorCode(error.code)
-        })
+          this.errorMessage = translateErrorCode(error.code);
+        });
     },
     async createAuthWithEmailAndPassword(data) {
       await createUserWithEmailAndPassword(this.auth, data.email, data.password)
         .then(async (userCredential) => {
-          this.user = await userCredential.user
-          await userDataSet(data, this.user.uid)
-          await this.getUserData()
+          this.user = await userCredential.user;
+          await userDataSet(data, this.user.uid);
+          await this.getUserData();
         })
         .catch((error) => {
-          this.errorMessage = translateErrorCode(error.code)
-        })
+          this.errorMessage = translateErrorCode(error.code);
+        });
     },
     async authLogout() {
       signOut(this.auth)
         .then(async () => {
-          this.removeUserData()
+          this.removeUserData();
         })
         .catch((error) => {
-          alert('Ошибка logout: ' + error)
-        })
+          alert('Ошибка logout: ' + error);
+        });
     },
     async authChange(callback) {
       onAuthStateChanged(this.auth, async (user) => {
         if (user) {
-          this.user = user
-          this.getUserData(callback)
+          this.user = user;
+          this.getUserData(callback);
         } else {
-          this.removeUserData(callback)
+          this.removeUserData(callback);
         }
-      })
+      });
     },
     async getUserData(callback) {
-      let data = await userDataGet(this.user.uid)
-      this.user.name = data?.name || ''
-      this.user.email = data?.email ?? ''
+      let data = await userDataGet(this.user.uid);
+      this.user.name = data?.name || '';
+      this.user.email = data?.email ?? '';
 
-      const favorites = data?.favorites ?? []
-      const sortedFavorites = favorites.sort(
+      const sortedFavorites = (data?.favorites ?? []).sort(
         (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
-      )
-      this.favorites = sortedFavorites
+      );
+      this.favorites = sortedFavorites;
 
-      this.lastSearchList = data?.lastSearchList || []
-
-      const lastViews = data?.lastViews ?? []
-      const sortedLastViews = lastViews.sort(
+      this.lastSearchList = data?.lastSearchList || [];
+      const sortedLastViews = (data?.lastViews ?? []).sort(
         (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
-      )
-      this.lastViews = sortedLastViews
+      );
+      this.lastViews = sortedLastViews;
 
       if (data?.api_key) {
-        this.apiKey = data.api_key
+        this.apiKey = data.api_key;
       }
 
-      typeof callback === 'function' ? callback() : ''
+      typeof callback === 'function' ? callback() : '';
     },
     removeUserData(callback) {
-      this.user = null
-      this.favorites = []
-      typeof callback === 'function' ? callback() : ''
+      this.user = null;
+      this.favorites = [];
+      typeof callback === 'function' ? callback() : '';
     },
     searchQueryWithGenre() {
-      let qr = {}
+      let qr = {};
       if (this.searchQueryStore) {
-        qr.q = this.searchQueryStore
+        qr.q = this.searchQueryStore;
       }
       if (this.genreIdStore) {
-        qr.genres = this.genreIdStore
+        qr.genres = this.genreIdStore;
       }
-      return qr
+      return qr;
     },
     setCurrentFocus(index) {
-      this.currentFocusIndex = index
+      this.currentFocusIndex = index;
     },
     setFocusIds(href) {
       this.focusIds = {
         ...this.focusIds,
         [href]: this.currentFocusIndex,
-      }
+      };
     },
     setMountedCurrentFocus(href) {
-      this.setCurrentFocus(this.focusIds[href])
+      this.setCurrentFocus(this.focusIds[href]);
     },
     async searchPageTitle() {
       let genre_name = this.genreIdStore
         ? await this.genreListStore.filter(
             (genre) => +genre.id === +this.genreIdStore
           )[0].genre
-        : null
+        : null;
       if (this.searchQueryStore && this.genreIdStore) {
-        return `Поиск по слову "${this.searchQueryStore}", жанр "${genre_name}"`
+        return `Поиск по слову "${this.searchQueryStore}", жанр "${genre_name}"`;
       } else if (this.searchQueryStore && !this.genreIdStore) {
-        return `Поиск по слову "${this.searchQueryStore}"`
+        return `Поиск по слову "${this.searchQueryStore}"`;
       } else if (this.genreIdStore && !this.searchQueryStore) {
-        return `Поиск по жанру "${genre_name}"`
+        return `Поиск по жанру "${genre_name}"`;
       } else {
-        return 'Ничего не указано для поиска'
+        return 'Ничего не указано для поиска';
       }
     },
   },
-})
+});

@@ -7,20 +7,20 @@
 </template>
 
 <script setup>
-  import { pagesTitle } from '@/components/const'
-  import { useFilmStore } from '@/stores/filmStore'
-  import { ref, watch } from 'vue'
-  import FilmList from '@/components/FilmList.vue'
+  import { pagesTitle } from '@/components/const';
+  import { useFilmStore } from '@/stores/filmStore';
+  import { ref, watch } from 'vue';
+  import FilmList from '@/components/FilmList.vue';
 
-  const filmStore = useFilmStore()
-  const showPreload = ref(false)
+  const filmStore = useFilmStore();
+  const showPreload = ref(false);
 
   watch(
     () => filmStore.favorites,
     () => {
-      filmStore.films = filmStore.favorites
+      filmStore.films = filmStore.favorites;
     }
-  )
+  );
 </script>
 
 <style scoped lang="scss">

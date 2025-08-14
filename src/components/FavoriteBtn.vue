@@ -9,46 +9,48 @@
 </template>
 
 <script setup>
-  import IconFavorite from '@/components/icons/IconFavorite'
-  import { inject, onMounted, ref, defineProps } from 'vue'
-  import { useFilmStore } from '@/stores/filmStore'
-  import { getFilmInfo } from './api'
+  import IconFavorite from '@/components/icons/IconFavorite';
+  import { inject, onMounted, ref, defineProps } from 'vue';
+  import { useFilmStore } from '@/stores/filmStore';
+  import { getFilmInfo } from './api';
 
   const props = defineProps({
     filmId: Number,
-  })
+  });
 
-  const isFavorite = ref(false)
-  const isShow = ref(false)
-  const emitter = inject('emitter')
-  const filmStore = useFilmStore()
+  const isFavorite = ref(false);
+  const isShow = ref(false);
+  const emitter = inject('emitter');
+  const filmStore = useFilmStore();
 
   const checkFavorite = () => {
-    isFavorite.value = filmStore.checkIsFavorite(props.filmId)
-  }
+    isFavorite.value = props.filmId
+      ? filmStore.checkIsFavorite(props.filmId)
+      : false;
+  };
 
   async function toggleFavorite() {
     if (!filmStore.user) {
-      alert('Необходима авторизация')
-      return
+      alert('Необходима авторизация');
+      return;
     }
-    isShow.value = true
+    isShow.value = true;
     if (!isFavorite.value) {
-      const data = await getFilmInfo(props.filmId)
-      await filmStore.addFavorite(await data)
-      isFavorite.value = true
+      const data = await getFilmInfo(props.filmId);
+      await filmStore.addFavorite(await data);
+      isFavorite.value = true;
     } else {
-      await filmStore.removeFavorite(props.filmId)
-      isFavorite.value = false
+      await filmStore.removeFavorite(props.filmId);
+      isFavorite.value = false;
     }
-    isShow.value = false
+    isShow.value = false;
   }
 
   onMounted(() => {
-    checkFavorite()
-  })
+    checkFavorite();
+  });
 
-  emitter.on('setUserData', checkFavorite)
+  emitter.on('setUserData', checkFavorite);
 </script>
 
 <style scoped lang="scss">
