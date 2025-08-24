@@ -2,10 +2,10 @@
   <ButtonBack />
   <h1 v-title>{{ filmName }}</h1>
   <div class="film__wrap">
-    <FilmImage :filmInfo="filmInfo" />
+    <FilmImage :filmInfo="filmInfo" :class="{ unwatch: isUnwatch }" />
     <div class="film__note">
       <div class="film__btns">
-        <FilmPageDialog />
+        <FilmPlayerSelect />
       </div>
       <div class="film__description">
         <h3>Описание:</h3>
@@ -22,7 +22,7 @@
 
 <script setup>
   import { useFilmStore } from '@/stores/filmStore';
-  import FilmPageDialog from '@/components/FilmPageDialog.vue';
+  import FilmPlayerSelect from '@/components/FilmPlayerSelect.vue';
   import FilmList from '@/components/FilmList.vue';
   import { computed, onMounted, ref } from 'vue';
   import { useRoute } from 'vue-router';
@@ -76,6 +76,10 @@
     }
   };
 
+  const isUnwatch = computed(() =>
+    filmStore.isUnWatch(filmInfo.value?.kinopoiskId ?? filmInfo.value?.filmId)
+  );
+
   onMounted(() => {
     loadFilm();
     loadSimilars();
@@ -120,5 +124,9 @@
     :global(.film__list) {
       padding: 0;
     }
+  }
+
+  .unwatch {
+    filter: grayscale(100%) brightness(0.2);
   }
 </style>

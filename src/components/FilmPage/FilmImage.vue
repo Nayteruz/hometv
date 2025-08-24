@@ -1,19 +1,23 @@
 <template>
   <div class="image">
-    <FavoriteBtn class="favorite" :filmId="filmId" />
+    <div class="icon-actions">
+      <FavoriteActionButton class="favorite" :filmId="filmId" />
+      <WatchActionButton class="watch" :filmId="filmId" />
+      <FilmRating :filmInfo="props.filmInfo" class="rating" />
+    </div>
     <img
       v-if="filmInfo?.posterUrl"
       :src="filmInfo?.posterUrl"
       alt="filmTitle"
     />
-    <FilmRating :filmInfo="props.filmInfo" />
   </div>
 </template>
 
 <script setup>
   import { defineProps, computed } from 'vue';
-  import FavoriteBtn from '../FavoriteBtn.vue';
+  import FavoriteActionButton from '../FavoriteActionButton.vue';
   import FilmRating from '../FilmRating.vue';
+  import WatchActionButton from '../WatchActionButton.vue';
 
   const props = defineProps({
     filmInfo: Object,
@@ -48,12 +52,28 @@
     }
   }
 
-  .favorite {
+  .icon-actions {
     position: absolute;
-    left: 10px;
-    top: 10px;
+    left: 5px;
+    right: 5px;
+    top: 5px;
     z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .favorite {
     width: 30px;
     height: 30px;
+  }
+
+  .watch {
+    width: 32px;
+    height: 32px;
+  }
+
+  .rating {
+    margin-left: auto;
   }
 </style>

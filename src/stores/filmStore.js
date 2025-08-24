@@ -38,6 +38,7 @@ export const useFilmStore = defineStore('filmStore', {
     isShowLastSearchList: false,
     lastSearchList: [],
     lastViews: [],
+    unWatchIds: new Set(),
   }),
   getters: {
     filterGenres() {
@@ -174,6 +175,47 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
+    async addUnWatch(itemId) {
+      if (!itemId) {
+        return;
+      }
+
+      try {
+        if (this.user) {
+          const docRef = doc(firebaseDb, 'users', this.user.uid);
+          this.unWatchIds.add(itemId);
+          const list = [...this.unWatchIds];
+          const trimmedList = list.length > 100 ? list.slice(0, 100) : list;
+
+          this.unWatchIds = new Set(trimmedList);
+
+          await updateDoc(docRef, { unWatchIds: trimmedList });
+        }
+      } catch (e) {
+        console.error('Ошибка добавления в непросматриваемое: ' + e);
+      }
+    },
+
+    async removeUnWatch(itemId) {
+      if (!itemId) {
+        return;
+      }
+
+      try {
+        if (this.user) {
+          const docRef = doc(firebaseDb, 'users', this.user.uid);
+          this.unWatchIds.delete(itemId);
+          await updateDoc(docRef, { unWatchIds: [...this.unWatchIds] });
+        }
+      } catch (e) {
+        console.error('Ошибка удаления из непросматриваемого: ' + e);
+      }
+    },
+
+    isUnWatch(itemId) {
+      return this.unWatchIds.has(itemId);
+    },
+
     async authWithEmailAndPassword(data) {
       await signInWithEmailAndPassword(this.auth, data.email, data.password)
         .then(() => {
@@ -228,6 +270,8 @@ export const useFilmStore = defineStore('filmStore', {
         (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
       );
       this.lastViews = sortedLastViews;
+
+      this.unWatchIds = new Set(data?.unWatchIds ?? []);
 
       if (data?.api_key) {
         this.apiKey = data.api_key;

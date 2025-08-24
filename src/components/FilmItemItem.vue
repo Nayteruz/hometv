@@ -1,6 +1,9 @@
 <template>
   <li
-    :class="{ films__item: true, focused: isFocused | isFocusedOnHover }"
+    :class="[
+      'card',
+      { focused: isFocused | isFocusedOnHover, unwatch: isUnwatch },
+    ]"
     @mouseover="onOver"
     @mouseleave="onLeave"
     tabindex="0"
@@ -8,27 +11,32 @@
   >
     <a
       :href="`/film/${filmId}`"
-      class="item__link"
+      class="card-link"
       @click.prevent="goToPageFilm"
     ></a>
-    <FavoriteBtn class="favorite" :filmId="filmId" />
-    <div class="item__image">
+    <div class="icon-actions">
+      <FavoriteActionButton class="favorite" :filmId="filmId" />
+      <WatchActionButton class="watch" :filmId="filmId" />
+      <FilmRating
+        :filmInfo="props.itemFilm"
+        :isRating="props.isRating"
+        class="rating"
+      />
+    </div>
+    <div class="image-wrapper">
       <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"></svg>
       <img :src="itemFilm.posterUrlPreview" :alt="props.itemFilm.nameRu" />
     </div>
-    <FilmRating :filmInfo="props.itemFilm" :isRating="props.isRating" />
-    <div class="item__options">
-      <ul>
-        <li class="name">{{ filmName }}</li>
-        <li v-if="itemFilm.year" class="year">{{ itemFilm.year }} г.</li>
-      </ul>
+    <div class="name-wrapper">
+      <h3>{{ filmName }}</h3>
     </div>
   </li>
 </template>
 
 <script setup>
   import { useFilmStore } from '@/stores/filmStore';
-  import FavoriteBtn from '@/components/FavoriteBtn.vue';
+  import FavoriteActionButton from '@/components/FavoriteActionButton.vue';
+  import WatchActionButton from '@/components/WatchActionButton.vue';
   import { computed, defineProps, ref, watch } from 'vue';
   import { useRouter } from 'vue-router';
   import FilmRating from './FilmRating.vue';
@@ -52,6 +60,8 @@
   const isFocusedOnHover = ref(false);
 
   const filmId = props.itemFilm.filmId || props.itemFilm.kinopoiskId;
+
+  const isUnwatch = computed(() => filmStore.isUnWatch(filmId));
 
   const goToPageFilm = () => {
     router.push(`/film/${filmId}`);
@@ -80,7 +90,7 @@
 </script>
 
 <style scoped lang="scss">
-  .films__item {
+  .card {
     display: flex;
     flex-direction: column;
     position: relative;
@@ -89,7 +99,7 @@
     &:hover {
       box-shadow: 0 0 10px 6px #5077bf;
 
-      .item__options {
+      .name-wrapper {
         display: flex;
       }
     }
@@ -97,14 +107,18 @@
     &.focused {
       box-shadow: 0 0 10px 6px #5077bf;
 
-      a.item__link {
-        box-shadow: inset 0 0 1px 3px #c4d9ff;
+      a.card-link {
+        box-shadow: 0 0 1px 3px #c4d9ff;
         border-radius: 8px;
       }
     }
+
+    &.unwatch {
+      filter: grayscale(100%) brightness(0.2);
+    }
   }
 
-  .item__image {
+  .image-wrapper {
     font-size: 0;
     line-height: 0;
     overflow: hidden;
@@ -131,59 +145,40 @@
     }
   }
 
-  .item__options {
+  .name-wrapper {
     position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    inset: 0;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 10px;
     align-items: flex-end;
     display: none;
+
     @media all and (max-width: 1024px) {
       background: transparent;
       display: flex;
     }
 
-    ul {
+    h3 {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
       background: rgba(0, 0, 0, 0.6);
       border-radius: 0 0 10px 10px;
+      padding: 10px 10px 20px;
       width: 100%;
-      padding: 10px;
       margin: 0;
-      list-style: none;
 
-      li {
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        border-radius: 10px;
-
-        &.name {
-          font-size: 1rem;
-          font-weight: bold;
-          @media all and (max-width: 1024px) {
-            font-size: 0.9rem;
-            line-height: 1;
-          }
-          @media all and (max-width: 768px) {
-            font-size: 0.8rem;
-          }
-        }
-
-        &.year {
-          font-size: 0.8rem;
-          @media all and (max-width: 768px) {
-            font-size: 0.7rem;
-          }
-        }
+      @media all and (max-width: 1024px) {
+        font-size: 0.9rem;
+        line-height: 1;
+      }
+      @media all and (max-width: 768px) {
+        font-size: 0.8rem;
       }
     }
   }
 
-  a.item__link {
+  a.card-link {
     position: absolute;
     left: 0;
     right: 0;
@@ -191,14 +186,8 @@
     bottom: 0;
     z-index: 2;
   }
-  .favorite {
-    position: absolute;
-    left: 5px;
-    top: 5px;
-    z-index: 10;
-  }
 
-  .films__item.loading {
+  .card.loading {
     &:after {
       content: '';
       position: absolute;
@@ -218,6 +207,24 @@
       animation: 2s shine linear infinite;
       border-radius: 10px;
     }
+  }
+
+  .icon-actions {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 8px 8px 0 0;
+    padding: 5px;
+  }
+
+  .rating {
+    margin-left: auto;
   }
 
   @keyframes shine {

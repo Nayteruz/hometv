@@ -48,6 +48,9 @@
 
   #app {
     padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     @media all and (max-width: 1024px) {
       padding: 0;
     }
@@ -81,6 +84,7 @@
     margin: 0 auto 0;
     max-width: 1280px;
     position: relative;
+    flex: 1;
 
     @media all and (max-width: 1024px) {
       border-radius: 0;

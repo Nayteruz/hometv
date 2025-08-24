@@ -22,10 +22,6 @@
 
 <style lang="scss" scoped>
   .rating {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    z-index: 10;
     background: #ffa800;
     border-radius: 5px;
     font-size: 13px;
@@ -37,6 +33,7 @@
     gap: 2px;
     color: #2c5e95;
     line-height: 0;
+    user-select: none;
 
     @media all and (max-width: 768px) {
       font-size: 11px;
