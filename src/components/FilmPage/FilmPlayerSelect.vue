@@ -3,29 +3,27 @@
     <li :class="{ selected: playerNum === 1 }" @click="playerNum = 1">
       Multiple
     </li>
-    <li :class="{ selected: playerNum === 2 }" @click="playerNum = 2">
-      Kinotop
-    </li>
+    <!-- <li :class="{ selected: playerNum === 2 }" @click="playerNum = 2">Kinotop</li> -->
     <!-- <li :class="{ selected: playerNum === 3 }" @click="playerNum = 3">KinoBD</li> -->
-    <li :class="{ selected: playerNum === 4 }" @click="playerNum = 4">
-      KinoBox
-    </li>
+    <!-- <li :class="{ selected: playerNum === 4 }" @click="playerNum = 4">KinoBox</li> -->
     <li :class="{ selected: playerNum === 5 }" @click="playerNum = 5">Lumex</li>
   </ul>
   <PlayersList v-if="playerNum === 1" />
-  <FilmKinoTop v-if="playerNum === 2" />
-  <FilmKinoBD v-if="playerNum === 3" />
-  <FilmKinoBoxTab v-if="playerNum === 4" />
+  <!-- <FilmKinoTop v-if="playerNum === 2" /> -->
+  <!-- <FilmKinoBD v-if="playerNum === 3" /> -->
+  <!-- <FilmKinoBoxTab v-if="playerNum === 4" /> -->
   <FilmPlayerClub v-if="playerNum === 5" />
 </template>
 
 <script setup>
   import { ref } from 'vue';
-  import FilmKinoBoxTab from '@/components/FilmKinoboxTab.vue';
-  import FilmPlayerClub from '@/components/FilmPlayerClub.vue';
-  import FilmKinoTop from '@/components/FilmKinoTop.vue';
-  import FilmKinoBD from '@/components/FilmKinoBD.vue';
+  import FilmPlayerClub from '@/components/FilmPage/FilmPlayerClub.vue';
   import PlayersList from '@/components/PlayersList.vue';
+  // написано что теперь платно только можно
+  // import FilmKinoBoxTab from '@/components/FilmPage/FilmKinoboxTab.vue';
+  // заблочили их походу
+  // import FilmKinoTop from '@/components/FilmPage/FilmKinoTop.vue';
+  // import FilmKinoBD from '@/components/FilmPage/FilmKinoBD.vue';
 
   const playerNum = ref(0);
 </script>
@@ -33,21 +31,6 @@
 <style scoped lang="scss">
   @use 'sass:color';
 
-  .film__show {
-    background: #5077bf;
-    outline: none;
-    padding: 20px 40px;
-    color: #fff;
-    border-radius: 10px;
-    border: none;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-
-    &:hover {
-      background: color.adjust(#5077bf, $lightness: -10%);
-    }
-  }
   .tab-titles {
     display: flex;
     align-items: center;

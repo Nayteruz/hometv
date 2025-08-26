@@ -7,7 +7,7 @@
 <script setup>
   import { defineProps, computed } from 'vue';
   import IconStar from '@/components/icons/IconStar.vue';
-  import { getFilmRating } from './utils';
+  import { getFilmRating } from '@/components/utils';
 
   const props = defineProps({
     filmInfo: Object,

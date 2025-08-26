@@ -39,8 +39,8 @@
   import WatchActionButton from '@/components/WatchActionButton.vue';
   import { computed, defineProps, ref, watch } from 'vue';
   import { useRouter } from 'vue-router';
-  import FilmRating from './FilmRating.vue';
-  import { getFilmPageTitle } from './utils';
+  import FilmRating from '@/components/FilmRating.vue';
+  import { getFilmPageTitle } from '@/components/utils';
 
   const props = defineProps({
     itemFilm: Object,
@@ -61,7 +61,7 @@
 
   const filmId = props.itemFilm.filmId || props.itemFilm.kinopoiskId;
 
-  const isUnwatch = computed(() => filmStore.isUnWatch(filmId));
+  const isUnwatch = computed(() => filmStore.isSkipped(filmId));
 
   const goToPageFilm = () => {
     router.push(`/film/${filmId}`);

@@ -20,13 +20,13 @@
   });
 
   const filmStore = useFilmStore();
-  const isUnwatch = computed(() => filmStore.isUnWatch(props.filmId));
+  const isUnwatch = computed(() => filmStore.isSkipped(props.filmId));
 
   const toggleWatch = () => {
     if (isUnwatch.value) {
-      filmStore.removeUnWatch(props.filmId);
+      filmStore.removeSkip(props.filmId);
     } else {
-      filmStore.addUnWatch(props.filmId);
+      filmStore.addSkip(props.filmId);
     }
   };
 </script>

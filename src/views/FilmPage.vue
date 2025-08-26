@@ -22,7 +22,7 @@
 
 <script setup>
   import { useFilmStore } from '@/stores/filmStore';
-  import FilmPlayerSelect from '@/components/FilmPlayerSelect.vue';
+  import FilmPlayerSelect from '@/components/FilmPage/FilmPlayerSelect.vue';
   import FilmList from '@/components/FilmList.vue';
   import { computed, onMounted, ref } from 'vue';
   import { useRoute } from 'vue-router';
@@ -77,7 +77,7 @@
   };
 
   const isUnwatch = computed(() =>
-    filmStore.isUnWatch(filmInfo.value?.kinopoiskId ?? filmInfo.value?.filmId)
+    filmStore.isSkipped(filmInfo.value?.kinopoiskId ?? filmInfo.value?.filmId)
   );
 
   onMounted(() => {

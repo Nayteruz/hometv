@@ -1,7 +1,7 @@
 <template>
   <div :class="['films__wrap', { loading: loading }]">
     <ul class="films__list">
-      <FilmItemItem
+      <FilmItem
         v-for="(film, index) in props.items"
         :itemFilm="film"
         :key="film.filmId || film.kinopoiskId"
@@ -15,7 +15,7 @@
 
 <script setup>
   import { useFilmStore } from '@/stores/filmStore';
-  import FilmItemItem from '@/components/FilmItemItem.vue';
+  import FilmItem from '@/components/FilmPage/FilmItem.vue';
   import PreloadCards from '@/components/PreloadCards.vue';
   import { inject, ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
 
