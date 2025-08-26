@@ -114,7 +114,7 @@ export const useFilmStore = defineStore('filmStore', {
 
       try {
         const docRef = doc(firebaseDb, 'users', this.user.uid);
-        await updateDoc(docRef, { favorites: [...updatedFavorites] });
+        await updateDoc(docRef, { favorites: updatedFavorites });
       } catch (e) {
         if (!this.user) {
           console.warn('Необходимо авторизоваться');
@@ -153,22 +153,25 @@ export const useFilmStore = defineStore('filmStore', {
         return;
       }
 
-      const itemFilmWithSortTime = { ...itemFilm, sortTime: Date.now() };
+      const itemWithTime = { ...itemFilm, sortTime: Date.now() };
       const filtered = this.lastViews.filter(
         (item) =>
           Number(item?.kinopoiskId ?? item?.filmId) !==
-          Number(itemFilm?.kinopoiskId ?? itemFilm?.filmId)
+          Number(itemWithTime?.kinopoiskId ?? itemWithTime?.filmId)
       );
 
       try {
         if (this.user) {
           const docRef = doc(firebaseDb, 'users', this.user.uid);
-          const list = [itemFilmWithSortTime, ...filtered];
-          const trimmedList = list.length > 40 ? list.slice(0, 40) : list;
+          const list = [itemWithTime, ...filtered];
 
-          this.lastViews = trimmedList;
+          if (list.length > 40) {
+            list.pop();
+          }
 
-          await updateDoc(docRef, { lastViews: trimmedList });
+          this.lastViews = list;
+
+          await updateDoc(docRef, { lastViews: list });
         }
       } catch (e) {
         console.error('Ошибка добавления в последнее просмотренное: ' + e);
