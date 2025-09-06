@@ -60,20 +60,18 @@
     z-index: 10;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
   }
 
   .favorite {
     width: 30px;
     height: 30px;
+    margin-right: auto;
   }
 
   .watch {
     width: 32px;
     height: 32px;
-  }
-
-  .rating {
-    margin-left: auto;
+    color: #ccc;
   }
 </style>

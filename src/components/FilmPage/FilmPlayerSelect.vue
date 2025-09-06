@@ -1,7 +1,7 @@
 <template>
   <ul class="tab-titles">
     <li :class="{ selected: playerNum === 1 }" @click="playerNum = 1">
-      Multiple
+      Плееры
     </li>
     <!-- <li :class="{ selected: playerNum === 2 }" @click="playerNum = 2">Kinotop</li> -->
     <!-- <li :class="{ selected: playerNum === 3 }" @click="playerNum = 3">KinoBD</li> -->

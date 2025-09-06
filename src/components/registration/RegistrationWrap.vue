@@ -2,7 +2,7 @@
   <div class="registration-wrap">
     <IconUser @click="togglePop" />
     <div class="registration-wrap--pop" v-if="isVisible">
-      <LogoutComponent v-if="filmStore.user" @setForm="setForm" />
+      <LogoutComponent v-if="filmStore.user" />
       <SignInComponent v-else-if="formView === 'sign'" @setForm="setForm" />
       <RegistrationComponent
         v-else-if="formView === 'reg'"
@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
   import IconUser from '@/components/icons/IconUser.vue';
   import { onMounted, ref, inject } from 'vue';
   import RegistrationComponent from '@/components/registration/RegistrationComponent.vue';
@@ -20,47 +20,28 @@
   import LogoutComponent from '@/components/registration/LogoutComponent.vue';
   import { useFilmStore } from '@/stores/filmStore';
 
-  export default {
-    name: 'RegistrationWrap',
-    components: {
-      IconUser,
-      RegistrationComponent,
-      SignInComponent,
-      LogoutComponent,
-    },
-    setup() {
-      const filmStore = useFilmStore();
-      const isVisible = ref(false);
-      const formView = ref('sign');
-      const emitter = inject('emitter');
+  const filmStore = useFilmStore();
+  const isVisible = ref(false);
+  const formView = ref('sign');
+  const emitter = inject('emitter');
 
-      function togglePop() {
-        isVisible.value = !isVisible.value;
-      }
-
-      function setForm(e) {
-        filmStore.errorMessage = '';
-        formView.value = e;
-      }
-
-      function updateFavorite() {
-        emitter.emit('setUserData');
-      }
-
-      onMounted(async () => {
-        await filmStore.authChange(updateFavorite);
-        await emitter.emit('setUserData');
-      });
-
-      return {
-        isVisible,
-        setForm,
-        togglePop,
-        formView,
-        filmStore,
-      };
-    },
+  const togglePop = () => {
+    isVisible.value = !isVisible.value;
   };
+
+  const setForm = (e) => {
+    filmStore.errorMessage = '';
+    formView.value = e;
+  };
+
+  const updateFavorite = () => {
+    emitter.emit('setUserData');
+  };
+
+  onMounted(async () => {
+    await filmStore.authChange(updateFavorite);
+    await emitter.emit('setUserData');
+  });
 </script>
 
 <style>
@@ -68,11 +49,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-
-  .registration--form h3 {
-    font-size: 16px;
-    font-weight: normal;
   }
 
   .registration--form input {

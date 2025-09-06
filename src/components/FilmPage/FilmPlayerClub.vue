@@ -9,20 +9,11 @@
   </div>
 </template>
 
-<script>
+<script setup>
   import { useRoute } from 'vue-router';
 
-  export default {
-    name: 'FilmPlayerClub',
-    setup() {
-      const route = useRoute();
-      const filmId = route.params.id;
-
-      return {
-        filmId,
-      };
-    },
-  };
+  const route = useRoute();
+  const filmId = route.params.id;
 </script>
 
 <style scoped lang="scss">

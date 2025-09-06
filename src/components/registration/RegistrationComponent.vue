@@ -1,15 +1,15 @@
 <template>
   <div class="registration--form">
     <h3>Регистрация</h3>
-    <p><input type="text" placeholder="Email" v-model="email" /></p>
-    <p><input type="text" placeholder="Name" v-model="user_name" /></p>
+    <p><input type="text" placeholder="Почта" v-model="email" /></p>
+    <p><input type="text" placeholder="Имя" v-model="user_name" /></p>
     <p>
-      <input type="text" placeholder="Api key" v-model="api_key" />
-      <small
-        ><a href="https://kinopoiskapiunofficial.tech/signup"
-          >зарегистрироваться</a
-        ></small
-      >
+      <input type="text" placeholder="Api ключ" v-model="api_key" />
+      <small>
+        <a target="_blank" href="https://kinopoiskapiunofficial.tech/signup"
+          >получить ключ API</a
+        >
+      </small>
     </p>
     <p><input type="password" placeholder="Password" v-model="password" /></p>
     <p class="err-string" v-if="filmStore.errorMessage">
@@ -23,48 +23,33 @@
   </div>
 </template>
 
-<script>
-  import { ref } from 'vue';
+<script setup>
+  import { ref, defineEmits } from 'vue';
   import IconGoogle from '@/components/icons/IconGoogle.vue';
   import { useFilmStore } from '@/stores/filmStore';
-  export default {
-    name: 'RegistrationComponent',
-    components: { IconGoogle },
-    setup(props, { emit }) {
-      const filmStore = useFilmStore();
-      const email = ref('');
-      const password = ref('');
-      const user_name = ref('');
-      const api_key = ref('');
 
-      async function register() {
-        await filmStore.createAuthWithEmailAndPassword({
-          email: email.value,
-          password: password.value,
-          user_name: user_name.value,
-          api_key: api_key.value,
-        });
-      }
+  const emit = defineEmits(['setForm']);
+  const filmStore = useFilmStore();
+  const email = ref('');
+  const password = ref('');
+  const user_name = ref('');
+  const api_key = ref('');
 
-      function setFormView() {
-        emit('setForm', 'sign');
-      }
+  const register = async () => {
+    await filmStore.createAuthWithEmailAndPassword({
+      email: email.value,
+      password: password.value,
+      user_name: user_name.value,
+      api_key: api_key.value,
+    });
+  };
 
-      function signWithGoogle() {
-        console.warn('ok');
-      }
+  const setFormView = () => {
+    emit('setForm', 'sign');
+  };
 
-      return {
-        email,
-        user_name,
-        password,
-        api_key,
-        filmStore,
-        register,
-        signWithGoogle,
-        setFormView,
-      };
-    },
+  const signWithGoogle = () => {
+    console.warn('ok');
   };
 </script>
 

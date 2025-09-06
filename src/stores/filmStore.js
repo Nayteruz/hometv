@@ -229,6 +229,22 @@ export const useFilmStore = defineStore('filmStore', {
           this.errorMessage = translateErrorCode(error.code);
         });
     },
+
+    async editAuthNameOrApiKey(data) {
+      try {
+        if (this.user) {
+          const docRef = doc(firebaseDb, 'users', this.user.uid);
+          await updateDoc(docRef, {
+            name: data.userName || '',
+            api_key: data.apiKey || this.apiKey,
+          });
+        }
+        await this.getUserData();
+      } catch (error) {
+        this.errorMessage = translateErrorCode(error.code);
+      }
+    },
+
     async authLogout() {
       signOut(this.auth)
         .then(async () => {

@@ -35,75 +35,61 @@
   </div>
 </template>
 
-<script>
+<script setup>
   import { onMounted, ref } from 'vue';
   import { useRoute } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
   import { players } from './const';
 
-  export default {
-    name: 'PlayersList',
-    setup() {
-      const filmStore = useFilmStore();
-      const route = useRoute();
-      const filmId = route.params.id;
-      const playerList = ref(null);
-      const selectedIndex = ref(-1);
-      const playerNames = Object.keys(players);
-      const playersData = ref([]);
+  const filmStore = useFilmStore();
+  const route = useRoute();
+  const filmId = route.params.id;
+  const playerList = ref(null);
+  const selectedIndex = ref(-1);
+  const playerNames = Object.keys(players);
+  const playersData = ref([]);
 
-      const selectPlayer = (index) => {
-        selectedIndex.value = index;
-      };
-
-      async function initPlayer() {
-        filmStore.setFilmPageId(filmId);
-
-        const playersList = await Promise.all(
-          Object.entries(players).map(async ([name, getSrc]) => {
-            let api = filmStore.apiKey;
-            if (name === 'Alloha') {
-              api = filmStore.apiAloha;
-            }
-            if (name === 'HDVB') {
-              api = filmStore.apiHDBV;
-            }
-            if (name !== 'Alloha' && name !== 'HDVB') {
-              api = undefined;
-            }
-
-            let iframeSrc =
-              typeof getSrc === 'function' ? await getSrc(filmId, api) : null;
-            return {
-              name,
-              iframeSrc,
-            };
-          })
-        );
-
-        playersData.value = playersList.filter((player) => player.iframeSrc);
-
-        if (playersData.value.length > 0) {
-          selectedIndex.value = 0;
-        }
-      }
-
-      onMounted(() => {
-        if (playerList.value) {
-          initPlayer();
-        }
-      });
-
-      return {
-        filmId,
-        playerNames,
-        selectedIndex,
-        selectPlayer,
-        playerList,
-        playersData,
-      };
-    },
+  const selectPlayer = (index) => {
+    selectedIndex.value = index;
   };
+
+  async function initPlayer() {
+    filmStore.setFilmPageId(filmId);
+
+    const playersList = await Promise.all(
+      Object.entries(players).map(async ([name, getSrc]) => {
+        let api = filmStore.apiKey;
+        if (name === 'Alloha') {
+          api = filmStore.apiAloha;
+        }
+        if (name === 'HDVB') {
+          api = filmStore.apiHDBV;
+        }
+        if (name !== 'Alloha' && name !== 'HDVB') {
+          api = undefined;
+        }
+
+        let iframeSrc =
+          typeof getSrc === 'function' ? await getSrc(filmId, api) : null;
+        return {
+          name,
+          iframeSrc,
+        };
+      })
+    );
+
+    playersData.value = playersList.filter((player) => player.iframeSrc);
+
+    if (playersData.value.length > 0) {
+      selectedIndex.value = 0;
+    }
+  }
+
+  onMounted(() => {
+    if (playerList.value) {
+      initPlayer();
+    }
+  });
 </script>
 
 <style scoped lang="scss">

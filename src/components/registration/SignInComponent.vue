@@ -9,45 +9,29 @@
     <div class="btns">
       <button class="sign" @click.prevent="signIn">Войти</button>
       <button class="reg" @click.prevent="setFormView">Регистрация</button>
-      <!--      <IconGoogle @click="signWithGoogle"/>-->
     </div>
   </div>
 </template>
 
-<script>
-  import { ref } from 'vue';
+<script setup>
+  import { ref, defineEmits } from 'vue';
   import '@/plugins/index';
   import { useFilmStore } from '@/stores/filmStore';
 
-  export default {
-    name: 'SignInComponent',
+  const emit = defineEmits(['setForm']);
+  const email = ref('');
+  const password = ref('');
+  const filmStore = useFilmStore();
 
-    setup(props, { emit }) {
-      const email = ref('');
-      const password = ref('');
-      const errMsg = ref('');
-      const filmStore = useFilmStore();
+  const signIn = async () => {
+    await filmStore.authWithEmailAndPassword({
+      email: email.value,
+      password: password.value,
+    });
+  };
 
-      async function signIn() {
-        await filmStore.authWithEmailAndPassword({
-          email: email.value,
-          password: password.value,
-        });
-      }
-
-      function setFormView() {
-        emit('setForm', 'reg');
-      }
-
-      return {
-        email,
-        password,
-        errMsg,
-        signIn,
-        setFormView,
-        filmStore,
-      };
-    },
+  const setFormView = () => {
+    emit('setForm', 'reg');
   };
 </script>
 

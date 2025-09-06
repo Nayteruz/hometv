@@ -17,11 +17,7 @@
     <div class="icon-actions">
       <FavoriteActionButton class="favorite" :filmId="filmId" />
       <WatchActionButton class="watch" :filmId="filmId" />
-      <FilmRating
-        :filmInfo="props.itemFilm"
-        :isRating="props.isRating"
-        class="rating"
-      />
+      <FilmRating :filmInfo="props.itemFilm" :isRating="props.isRating" />
     </div>
     <div class="image-wrapper">
       <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"></svg>
@@ -223,8 +219,12 @@
     padding: 5px;
   }
 
-  .rating {
-    margin-left: auto;
+  .favorite {
+    margin-right: auto;
+  }
+
+  .watch {
+    color: #ccc;
   }
 
   @keyframes shine {

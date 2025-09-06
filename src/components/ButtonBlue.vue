@@ -67,12 +67,12 @@
     :deep(svg) {
       width: var(--svg-size);
       height: var(--svg-size);
-      color: #183153;
+      color: #1e396c;
     }
 
     &:hover {
       :deep(svg) {
-        color: #cd0000;
+        color: #071f3a;
       }
     }
   }
