@@ -1,6 +1,6 @@
 <template>
   <div :class="['films__wrap', { loading: loading }]">
-    <ul class="films__list">
+    <ul class="films__list" v-if="props.items.length">
       <FilmItem
         v-for="(film, index) in props.items"
         :itemFilm="film"
@@ -10,6 +10,7 @@
       />
       <PreloadCards v-if="props.showPreload" />
     </ul>
+    <h2 v-else class="not-found">Ничего не найдено</h2>
   </div>
 </template>
 
@@ -103,6 +104,12 @@
     @media all and (max-width: 480px) {
       grid-template-columns: repeat(2, 1fr);
     }
+  }
+
+  .not-found {
+    margin: 0 15px;
+    color: #fff;
+    font-size: 25px;
   }
 
   @keyframes rorateRound {
