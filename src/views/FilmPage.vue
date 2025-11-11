@@ -47,8 +47,9 @@
     try {
       const data = getFilmInfo(route.params.id);
       filmInfo.value = await data;
-
-      setTimeout(filmStore.addLastViews, 2000, await data);
+      filmStore.authChange().then(() => {
+        filmStore.addLastViews(filmInfo.value);
+      });
     } catch (error) {
       console.error('Error load film info', error);
       filmInfo.value = [];
