@@ -92,55 +92,84 @@ export const useFilmStore = defineStore('filmStore', {
       return favoriteMap.has(filmId);
     },
     async addFavorite(itemFilm) {
-      const itemFilmWithSortTime = { ...itemFilm, sortTime: Date.now() };
-      try {
-        const docRef = doc(firebaseDb, 'users', this.user.uid);
-        await updateDoc(docRef, {
-          favorites: [...this.favorites, itemFilmWithSortTime],
-        });
-      } catch (e) {
-        if (!this.user) {
-          console.warn('Необходимо авторизоваться');
-        } else {
-          console.warn('Ошибка добавления в избранное: ' + e);
-        }
-      }
-      this.favorites = [...this.favorites, itemFilmWithSortTime];
-    },
-    async removeFavorite(filmId) {
-      const updatedFavorites = this.favorites.filter(
-        (film) => Number(film?.kinopoiskId ?? film?.filmId) !== Number(filmId)
-      );
-
-      try {
-        const docRef = doc(firebaseDb, 'users', this.user.uid);
-        await updateDoc(docRef, { favorites: updatedFavorites });
-      } catch (e) {
-        if (!this.user) {
-          console.warn('Необходимо авторизоваться');
-        } else {
-          console.warn('Ошибка удаления из избранного: ' + e);
-        }
-      }
-      this.favorites = [...updatedFavorites];
-    },
-
-    async addLastSearchList(searchValue) {
-      if (!searchValue) {
+      if (!this.user || !itemFilm) {
         return;
       }
 
-      const filtered = this.lastSearchList.filter(
-        (item) => item.value.toLowerCase() !== searchValue.toLowerCase()
-      );
+      try {
+        const updatedFavorites = await this.safeUpdateUserData(
+          'favorites',
+          (currentFavorites) => {
+            const filmId = Number(itemFilm?.kinopoiskId ?? itemFilm?.filmId);
+            const itemWithTime = { ...itemFilm, sortTime: Date.now() };
+
+            const alreadyExists = currentFavorites.some(
+              (film) => Number(film?.kinopoiskId ?? film?.filmId) === filmId
+            );
+
+            if (alreadyExists) {
+              return currentFavorites;
+            }
+
+            return [...currentFavorites, itemWithTime];
+          }
+        );
+
+        if (updatedFavorites) {
+          this.favorites = updatedFavorites;
+        }
+      } catch (e) {
+        console.warn('Ошибка добавления в избранное: ' + e);
+      }
+    },
+    async removeFavorite(filmId) {
+      if (!this.user || !filmId) {
+        return;
+      }
 
       try {
-        if (this.user) {
-          const docRef = doc(firebaseDb, 'users', this.user.uid);
-          const list = [{ id: Date.now(), value: searchValue }, ...filtered];
+        const updatedFavorites = await this.safeUpdateUserData(
+          'favorites',
+          (currentFavorites) => {
+            const numericFilmId = Number(filmId);
 
-          this.lastSearchList = list;
-          await updateDoc(docRef, { lastSearchList: list });
+            return currentFavorites.filter(
+              (film) =>
+                Number(film?.kinopoiskId ?? film?.filmId) !== numericFilmId
+            );
+          }
+        );
+
+        if (updatedFavorites) {
+          this.favorites = updatedFavorites;
+        }
+      } catch (e) {
+        console.warn('Ошибка удаления из избранного: ' + e);
+      }
+    },
+
+    async addLastSearchList(searchValue) {
+      if (!searchValue || !this.user) {
+        return;
+      }
+
+      try {
+        const updatedSearchList = await this.safeUpdateUserData(
+          'lastSearchList',
+          (currentSearchList) => {
+            const filtered = currentSearchList.filter(
+              (item) => item.value.toLowerCase() !== searchValue.toLowerCase()
+            );
+
+            return [{ id: Date.now(), value: searchValue }, ...filtered].slice(
+              0,
+              30
+            );
+          }
+        );
+
+        if (updatedSearchList) {
+          this.lastSearchList = updatedSearchList;
         }
       } catch (e) {
         console.error('Ошибка добавления в поиск: ' + e);
@@ -148,24 +177,27 @@ export const useFilmStore = defineStore('filmStore', {
     },
 
     async addLastViews(itemFilm) {
-      if (!itemFilm) {
+      if (!itemFilm || !this.user) {
         return;
       }
 
-      const itemWithTime = { ...itemFilm, sortTime: Date.now() };
-      const filtered = this.lastViews.filter(
-        (item) =>
-          Number(item?.kinopoiskId ?? item?.filmId) !==
-          Number(itemWithTime?.kinopoiskId ?? itemWithTime?.filmId)
-      );
-
       try {
-        if (this.user) {
-          const docRef = doc(firebaseDb, 'users', this.user.uid);
-          const list = [itemWithTime, ...filtered];
-          this.lastViews = list;
+        const updatedLastViews = await this.safeUpdateUserData(
+          'lastViews',
+          (currentLastViews) => {
+            const filmId = Number(itemFilm?.kinopoiskId ?? itemFilm?.filmId);
+            const itemWithTime = { ...itemFilm, sortTime: Date.now() };
 
-          await updateDoc(docRef, { lastViews: list });
+            const filtered = currentLastViews.filter(
+              (item) => Number(item?.kinopoiskId ?? item?.filmId) !== filmId
+            );
+
+            return [itemWithTime, ...filtered].slice(0, 40);
+          }
+        );
+
+        if (updatedLastViews) {
+          this.lastViews = updatedLastViews;
         }
       } catch (e) {
         console.error('Ошибка добавления в последнее просмотренное: ' + e);
@@ -173,16 +205,22 @@ export const useFilmStore = defineStore('filmStore', {
     },
 
     async addSkip(itemId) {
-      if (!itemId) {
+      if (!this.user || !itemId) {
         return;
       }
 
       try {
-        if (this.user) {
-          const docRef = doc(firebaseDb, 'users', this.user.uid);
-          this.skippedIds.add(itemId);
+        const updatedSkippedIds = await this.safeUpdateUserData(
+          'skippedIds',
+          (currentSkippedIds) => {
+            const skippedSet = new Set(currentSkippedIds);
+            skippedSet.add(itemId);
+            return Array.from(skippedSet).slice(0, 100);
+          }
+        );
 
-          await updateDoc(docRef, { skippedIds: [...this.skippedIds] });
+        if (updatedSkippedIds) {
+          this.skippedIds = new Set(updatedSkippedIds);
         }
       } catch (e) {
         console.error('Ошибка добавления в непросматриваемое: ' + e);
@@ -190,15 +228,23 @@ export const useFilmStore = defineStore('filmStore', {
     },
 
     async removeSkip(itemId) {
-      if (!itemId) {
+      if (!this.user || !itemId) {
         return;
       }
 
       try {
-        if (this.user) {
-          const docRef = doc(firebaseDb, 'users', this.user.uid);
-          this.skippedIds.delete(itemId);
-          await updateDoc(docRef, { skippedIds: [...this.skippedIds] });
+        const updatedSkippedIds = await this.safeUpdateUserData(
+          'skippedIds',
+          (currentSkippedIds) => {
+            const skippedSet = new Set(currentSkippedIds);
+            skippedSet.delete(itemId);
+            return Array.from(skippedSet);
+          }
+        );
+
+        // Обновляем локальное состояние
+        if (updatedSkippedIds) {
+          this.skippedIds = new Set(updatedSkippedIds);
         }
       } catch (e) {
         console.error('Ошибка удаления из непросматриваемого: ' + e);
@@ -269,16 +315,14 @@ export const useFilmStore = defineStore('filmStore', {
       this.user.name = data?.name || '';
       this.user.email = data?.email ?? '';
 
-      const sortedFavorites = (data?.favorites ?? []).sort(
+      this.favorites = (data?.favorites ?? []).sort(
         (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
       );
-      this.favorites = sortedFavorites;
 
       this.lastSearchList = (data?.lastSearchList || []).slice(0, 30);
-      const sortedLastViews = (data?.lastViews ?? [])
+      this.lastViews = (data?.lastViews ?? [])
         .slice(0, 40)
         .sort((a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0));
-      this.lastViews = sortedLastViews;
 
       this.skippedIds = new Set((data?.skippedIds ?? []).slice(0, 100));
 
@@ -329,6 +373,27 @@ export const useFilmStore = defineStore('filmStore', {
         return `Поиск по жанру "${genre_name}"`;
       } else {
         return 'Ничего не указано для поиска';
+      }
+    },
+    async safeUpdateUserData(fieldName, updateCallback) {
+      if (!this.user) {
+        console.warn('Необходимо авторизоваться');
+        return null;
+      }
+
+      try {
+        const userData = await userDataGet(this.user.uid);
+        const currentData = userData?.[fieldName] || [];
+
+        const updatedData = updateCallback(currentData);
+
+        const docRef = doc(firebaseDb, 'users', this.user.uid);
+        await updateDoc(docRef, { [fieldName]: updatedData });
+
+        return updatedData;
+      } catch (e) {
+        console.error(`Ошибка обновления ${fieldName}:`, e);
+        throw e;
       }
     },
   },
