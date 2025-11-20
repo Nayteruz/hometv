@@ -18,6 +18,41 @@ export const players = {
   Collaps: (id) => `https://api.atomics.ws/embed/kp/${id}`,
   VideoCDN: (id) =>
     `https://p.lumex.space/j3mqebEPqCLB?domain=nayteruz.github.io&kp_id=${id}`,
+  Coll: async (id) => {
+    const url = `https://api.bhcesh.me/list?token=4c250f7ac0a8c8a658c789186b9a58a5&kinopoisk_id=${id}`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (
+        Array.isArray(data.results) &&
+        data.results.length > 0 &&
+        data.results?.[0].iframe_url
+      ) {
+        return data.results?.[0].iframe_url;
+      }
+    } catch (e) {
+      console.error('HDVB error:', e);
+    }
+    return null;
+  },
+  kodi: async (id) => {
+    const url = `https://kodikapi.com/search?token=41dd95f84c21719b09d6c71182237a25&kinopoisk_id=${id}`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (
+        Array.isArray(data.results) &&
+        data.results.length > 0 &&
+        data.results?.[0].link
+      ) {
+        return data.results?.[0].link;
+      }
+    } catch (e) {
+      console.error('HDVB error:', e);
+    }
+    return null;
+  },
+
   HDVB: async (id, api) => {
     const url = `https://apivb.com/api/videos.json?id_kp=${id}&token=${api}`;
     try {
