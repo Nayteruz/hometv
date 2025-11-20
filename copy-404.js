@@ -8,6 +8,7 @@ fs.copyFile(srcPath, destPath, (err) => {
   if (err) {
     console.error('Error copying file:', err);
   } else {
+    // eslint-disable-next-line no-console
     console.log('index.html was copied to 404.html');
   }
 });
