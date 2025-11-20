@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "core-js": "^3.45.0",
-    "firebase": "^9.8.3",
+    "firebase": "^12.6.0",
     "mitt": "^3.0.1",
     "pinia": "^3.0.4",
     "register-service-worker": "^1.7.2",
@@ -20,6 +20,7 @@
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "@eslint/js": "^9.39.1",
+    "@vitejs/plugin-vue": "^6.0.2",
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
@@ -29,6 +30,7 @@
     "gh-pages": "^6.3.0",
     "globals": "^16.5.0",
     "sass": "^1.90.0",
-    "sass-loader": "^16.0.5"
+    "sass-loader": "^16.0.5",
+    "vite": "^7.2.4"
   }
 }

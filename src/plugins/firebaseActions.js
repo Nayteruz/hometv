@@ -1,4 +1,3 @@
-//import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged} from "registration/auth";
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { firebaseDb } from '@/plugins/firebase';
 
