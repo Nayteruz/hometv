@@ -18,10 +18,10 @@
 </template>
 
 <script setup>
-  import RegistrationWrap from '@/components/registration/RegistrationWrap.vue';
   import { useRoute } from 'vue-router';
   import { computed, ref } from 'vue';
   import HomeButton from './HomeButton.vue';
+  import RegistrationWrap from '@/components/registration/RegistrationWrap.vue';
   import LastViewButton from './LastViewButton.vue';
   import FavoriteButton from './FavoriteButton.vue';
   import ReloadButton from './ReloadButton.vue';

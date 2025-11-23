@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-  import { ref, defineEmits } from 'vue';
+  import { ref } from 'vue';
   import IconGoogle from '@/components/icons/IconGoogle.vue';
   import { useFilmStore } from '@/stores/filmStore';
 

@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-  import { defineProps, computed } from 'vue';
+  import { computed } from 'vue';
   import FavoriteActionButton from '../FavoriteActionButton.vue';
   import FilmRating from '../FilmRating.vue';
   import WatchActionButton from '../WatchActionButton.vue';

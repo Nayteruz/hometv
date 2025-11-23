@@ -18,7 +18,7 @@
   import { useFilmStore } from '@/stores/filmStore';
   import FilmItem from '@/components/FilmPage/FilmItem.vue';
   import PreloadCards from '@/components/PreloadCards.vue';
-  import { inject, ref, defineProps, onMounted, onBeforeUnmount } from 'vue';
+  import { inject, ref, onMounted, onBeforeUnmount } from 'vue';
 
   const filmStore = useFilmStore();
   const emitter = inject('emitter');

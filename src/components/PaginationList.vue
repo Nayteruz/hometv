@@ -44,7 +44,7 @@
   import { useFilmStore } from '@/stores/filmStore';
   import IconArrowSmall from '@/components/icons/IconArrowSmall.vue';
   import IconArrowBig from '@/components/icons/IconArrowBig.vue';
-  import { inject, defineProps, computed } from 'vue';
+  import { inject, computed } from 'vue';
 
   const filmStore = useFilmStore();
   const emitter = inject('emitter');

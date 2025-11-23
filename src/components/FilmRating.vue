@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-  import { defineProps, computed } from 'vue';
+  import { computed } from 'vue';
   import IconStar from '@/components/icons/IconStar.vue';
   import { getFilmRating } from '@/components/utils';
 

@@ -1,6 +1,8 @@
 <template>
   <div class="registration-wrap">
-    <IconUser @click="togglePop" />
+    <ButtonBlue class="button" @click="togglePop" :size="22"
+      ><IconUser
+    /></ButtonBlue>
     <div class="registration-wrap--pop" v-if="isVisible">
       <LogoutComponent v-if="filmStore.user" />
       <SignInComponent v-else-if="formView === 'sign'" @setForm="setForm" />
@@ -13,11 +15,12 @@
 </template>
 
 <script setup>
-  import IconUser from '@/components/icons/IconUser.vue';
   import { onMounted, ref, inject } from 'vue';
-  import RegistrationComponent from '@/components/registration/RegistrationComponent.vue';
-  import SignInComponent from '@/components/registration/SignInComponent.vue';
-  import LogoutComponent from '@/components/registration/LogoutComponent.vue';
+  import IconUser from '@/components/icons/IconUser.vue';
+  import RegistrationComponent from './RegistrationComponent.vue';
+  import SignInComponent from './SignInComponent.vue';
+  import LogoutComponent from './LogoutComponent.vue';
+  import ButtonBlue from '@/components/ButtonBlue.vue';
   import { useFilmStore } from '@/stores/filmStore';
 
   const filmStore = useFilmStore();
@@ -110,6 +113,10 @@
   .registration-wrap {
     position: relative;
     z-index: 100;
+  }
+
+  .button {
+    width: 100%;
   }
 
   .registration-wrap--pop {

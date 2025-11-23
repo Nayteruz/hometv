@@ -28,7 +28,7 @@
 
 <script setup>
   import { useFilmStore } from '@/stores/filmStore';
-  import { computed, onMounted, ref, defineProps } from 'vue';
+  import { computed, onMounted, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import ButtonBlue from '../ButtonBlue.vue';
   import SearchPopup from './SearchPopup.vue';

@@ -5,8 +5,8 @@
 </template>
 
 <script setup>
-  import ButtonBlue from '../ButtonBlue.vue';
-  import IconReload from '../icons/IconReload.vue';
+  import ButtonBlue from '@/components/ButtonBlue.vue';
+  import IconReload from '@/components/icons/IconReload.vue';
 
   const reloadPage = () => {
     document.location.reload();

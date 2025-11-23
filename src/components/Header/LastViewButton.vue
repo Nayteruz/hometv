@@ -6,7 +6,7 @@
   import { useFilmStore } from '@/stores/filmStore';
   import { useRouter } from 'vue-router';
   import IconFilm from '@/components/icons/IconFilm.vue';
-  import ButtonBlue from '../ButtonBlue.vue';
+  import ButtonBlue from '@/components/ButtonBlue.vue';
 
   const router = useRouter();
   const filmStore = useFilmStore();

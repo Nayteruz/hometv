@@ -33,7 +33,7 @@
   import { useFilmStore } from '@/stores/filmStore';
   import FavoriteActionButton from '@/components/FavoriteActionButton.vue';
   import WatchActionButton from '@/components/WatchActionButton.vue';
-  import { computed, defineProps, ref, watch } from 'vue';
+  import { computed, ref, watch } from 'vue';
   import { useRouter } from 'vue-router';
   import FilmRating from '@/components/FilmRating.vue';
   import { getFilmPageTitle } from '@/components/utils';

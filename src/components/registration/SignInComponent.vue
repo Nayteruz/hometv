@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-  import { ref, defineEmits } from 'vue';
+  import { ref } from 'vue';
   import '@/plugins/index';
   import { useFilmStore } from '@/stores/filmStore';
 

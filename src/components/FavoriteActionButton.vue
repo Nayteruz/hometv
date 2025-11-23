@@ -9,8 +9,8 @@
 </template>
 
 <script setup>
-  import { inject, onMounted, ref, defineProps } from 'vue';
-  import IconFavorite from '@/components/icons/IconFavorite';
+  import { inject, onMounted, ref } from 'vue';
+  import IconFavorite from '@/components/icons/IconFavorite.vue';
   import { useFilmStore } from '@/stores/filmStore';
   import { getFilmInfo } from './api';
 

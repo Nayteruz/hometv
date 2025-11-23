@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-  import { computed, defineProps } from 'vue';
+  import { computed } from 'vue';
   import IconEye from './icons/IconEye.vue';
   import IconEyeSlash from './icons/IconEyeSlash.vue';
   import { useFilmStore } from '@/stores/filmStore';
