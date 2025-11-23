@@ -1,6 +1,6 @@
 <template>
   <div class="registration--form">
-    <h3>
+    <h3 class="heading">
       Вы вошли как:
       <strong class="name">{{ filmStore.user.name }}</strong>
       <button class="edit" @click="toggleView"><IconEdit /></button>
@@ -52,6 +52,11 @@
 <style lang="scss" scoped>
   .toggle {
     font-size: 12px;
+  }
+
+  .heading {
+    color: #333;
+    margin: 0;
   }
 
   .edit {

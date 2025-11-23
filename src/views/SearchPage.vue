@@ -1,16 +1,14 @@
 <template>
-  <div class="list">
-    <h1 v-title>{{ pageTitle }}</h1>
-    <PaginationList :total="totalPages" @clickPage="getListFilms" />
-    <FilmList :items="films" :showPreload="showPreload" />
-    <PaginationList :total="totalPages" @clickPage="getListFilms" />
-    <div
-      v-if="filmStore.pageNum < totalPages"
-      v-intersection="{ getMoreFilms }"
-      ref="observer"
-      class="observer"
-    ></div>
-  </div>
+  <h1 v-title>{{ pageTitle }}</h1>
+  <PaginationList :total="totalPages" @clickPage="getListFilms" />
+  <FilmList :items="films" :showPreload="showPreload" />
+  <PaginationList :total="totalPages" @clickPage="getListFilms" />
+  <div
+    v-if="filmStore.pageNum < totalPages"
+    v-intersection="{ getMoreFilms }"
+    ref="observer"
+    class="observer"
+  ></div>
 </template>
 
 <script setup>
@@ -87,13 +85,3 @@
     pageTitle.value = await filmStore.searchPageTitle();
   });
 </script>
-
-<style scoped lang="scss">
-  .list {
-    padding: 0 15px 30px;
-
-    @media all and (max-width: 768px) {
-      padding: 0 5px 10px;
-    }
-  }
-</style>

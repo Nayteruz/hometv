@@ -35,9 +35,6 @@
     margin: 20px 0;
 
     ul {
-      padding: 0;
-      margin: 0;
-      list-style: none;
       display: flex;
       flex-wrap: wrap;
       gap: 3px 5px;

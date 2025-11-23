@@ -87,9 +87,6 @@
   }
 
   .films__list {
-    padding: 5px 0;
-    margin: 0;
-    list-style: none;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 10px;

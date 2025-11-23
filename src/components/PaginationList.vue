@@ -110,15 +110,12 @@
 
 <style scoped lang="scss">
   .pagination {
-    margin: 0;
+    margin: 10px 0;
 
     ul {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      padding: 0;
-      margin: 10px 0;
-      list-style: none;
       gap: 3px 6px;
       font-family: 'Roboto', sans-serif;
       user-select: none;

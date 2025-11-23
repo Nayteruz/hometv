@@ -36,6 +36,11 @@
 </script>
 
 <style scoped>
+  .name {
+    color: #333;
+    margin: 0;
+  }
+
   .registration--form button.reg {
     background: transparent;
     border: 1px solid #2c4f91;

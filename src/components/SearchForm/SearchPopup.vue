@@ -70,9 +70,6 @@
     }
 
     ul {
-      padding: 0;
-      margin: 0;
-      list-style: none;
       display: flex;
       flex-direction: column;
       gap: 3px 5px;

@@ -2,11 +2,13 @@
   <div class="wrapper">
     <HeaderFilm :key="$route.fullPath" />
     <GenreList />
-    <RouterView v-slot="{ Component }">
-      <KeepAlive include="MainList">
-        <component :is="Component" :key="$route.fullPath"></component>
-      </KeepAlive>
-    </RouterView>
+    <main class="content">
+      <RouterView v-slot="{ Component }">
+        <KeepAlive include="MainList">
+          <component :is="Component" :key="$route.fullPath"></component>
+        </KeepAlive>
+      </RouterView>
+    </main>
     <ToTop />
     <NavigationByKeys :key="$route.fullPath" />
   </div>
@@ -76,6 +78,18 @@
     }
   }
 
+  h3 {
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
   .wrapper {
     background: #163060;
     border-radius: 10px;
@@ -88,6 +102,14 @@
 
     @media all and (max-width: 1024px) {
       border-radius: 0;
+    }
+  }
+
+  .content {
+    padding: 0 15px 30px;
+
+    @media all and (max-width: 768px) {
+      padding: 0 5px 10px;
     }
   }
 

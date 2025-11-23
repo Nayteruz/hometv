@@ -58,9 +58,6 @@
     }
 
     ul {
-      padding: 0;
-      margin: 0;
-      list-style: none;
       display: flex;
       align-items: center;
       flex-wrap: wrap;

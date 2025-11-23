@@ -1,6 +1,6 @@
 <template>
   <div class="registration--form">
-    <h3>Регистрация</h3>
+    <h3 class="name">Регистрация</h3>
     <p><input type="text" placeholder="Почта" v-model="email" /></p>
     <p><input type="text" placeholder="Имя" v-model="user_name" /></p>
     <p>
@@ -54,6 +54,11 @@
 </script>
 
 <style scoped>
+  .name {
+    color: #333;
+    margin: 0;
+  }
+
   .registration--form button.sign {
     background: transparent;
     border: 1px solid #2c4f91;

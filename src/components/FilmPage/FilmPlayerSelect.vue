@@ -36,19 +36,20 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 5px;
-    padding: 0;
     margin: 0 0 10px 0;
-    list-style: none;
+
     li {
       padding: 10px 20px;
       cursor: pointer;
       background: #2c4f91;
       border-radius: 5px;
       user-select: none;
+
       &.selected,
       &:hover {
         background: #071f3a;
       }
+
       &.favorite-btn {
         margin-left: auto;
         background: none;
