@@ -74,4 +74,42 @@ export const pagesTitle = {
   MAIN: 'Список последних новинок',
   LAST_VIEWS: 'Последние просмотренные',
   FAVORITE: 'Избранные фильмы/мультики и тд',
+  WATCHING: 'Смотрю сейчас',
+  WATCH_LIST: 'Буду смотреть позже',
+  WAIT_LIST: 'Жду продолженния или новые серии',
+};
+
+export const ROUTER_PAGES = {
+  HOME: {
+    path: '/',
+    name: 'home',
+  },
+  FILM_PAGE: {
+    path: '/film/:id',
+    name: 'filmPage',
+  },
+  SEARCH: {
+    path: '/search',
+    name: 'searchPage',
+  },
+  FAVORITES: {
+    path: '/favorites',
+    name: 'favorite',
+  },
+  LAST_VIEWS: {
+    path: '/last-views',
+    name: 'lastViews',
+  },
+  WATCHING: {
+    path: '/watching',
+    name: 'watchingNow',
+  },
+  WATCH_LIST: {
+    path: '/watch-list',
+    name: 'watchList',
+  },
+  WAITING_LIST: {
+    path: '/waiting-list',
+    name: 'waitingList',
+  },
 };

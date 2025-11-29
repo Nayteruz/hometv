@@ -5,7 +5,7 @@
     <FavoriteButton />
     <SearchForm :visibleSearch="isSearchVisible" />
     <RegistrationWrap />
-    <ReloadButton />
+    <MenuPopup />
     <ButtonBlue
       @click="toggleSearch"
       :size="20"
@@ -24,11 +24,11 @@
   import RegistrationWrap from '@/components/registration/RegistrationWrap.vue';
   import LastViewButton from './LastViewButton.vue';
   import FavoriteButton from './FavoriteButton.vue';
-  import ReloadButton from './ReloadButton.vue';
   import SearchForm from '../SearchForm/SearchForm.vue';
   import ButtonBlue from '../ButtonBlue.vue';
   import IconSearchPlus from '../icons/IconSearchPlus.vue';
   import IconSearchMinus from '../icons/IconSearchMinus.vue';
+  import MenuPopup from './MenuPopup.vue';
 
   const route = useRoute();
   const searchQueryRoute = computed(() => route.query.q);

@@ -1,7 +1,7 @@
 <template>
   <ButtonBlue @click="reloadPage" :size="20" class="reload"
-    ><IconReload
-  /></ButtonBlue>
+    ><IconReload /> Перезагрузить</ButtonBlue
+  >
 </template>
 
 <script setup>

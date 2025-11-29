@@ -2,7 +2,11 @@
   <button
     :style="svgSize"
     :type="props.type"
-    :class="['button', props.class, { border: props.border }]"
+    :class="[
+      'button',
+      props.class,
+      { border: props.border, isOpen: props.isOpen },
+    ]"
   >
     <slot></slot>
   </button>
@@ -25,6 +29,10 @@
       default: 16,
     },
     border: {
+      type: Boolean,
+      default: false,
+    },
+    isOpen: {
       type: Boolean,
       default: false,
     },
@@ -70,7 +78,8 @@
       color: #1e396c;
     }
 
-    &:hover {
+    &:hover,
+    &.isOpen {
       :deep(svg) {
         color: #071f3a;
       }
