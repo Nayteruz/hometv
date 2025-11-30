@@ -7,6 +7,7 @@
     <!-- <li :class="{ selected: playerNum === 3 }" @click="playerNum = 3">KinoBD</li> -->
     <!-- <li :class="{ selected: playerNum === 4 }" @click="playerNum = 4">KinoBox</li> -->
     <li :class="{ selected: playerNum === 5 }" @click="playerNum = 5">Lumex</li>
+    <li class="actions"><FilmActionList /></li>
   </ul>
   <PlayersList v-if="playerNum === 1" />
   <!-- <FilmKinoTop v-if="playerNum === 2" /> -->
@@ -19,6 +20,7 @@
   import { ref } from 'vue';
   import FilmPlayerClub from '@/components/FilmPage/FilmPlayerClub.vue';
   import PlayersList from '@/components/PlayersList.vue';
+  import FilmActionList from './FilmActionList.vue';
   // написано что теперь платно только можно
   // import FilmKinoBoxTab from '@/components/FilmPage/FilmKinoboxTab.vue';
   // заблочили их походу
@@ -33,7 +35,6 @@
 
   .tab-titles {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
     gap: 5px;
     margin: 0 0 10px 0;
@@ -55,6 +56,10 @@
         background: none;
         padding: 0;
         position: relative;
+      }
+
+      &.actions {
+        padding: 0;
       }
     }
   }

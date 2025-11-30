@@ -11,7 +11,7 @@
           >
         </li>
         <li>
-          <router-link :to="ROUTER_PAGES.WAITING_LIST.path" class="item"
+          <router-link :to="ROUTER_PAGES.WATCH_LIST.path" class="item"
             ><IconWillWatch />Буду смотреть</router-link
           >
         </li>

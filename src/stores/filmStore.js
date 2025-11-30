@@ -15,6 +15,7 @@ import {
   ignore_genre,
 } from '@/plugins/firebaseActions';
 import { getFilters } from '@/components/api';
+import { addDataLast, addDataFirst, removeData } from './utils';
 
 export const useFilmStore = defineStore('filmStore', {
   state: () => ({
@@ -38,6 +39,9 @@ export const useFilmStore = defineStore('filmStore', {
     isShowLastSearchList: false,
     lastSearchList: [],
     lastViews: [],
+    watchingList: [],
+    watchList: [],
+    waitingList: [],
     skippedIds: new Set(),
   }),
   getters: {
@@ -81,16 +85,7 @@ export const useFilmStore = defineStore('filmStore', {
         }
       }
     },
-    checkIsFavorite(filmId) {
-      const favoriteMap = new Map(
-        this.favorites.map((film) => [
-          Number(film?.kinopoiskId ?? film?.filmId),
-          film,
-        ])
-      );
 
-      return favoriteMap.has(filmId);
-    },
     async addFavorite(itemFilm) {
       if (!this.user || !itemFilm) {
         return;
@@ -99,20 +94,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedFavorites = await this.safeUpdateUserData(
           'favorites',
-          (currentFavorites) => {
-            const filmId = Number(itemFilm?.kinopoiskId ?? itemFilm?.filmId);
-            const itemWithTime = { ...itemFilm, sortTime: Date.now() };
-
-            const alreadyExists = currentFavorites.some(
-              (film) => Number(film?.kinopoiskId ?? film?.filmId) === filmId
-            );
-
-            if (alreadyExists) {
-              return currentFavorites;
-            }
-
-            return [...currentFavorites, itemWithTime];
-          }
+          (currentFavorites) => addDataLast(currentFavorites, itemFilm)
         );
 
         if (updatedFavorites) {
@@ -130,14 +112,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedFavorites = await this.safeUpdateUserData(
           'favorites',
-          (currentFavorites) => {
-            const numericFilmId = Number(filmId);
-
-            return currentFavorites.filter(
-              (film) =>
-                Number(film?.kinopoiskId ?? film?.filmId) !== numericFilmId
-            );
-          }
+          (currentFavorites) => removeData(currentFavorites, filmId)
         );
 
         if (updatedFavorites) {
@@ -184,20 +159,11 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedLastViews = await this.safeUpdateUserData(
           'lastViews',
-          (currentLastViews) => {
-            const filmId = Number(itemFilm?.kinopoiskId ?? itemFilm?.filmId);
-            const itemWithTime = { ...itemFilm, sortTime: Date.now() };
-
-            const filtered = currentLastViews.filter(
-              (item) => Number(item?.kinopoiskId ?? item?.filmId) !== filmId
-            );
-
-            return [itemWithTime, ...filtered].slice(0, 40);
-          }
+          (currentLastViews) => addDataFirst(currentLastViews, itemFilm)
         );
 
         if (updatedLastViews) {
-          this.lastViews = updatedLastViews;
+          this.lastViews = updatedLastViews.slice(0, 40);
         }
       } catch (e) {
         console.error('Ошибка добавления в последнее просмотренное: ' + e);
@@ -242,12 +208,125 @@ export const useFilmStore = defineStore('filmStore', {
           }
         );
 
-        // Обновляем локальное состояние
         if (updatedSkippedIds) {
           this.skippedIds = new Set(updatedSkippedIds);
         }
       } catch (e) {
         console.error('Ошибка удаления из непросматриваемого: ' + e);
+      }
+    },
+
+    async addWatching(itemFilm) {
+      if (!itemFilm || !this.user) {
+        return;
+      }
+
+      try {
+        const updatedWatching = await this.safeUpdateUserData(
+          'watchingList',
+          (currentWatching) => addDataFirst(currentWatching, itemFilm)
+        );
+
+        if (updatedWatching) {
+          this.watchingList = updatedWatching;
+        }
+      } catch (e) {
+        console.error('Ошибка добавления в смотрю сейчас: ' + e);
+      }
+    },
+
+    async removeWatching(filmId) {
+      if (!this.user || !filmId) {
+        return;
+      }
+
+      try {
+        const updatedWatching = await this.safeUpdateUserData(
+          'watchingList',
+          (currentWatching) => removeData(currentWatching, filmId)
+        );
+
+        if (updatedWatching) {
+          this.watchingList = updatedWatching;
+        }
+      } catch (e) {
+        console.warn('Ошибка удаления из смотрю сейчас: ' + e);
+      }
+    },
+
+    async addWatchList(itemFilm) {
+      if (!itemFilm || !this.user) {
+        return;
+      }
+
+      try {
+        const updatedWatchList = await this.safeUpdateUserData(
+          'watchList',
+          (currentWatchList) => addDataFirst(currentWatchList, itemFilm)
+        );
+
+        if (updatedWatchList) {
+          this.watchList = updatedWatchList;
+        }
+      } catch (e) {
+        console.error('Ошибка добавления в буду смотреть: ' + e);
+      }
+    },
+
+    async removeWatchList(filmId) {
+      if (!this.user || !filmId) {
+        return;
+      }
+
+      try {
+        const updatedWatchList = await this.safeUpdateUserData(
+          'watchList',
+          (currentWatching) => removeData(currentWatching, filmId)
+        );
+
+        if (updatedWatchList) {
+          this.watchList = updatedWatchList;
+        }
+      } catch (e) {
+        console.warn('Ошибка удаления из буду смотреть: ' + e);
+      }
+    },
+
+    async addWaitList(itemFilm) {
+      if (!itemFilm || !this.user) {
+        return;
+      }
+
+      try {
+        const updatedWaitList = await this.safeUpdateUserData(
+          'waitingList',
+          (currentWatchList) => addDataFirst(currentWatchList, itemFilm)
+        );
+
+        if (updatedWaitList) {
+          this.waitingList = updatedWaitList;
+        }
+      } catch (e) {
+        console.error('Ошибка добавления в жду продолжения: ' + e);
+      }
+    },
+
+    async removeWaitList(filmId) {
+      if (!this.user || !filmId) {
+        return;
+      }
+
+      try {
+        const updatedWaitList = await this.safeUpdateUserData(
+          'waitingList',
+          (currentWatching) => removeData(currentWatching, filmId)
+        );
+
+        if (updatedWaitList) {
+          this.waitingList = updatedWaitList;
+        }
+      } catch (e) {
+        console.warn('Ошибка удаления из жду продолжения: ' + e);
       }
     },
 
@@ -316,6 +395,18 @@ export const useFilmStore = defineStore('filmStore', {
       this.user.email = data?.email ?? '';
 
       this.favorites = (data?.favorites ?? []).sort(
+        (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
+      );
+
+      this.watchingList = (data?.watchingList ?? []).sort(
+        (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
+      );
+
+      this.watchList = (data?.watchList ?? []).sort(
+        (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
+      );
+
+      this.waitingList = (data?.waitingList ?? []).sort(
         (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
       );
 

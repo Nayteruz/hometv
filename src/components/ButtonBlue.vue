@@ -84,5 +84,10 @@
         color: #071f3a;
       }
     }
+
+    &:disabled {
+      pointer-events: none;
+      opacity: 0.8;
+    }
   }
 </style>

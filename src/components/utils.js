@@ -18,3 +18,15 @@ export const getFilmRating = (filmInfo) => {
 
   return '∞';
 };
+
+export const hasId = (list, id) => {
+  if (!Array.isArray(list) || list.length === 0 || !id) {
+    return false;
+  }
+
+  const listMap = new Map(
+    list.map((film) => [Number(film?.kinopoiskId ?? film?.filmId), film])
+  );
+
+  return listMap.has(Number(id));
+};

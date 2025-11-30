@@ -1,17 +1,19 @@
 <template>
-  <div class="registration-wrap">
-    <ButtonBlue class="button" @click="togglePop" :size="22"
-      ><IconUser
-    /></ButtonBlue>
-    <div class="registration-wrap--pop" v-if="isVisible">
-      <LogoutComponent v-if="filmStore.user" />
-      <SignInComponent v-else-if="formView === 'sign'" @setForm="setForm" />
-      <RegistrationComponent
-        v-else-if="formView === 'reg'"
-        @setForm="setForm"
-      />
-    </div>
-  </div>
+  <PopupContainer position="right" maxWidth="auto" class="popup">
+    <template #icon>
+      <IconUser class="icon" />
+    </template>
+    <template #content>
+      <div class="registration-wrap--pop">
+        <LogoutComponent v-if="filmStore.user" />
+        <SignInComponent v-else-if="formView === 'sign'" @setForm="setForm" />
+        <RegistrationComponent
+          v-else-if="formView === 'reg'"
+          @setForm="setForm"
+        />
+      </div>
+    </template>
+  </PopupContainer>
 </template>
 
 <script setup>
@@ -20,17 +22,12 @@
   import RegistrationComponent from './RegistrationComponent.vue';
   import SignInComponent from './SignInComponent.vue';
   import LogoutComponent from './LogoutComponent.vue';
-  import ButtonBlue from '@/components/ButtonBlue.vue';
   import { useFilmStore } from '@/stores/filmStore';
+  import PopupContainer from '../PopupContainer.vue';
 
   const filmStore = useFilmStore();
-  const isVisible = ref(false);
   const formView = ref('sign');
   const emitter = inject('emitter');
-
-  const togglePop = () => {
-    isVisible.value = !isVisible.value;
-  };
 
   const setForm = (e) => {
     filmStore.errorMessage = '';
@@ -119,13 +116,11 @@
     width: 100%;
   }
 
+  .popup .icon {
+    width: 24px;
+  }
+
   .registration-wrap--pop {
-    position: absolute;
-    right: 0;
-    top: 100%;
-    margin-top: 5px;
-    background: #ffff;
-    border-radius: 10px;
     padding: 15px;
     min-height: 100px;
     min-width: 250px;

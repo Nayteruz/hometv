@@ -1,7 +1,7 @@
 <template>
   <h1>{{ pagesTitle.WAIT_LIST }}</h1>
-  <FilmList :items="filmStore.lastViews" :showPreload="showPreload" />
-  <h3 v-if="filmStore.lastViews.length === 0">Список пуст</h3>
+  <FilmList :items="filmStore.waitingList" :showPreload="showPreload" />
+  <h3 v-if="filmStore.waitingList.length === 0">Список пуст</h3>
 </template>
 
 <script setup>
@@ -17,6 +17,6 @@
 <style scoped lang="scss">
   h3 {
     color: #fff;
-    margin-bottom: 20px;
+    margin: 30px 15px;
   }
 </style>

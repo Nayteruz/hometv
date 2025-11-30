@@ -1,6 +1,6 @@
 <template>
   <span class="favorite-icon">
-    <span class="loading-round" v-if="isShow"></span>
+    <span class="loading-round" v-if="isLoading"></span>
     <IconFavorite
       :class="{ active: isFavorite }"
       @click.prevent="toggleFavorite"
@@ -9,48 +9,34 @@
 </template>
 
 <script setup>
-  import { inject, onMounted, ref } from 'vue';
+  import { computed, ref } from 'vue';
   import IconFavorite from '@/components/icons/IconFavorite.vue';
   import { useFilmStore } from '@/stores/filmStore';
-  import { getFilmInfo } from './api';
+  import { getFilmInfo } from '@/components/api';
+  import { hasId } from '@/components/utils';
 
   const props = defineProps({
     filmId: Number,
   });
 
-  const isFavorite = ref(false);
-  const isShow = ref(false);
-  const emitter = inject('emitter');
+  const isLoading = ref(false);
   const filmStore = useFilmStore();
-
-  const checkFavorite = () => {
-    isFavorite.value = props.filmId
-      ? filmStore.checkIsFavorite(props.filmId)
-      : false;
-  };
+  const isFavorite = computed(() => hasId(filmStore.favorites, props.filmId));
 
   async function toggleFavorite() {
     if (!filmStore.user) {
       alert('Необходима авторизация');
       return;
     }
-    isShow.value = true;
+    isLoading.value = true;
     if (!isFavorite.value) {
       const data = await getFilmInfo(props.filmId);
       await filmStore.addFavorite(await data);
-      isFavorite.value = true;
     } else {
       await filmStore.removeFavorite(props.filmId);
-      isFavorite.value = false;
     }
-    isShow.value = false;
+    isLoading.value = false;
   }
-
-  onMounted(() => {
-    checkFavorite();
-  });
-
-  emitter.on('setUserData', checkFavorite);
 </script>
 
 <style scoped lang="scss">

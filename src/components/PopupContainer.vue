@@ -3,7 +3,7 @@
     <ButtonBlue
       @click="togglePopup"
       :size="30"
-      class="trigger"
+      :class="['trigger', buttonClass]"
       :isOpen="isOpen"
     >
       <slot name="icon"></slot>
@@ -37,6 +37,10 @@
     maxWidth: {
       type: String,
       default: '400px',
+    },
+    buttonClass: {
+      type: [String, Array, Object],
+      default: '',
     },
   });
 
