@@ -128,7 +128,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     border: 2px solid #3a6891;
-    z-index: 1000;
+    z-index: 100;
     margin-top: 4px;
     overflow: hidden;
 

@@ -40,6 +40,7 @@
 
     &:hover {
       background: color.adjust(#3363bd, $lightness: -10%);
+      color: #fff;
 
       svg {
         color: #fff;

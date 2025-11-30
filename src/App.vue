@@ -40,6 +40,7 @@
 </script>
 
 <style lang="scss">
+  @use '@/variables' as *;
   @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
   * {
@@ -91,12 +92,12 @@
   }
 
   .wrapper {
-    background: #163060;
+    background: var(--color-main-dark);
     border-radius: 10px;
     padding: 0;
     font-family: 'Roboto', sans-serif;
     margin: 0 auto 0;
-    max-width: 1280px;
+    max-width: var(--wrapper-width);
     position: relative;
     flex: 1;
 

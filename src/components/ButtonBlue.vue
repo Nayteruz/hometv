@@ -45,6 +45,7 @@
 
 <style lang="scss" scoped>
   @use 'sass:color';
+  @use '@/variables' as *;
 
   .button {
     user-select: none;
@@ -54,34 +55,38 @@
     gap: 5px;
     padding: 0 8px 0;
     height: 32px;
-    color: #333;
+    color: var(--color-gray);
     text-decoration: none;
     font-size: 16px;
     font-weight: bold;
     line-height: 1;
-    background: #80b0d9;
+    background: var(--color-main);
     border-radius: 5px;
     border: none;
     cursor: pointer;
+    transition: all 0.3s ease;
 
     &.border {
-      border: 2px #3a6891 solid;
+      border: 2px var(--color-border) solid;
 
       &:hover {
-        background-color: color.adjust(#80b0d9, $lightness: -10%);
+        background-color: color-mix(in srgb, var(--color-main) 90%, black);
       }
     }
 
     :deep(svg) {
+      transition: all 0.3s ease;
       width: var(--svg-size);
       height: var(--svg-size);
-      color: #1e396c;
+      color: var(--color-svg);
     }
 
     &:hover,
     &.isOpen {
+      transition: all 0.3s ease;
+      color: var(--color-svg-hover);
       :deep(svg) {
-        color: #071f3a;
+        color: var(--color-svg-hover);
       }
     }
 

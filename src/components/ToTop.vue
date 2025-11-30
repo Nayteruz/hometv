@@ -9,6 +9,8 @@
 </script>
 
 <style scoped lang="scss">
+  @use '@/variables' as *;
+
   .button {
     position: fixed;
     right: 50%;
@@ -35,7 +37,7 @@
       top: 50%;
       height: 3px;
       width: 17px;
-      background: #fff;
+      background: var(--color-white);
     }
 
     &:before {

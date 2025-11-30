@@ -1,0 +1,11 @@
+:root {
+  --color-white: #fff;
+  --color-black: #000;
+  --color-gray: #333;
+  --color-main: #80b0d9;
+  --color-main-dark: #163060;
+  --color-svg: #163060;
+  --color-svg-hover: #3430b9;
+  --color-border: #3a6891;
+  --wrapper-width: 1280px;
+}
