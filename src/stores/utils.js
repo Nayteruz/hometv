@@ -44,7 +44,7 @@ export const removeData = (list, itemId) => {
 };
 
 const getCountryList = (countries) => {
-  return countries.map((country) => country.country);
+  return countries.map((country) => country?.country || country || '');
 };
 
 const getName = (filmRaw) => {
@@ -58,7 +58,7 @@ const getName = (filmRaw) => {
 };
 
 const getGenreList = (genres) => {
-  return genres.map((genre) => genre.genre);
+  return genres.map((genre) => genre?.genre || genre || '');
 };
 
 export const getFilmRating = (filmRaw) => {
@@ -95,19 +95,17 @@ export const getFilmType = (filmRaw) => {
 };
 
 export const getFilmEntity = (filmRaw) => {
-  const film = {
+  return {
     id: Number(filmRaw.kinopoiskId || filmRaw.filmId || filmRaw.id),
     name: getName(filmRaw),
     description: filmRaw?.description || 'Без описания',
-    year: filmRaw?.year || '∞',
+    year: filmRaw?.year || '',
     image: filmRaw.posterUrlPreview || filmRaw.posterUrl || filmRaw.image || '',
     rating: getFilmRating(filmRaw),
     countries: getCountryList(filmRaw?.countries || []),
     genres: getGenreList(filmRaw?.genres || []),
     type: getFilmType(filmRaw),
   };
-
-  return film;
 };
 
 export const getFilmEntityList = (filmRawList) => {

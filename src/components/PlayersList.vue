@@ -4,10 +4,14 @@
       <div class="player-select">
         <div class="player-name-list">
           <button
-            v-for="(name, index) in playerNames"
+            v-for="name of playerNames"
             :key="name"
-            :class="{ 'select-button': true, active: index === selectedIndex }"
-            @click="selectPlayer(index)"
+            :class="{
+              'select-button': true,
+              active: name === selectedPlayer,
+              loading: loadingPlayers[name],
+            }"
+            @click="selectPlayer(name)"
           >
             {{ name }}
           </button>
@@ -15,11 +19,11 @@
       </div>
       <div ref="playerList" class="player-list">
         <div
-          v-for="(item, index) in playersData"
+          v-for="item of playersData"
           :key="item.name"
-          :class="{ 'player-item': true, active: index === selectedIndex }"
+          :class="{ 'player-item': true, active: item.name === selectedPlayer }"
         >
-          <div v-if="index === selectedIndex">
+          <div v-if="item.name === selectedPlayer">
             <iframe
               v-if="item.iframeSrc"
               :src="item.iframeSrc"
@@ -27,7 +31,8 @@
               loading="lazy"
               :title="`Плеер ${item.name} для КиноПоиск ID ${filmId}`"
             ></iframe>
-            <div v-else>Загрузка плеера...</div>
+            <div v-else-if="item.loading">Загрузка плеера...</div>
+            <div v-else>Плеер не доступен</div>
           </div>
         </div>
       </div>
@@ -44,50 +49,94 @@
   const filmStore = useFilmStore();
   const route = useRoute();
   const filmId = route.params.id;
-  const playerList = ref(null);
-  const selectedIndex = ref(-1);
-  const playerNames = Object.keys(players);
-  const playersData = ref([]);
 
-  const selectPlayer = (index) => {
-    selectedIndex.value = index;
+  const playerNames = Object.keys(players);
+  const playersData = ref({});
+  const loadingPlayers = ref({});
+  const selectedPlayer = ref(null);
+  const playerList = ref(null);
+
+  const selectPlayer = async (name) => {
+    selectedPlayer.value = name;
+    const playerData = playersData.value[name];
+
+    if (playerData.loaded || playerData.loading) {
+      return;
+    }
+
+    await loadPlayer(name);
   };
 
-  async function initPlayer() {
-    filmStore.setFilmPageId(filmId);
+  const getApiKey = (name) => {
+    if (name === 'Alloha') return filmStore.apiAloha;
+    if (name === 'HDVB') return filmStore.apiHDBV;
+    return undefined;
+  };
 
-    const playersList = await Promise.all(
-      Object.entries(players).map(async ([name, getSrc]) => {
-        let api = filmStore.apiKey;
-        if (name === 'Alloha') {
-          api = filmStore.apiAloha;
-        }
-        if (name === 'HDVB') {
-          api = filmStore.apiHDBV;
-        }
-        if (name !== 'Alloha' && name !== 'HDVB') {
-          api = undefined;
-        }
+  const loadPlayer = async (name) => {
+    loadingPlayers.value[name] = true;
 
-        let iframeSrc =
-          typeof getSrc === 'function' ? await getSrc(filmId, api) : null;
-        return {
-          name,
-          iframeSrc,
-        };
-      })
-    );
-
-    playersData.value = playersList.filter((player) => player.iframeSrc);
-
-    if (playersData.value.length > 0) {
-      selectedIndex.value = 0;
+    const playerByName = playersData.value[name];
+    if (playerByName) {
+      playerByName.loading = true;
     }
-  }
+
+    try {
+      const getSrc = players[name];
+      const api = getApiKey(name);
+
+      let iframeSrc =
+        typeof getSrc === 'function' ? await getSrc(filmId, api) : null;
+
+      if (playerByName) {
+        playersData.value[name] = {
+          ...playerByName,
+          iframeSrc,
+          loading: false,
+          loaded: true,
+          error: !iframeSrc,
+        };
+      }
+    } catch (error) {
+      console.error(`Ошибка загрузки плеера ${name}:`, error);
+
+      if (playerByName) {
+        playersData.value[name] = {
+          ...playerByName,
+          loading: false,
+          loaded: true,
+          error: true,
+        };
+      }
+    } finally {
+      loadingPlayers.value[name] = false;
+    }
+  };
+
+  const initializePlayersData = () => {
+    for (const name of playerNames) {
+      playersData.value[name] = {
+        name,
+        iframeSrc: null,
+        loading: false,
+        loaded: false,
+        error: false,
+      };
+    }
+  };
+
+  const preloadFirstPlayer = async () => {
+    if (playerNames.length > 0) {
+      selectedPlayer.value = playerNames[0];
+      await loadPlayer(playerNames[0]);
+    }
+  };
 
   onMounted(() => {
     if (playerList.value) {
-      initPlayer();
+      filmStore.setFilmPageId(filmId);
+      initializePlayersData();
+      preloadFirstPlayer();
     }
   });
 </script>
@@ -130,7 +179,7 @@
     }
 
     &.active {
-      background: #071f3a;
+      background-color: #071f3a;
     }
   }
 
@@ -150,6 +199,24 @@
 
     &.active {
       display: flex;
+    }
+  }
+
+  .loading {
+    background: rgba(#fff, 0.1);
+    background: linear-gradient(
+      110deg,
+      rgba(#fff, 0.04) 8%,
+      rgba(#fff, 0.15) 18%,
+      rgba(#fff, 0.04) 33%
+    );
+    background-size: 400% 600%;
+    animation: 0.5s shine linear infinite;
+  }
+
+  @keyframes shine {
+    to {
+      background-position-x: -250%;
     }
   }
 </style>
