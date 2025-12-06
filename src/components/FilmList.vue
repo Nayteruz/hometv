@@ -4,7 +4,7 @@
       <FilmItem
         v-for="(film, index) in props.items"
         :itemFilm="film"
-        :key="film.filmId || film.kinopoiskId"
+        :key="film.id"
         :currentIndex="index"
         :isRating="props.isRating"
       />

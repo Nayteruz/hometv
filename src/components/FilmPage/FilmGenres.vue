@@ -2,7 +2,7 @@
   <div class="genres">
     <h3>{{ props.title }}</h3>
     <ul>
-      <li v-for="genre in genreList" :key="genre">
+      <li v-for="genre in props.genres" :key="genre">
         <span @click="changeGenre(genre)">{{ genre }}</span>
       </li>
     </ul>
@@ -10,7 +10,6 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue';
   import { useRouter } from 'vue-router';
 
   const router = useRouter();
@@ -19,8 +18,6 @@
     genres: Array,
     title: String,
   });
-
-  const genreList = computed(() => props.genres.map((g) => g.genre));
 
   const changeGenre = (name) => {
     const genres = JSON.parse(localStorage.getItem('genres'));

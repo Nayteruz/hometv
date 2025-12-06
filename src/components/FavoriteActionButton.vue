@@ -16,12 +16,12 @@
   import { hasId } from '@/components/utils';
 
   const props = defineProps({
-    filmId: Number,
+    id: Number,
   });
 
   const isLoading = ref(false);
   const filmStore = useFilmStore();
-  const isFavorite = computed(() => hasId(filmStore.favorites, props.filmId));
+  const isFavorite = computed(() => hasId(filmStore.favorites, props.id));
 
   async function toggleFavorite() {
     if (!filmStore.user) {
@@ -30,10 +30,10 @@
     }
     isLoading.value = true;
     if (!isFavorite.value) {
-      const data = await getFilmInfo(props.filmId);
+      const data = await getFilmInfo(props.id);
       await filmStore.addFavorite(await data);
     } else {
-      await filmStore.removeFavorite(props.filmId);
+      await filmStore.removeFavorite(props.id);
     }
     isLoading.value = false;
   }

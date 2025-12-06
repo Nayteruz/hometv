@@ -10,18 +10,18 @@
     ref="itemRef"
   >
     <a
-      :href="`/film/${filmId}`"
+      :href="`/film/${props.itemFilm.id}`"
       class="card-link"
       @click.prevent="goToPageFilm"
     ></a>
     <div class="icon-actions">
-      <FavoriteActionButton class="favorite" :filmId="filmId" />
-      <WatchActionButton class="watch" :filmId="filmId" />
-      <FilmRating :filmInfo="props.itemFilm" :isRating="props.isRating" />
+      <FavoriteActionButton class="favorite" :id="id" />
+      <WatchActionButton class="watch" :id="id" />
+      <FilmRating :rating="props.itemFilm.rating" :isRating="props.isRating" />
     </div>
     <div class="image-wrapper">
       <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"></svg>
-      <img :src="itemFilm.posterUrlPreview" :alt="props.itemFilm.nameRu" />
+      <img :src="itemFilm.image" :alt="props.itemFilm.name" />
     </div>
     <div class="name-wrapper">
       <h3>{{ filmName }}</h3>
@@ -54,13 +54,12 @@
   );
   const filmName = computed(() => getFilmPageTitle(props.itemFilm));
   const isFocusedOnHover = ref(false);
+  const id = computed(() => props.itemFilm.id);
 
-  const filmId = props.itemFilm.filmId || props.itemFilm.kinopoiskId;
-
-  const isUnwatch = computed(() => filmStore.isSkipped(filmId));
+  const isUnwatch = computed(() => filmStore.isSkipped(id.value));
 
   const goToPageFilm = () => {
-    router.push(`/film/${filmId}`);
+    router.push(`/film/${id.value}`);
   };
 
   const onOver = () => {

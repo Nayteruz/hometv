@@ -1,23 +1,19 @@
 <template>
   <span class="rating" v-if="isRating"
-    ><IconStar class="star" />{{ filmRating }}</span
+    ><IconStar class="star" />{{ props.rating }}</span
   >
 </template>
 
 <script setup>
-  import { computed } from 'vue';
   import IconStar from '@/components/icons/IconStar.vue';
-  import { getFilmRating } from '@/components/utils';
 
   const props = defineProps({
-    filmInfo: Object,
+    rating: String,
     isRating: {
       type: Boolean,
       default: true,
     },
   });
-
-  const filmRating = computed(() => getFilmRating(props.filmInfo));
 </script>
 
 <style lang="scss" scoped>

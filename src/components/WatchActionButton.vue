@@ -16,17 +16,17 @@
   import { useFilmStore } from '@/stores/filmStore';
 
   const props = defineProps({
-    filmId: Number,
+    id: Number,
   });
 
   const filmStore = useFilmStore();
-  const isUnwatch = computed(() => filmStore.isSkipped(props.filmId));
+  const isUnwatch = computed(() => filmStore.isSkipped(props.id));
 
   const toggleWatch = () => {
     if (isUnwatch.value) {
-      filmStore.removeSkip(props.filmId);
+      filmStore.removeSkip(props.id);
     } else {
-      filmStore.addSkip(props.filmId);
+      filmStore.addSkip(props.id);
     }
   };
 </script>

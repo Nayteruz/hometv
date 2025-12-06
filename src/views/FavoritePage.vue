@@ -1,6 +1,6 @@
 <template>
   <h1>{{ pagesTitle.FAVORITE }}</h1>
-  <FilmList :items="filmStore.favoriteList" :showPreload="showPreload" />
+  <FilmList :items="filmStore.favorites" :showPreload="showPreload" />
   <h3 v-if="filmStore.favorites.length === 0">Список пуст</h3>
 </template>
 

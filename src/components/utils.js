@@ -1,9 +1,5 @@
 export const getFilmPageTitle = (filmInfo) => {
-  const name =
-    filmInfo?.nameRu ||
-    filmInfo?.nameEn ||
-    filmInfo?.nameOriginal ||
-    'Без названия';
+  const name = filmInfo?.name || '';
   const year = filmInfo?.year || '';
   return `${name} ${year ? `(${year})` : ''}`;
 };
@@ -25,7 +21,10 @@ export const hasId = (list, id) => {
   }
 
   const listMap = new Map(
-    list.map((film) => [Number(film?.kinopoiskId ?? film?.filmId), film])
+    list.map((film) => [
+      Number(film?.kinopoiskId || film?.filmId || film?.id),
+      film,
+    ])
   );
 
   return listMap.has(Number(id));

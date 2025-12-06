@@ -19,11 +19,11 @@
   import { useFilmStore } from '@/stores/filmStore';
 
   const props = defineProps({
-    filmId: String,
+    id: String,
   });
 
   const filmStore = useFilmStore();
-  const isSelected = computed(() => hasId(filmStore.favorites, props.filmId));
+  const isSelected = computed(() => hasId(filmStore.favorites, props.id));
   const isLoading = ref(false);
 
   async function toggleFavorite() {
@@ -33,10 +33,10 @@
     }
     isLoading.value = true;
     if (!isSelected.value) {
-      const data = await getFilmInfo(props.filmId);
+      const data = await getFilmInfo(props.id);
       await filmStore.addFavorite(await data);
     } else {
-      await filmStore.removeFavorite(props.filmId);
+      await filmStore.removeFavorite(props.id);
     }
     isLoading.value = false;
   }

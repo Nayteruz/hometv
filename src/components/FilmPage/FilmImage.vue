@@ -1,15 +1,11 @@
 <template>
   <div class="image">
     <div class="icon-actions">
-      <FavoriteActionButton class="favorite" :filmId="filmId" />
-      <WatchActionButton class="watch" :filmId="filmId" />
-      <FilmRating :filmInfo="props.filmInfo" class="rating" />
+      <FavoriteActionButton class="favorite" :id="filmInfo.id" />
+      <WatchActionButton class="watch" :id="filmInfo.id" />
+      <FilmRating :rating="filmInfo.rating" class="rating" />
     </div>
-    <img
-      v-if="filmInfo?.posterUrl"
-      :src="filmInfo?.posterUrl"
-      alt="filmTitle"
-    />
+    <img v-if="filmInfo?.image" :src="filmInfo?.image" alt="filmTitle" />
   </div>
 </template>
 
@@ -24,9 +20,6 @@
   });
 
   const filmInfo = computed(() => props.filmInfo);
-  const filmId = computed(
-    () => props.filmInfo?.kinopoiskId ?? props.filmInfo?.filmId
-  );
 </script>
 
 <style lang="scss" scoped>

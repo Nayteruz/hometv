@@ -19,11 +19,11 @@
   import { computed, ref } from 'vue';
 
   const props = defineProps({
-    filmId: String,
+    id: String,
   });
 
   const filmStore = useFilmStore();
-  const isSelected = computed(() => hasId(filmStore.watchList, props.filmId));
+  const isSelected = computed(() => hasId(filmStore.watchList, props.id));
   const isLoading = ref(false);
 
   async function toggleAction() {
@@ -33,10 +33,10 @@
     }
     isLoading.value = true;
     if (!isSelected.value) {
-      const data = await getFilmInfo(props.filmId);
+      const data = await getFilmInfo(props.id);
       await filmStore.addWatchList(await data);
     } else {
-      await filmStore.removeWatchList(props.filmId);
+      await filmStore.removeWatchList(props.id);
     }
     isLoading.value = false;
   }

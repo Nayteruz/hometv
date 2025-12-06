@@ -15,7 +15,7 @@ import {
   ignore_genre,
 } from '@/plugins/firebaseActions';
 import { getFilters } from '@/components/api';
-import { addDataLast, addDataFirst, removeData } from './utils';
+import { removeData, addFirstAndExcludeCopy, getFilmEntityList } from './utils';
 
 export const useFilmStore = defineStore('filmStore', {
   state: () => ({
@@ -94,11 +94,12 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedFavorites = await this.safeUpdateUserData(
           'favorites',
-          (currentFavorites) => addDataLast(currentFavorites, itemFilm)
+          (currentFavorites) =>
+            addFirstAndExcludeCopy(currentFavorites, itemFilm)
         );
 
         if (updatedFavorites) {
-          this.favorites = updatedFavorites;
+          this.favorites = getFilmEntityList(updatedFavorites || []);
         }
       } catch (e) {
         console.warn('Ошибка добавления в избранное: ' + e);
@@ -116,7 +117,7 @@ export const useFilmStore = defineStore('filmStore', {
         );
 
         if (updatedFavorites) {
-          this.favorites = updatedFavorites;
+          this.favorites = getFilmEntityList(updatedFavorites || []);
         }
       } catch (e) {
         console.warn('Ошибка удаления из избранного: ' + e);
@@ -159,11 +160,12 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedLastViews = await this.safeUpdateUserData(
           'lastViews',
-          (currentLastViews) => addDataFirst(currentLastViews, itemFilm)
+          (currentLastViews) =>
+            addFirstAndExcludeCopy(currentLastViews, itemFilm)
         );
 
         if (updatedLastViews) {
-          this.lastViews = updatedLastViews.slice(0, 40);
+          this.lastViews = getFilmEntityList(updatedLastViews.slice(0, 40));
         }
       } catch (e) {
         console.error('Ошибка добавления в последнее просмотренное: ' + e);
@@ -224,7 +226,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedWatching = await this.safeUpdateUserData(
           'watchingList',
-          (currentWatching) => addDataFirst(currentWatching, itemFilm)
+          (currentWatching) => addFirstAndExcludeCopy(currentWatching, itemFilm)
         );
 
         if (updatedWatching) {
@@ -247,7 +249,7 @@ export const useFilmStore = defineStore('filmStore', {
         );
 
         if (updatedWatching) {
-          this.watchingList = updatedWatching;
+          this.watchingList = getFilmEntityList(updatedWatching || []);
         }
       } catch (e) {
         console.warn('Ошибка удаления из смотрю сейчас: ' + e);
@@ -262,7 +264,8 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedWatchList = await this.safeUpdateUserData(
           'watchList',
-          (currentWatchList) => addDataFirst(currentWatchList, itemFilm)
+          (currentWatchList) =>
+            addFirstAndExcludeCopy(currentWatchList, itemFilm)
         );
 
         if (updatedWatchList) {
@@ -285,7 +288,7 @@ export const useFilmStore = defineStore('filmStore', {
         );
 
         if (updatedWatchList) {
-          this.watchList = updatedWatchList;
+          this.watchList = getFilmEntityList(updatedWatchList || []);
         }
       } catch (e) {
         console.warn('Ошибка удаления из буду смотреть: ' + e);
@@ -300,7 +303,8 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedWaitList = await this.safeUpdateUserData(
           'waitingList',
-          (currentWatchList) => addDataFirst(currentWatchList, itemFilm)
+          (currentWatchList) =>
+            addFirstAndExcludeCopy(currentWatchList, itemFilm)
         );
 
         if (updatedWaitList) {
@@ -323,7 +327,7 @@ export const useFilmStore = defineStore('filmStore', {
         );
 
         if (updatedWaitList) {
-          this.waitingList = updatedWaitList;
+          this.waitingList = getFilmEntityList(updatedWaitList || []);
         }
       } catch (e) {
         console.warn('Ошибка удаления из жду продолжения: ' + e);
@@ -394,24 +398,24 @@ export const useFilmStore = defineStore('filmStore', {
       this.user.name = data?.name || '';
       this.user.email = data?.email ?? '';
 
-      this.favorites = (data?.favorites ?? []).sort(
+      this.favorites = getFilmEntityList(data?.favorites ?? []).sort(
         (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
       );
 
-      this.watchingList = (data?.watchingList ?? []).sort(
+      this.watchingList = getFilmEntityList(data?.watchingList ?? []).sort(
         (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
       );
 
-      this.watchList = (data?.watchList ?? []).sort(
+      this.watchList = getFilmEntityList(data?.watchList ?? []).sort(
         (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
       );
 
-      this.waitingList = (data?.waitingList ?? []).sort(
+      this.waitingList = getFilmEntityList(data?.waitingList ?? []).sort(
         (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
       );
 
       this.lastSearchList = (data?.lastSearchList || []).slice(0, 30);
-      this.lastViews = (data?.lastViews ?? [])
+      this.lastViews = getFilmEntityList(data?.lastViews ?? [])
         .slice(0, 40)
         .sort((a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0));
 

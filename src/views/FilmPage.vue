@@ -58,9 +58,7 @@
 
   const loadSimilars = async () => {
     try {
-      const data = await getSimilars(route.params.id);
-      const items = data.items || [];
-      similars.value = items;
+      similars.value = await getSimilars(route.params.id);
     } catch (error) {
       console.error('Error load similars', error);
       similars.value = [];
@@ -78,7 +76,11 @@
   };
 
   const isUnwatch = computed(() =>
-    filmStore.isSkipped(filmInfo.value?.kinopoiskId ?? filmInfo.value?.filmId)
+    filmStore.isSkipped(
+      filmInfo.value?.kinopoiskId ||
+        filmInfo.value?.filmId ||
+        filmInfo.value?.id
+    )
   );
 
   onMounted(() => {

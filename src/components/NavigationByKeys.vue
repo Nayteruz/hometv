@@ -47,10 +47,9 @@
     if (index === -1) {
       return;
     }
-    const filmId =
-      filmStore.films[index].filmId || filmStore.films[index].kinopoiskId;
+    const id = filmStore.films[index].id;
 
-    router.push(`/film/${filmId}`);
+    router.push(`/film/${id}`);
   };
 
   const handleKeyDown = (e) => {

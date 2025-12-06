@@ -1,16 +1,18 @@
 <template>
   <h1>{{ pagesTitle.WAIT_LIST }}</h1>
-  <FilmList :items="filmStore.waitingList" :showPreload="showPreload" />
-  <h3 v-if="filmStore.waitingList.length === 0">Список пуст</h3>
+  <FilmList :items="list" :showPreload="showPreload" />
+  <h3 v-if="list.length === 0">Список пуст</h3>
 </template>
 
 <script setup>
   import { useFilmStore } from '@/stores/filmStore';
-  import { ref } from 'vue';
+  import { computed, ref } from 'vue';
   import FilmList from '@/components/FilmList.vue';
   import { pagesTitle } from '@/components/const';
+  import { getFilmEntityList } from '@/stores/utils';
 
   const filmStore = useFilmStore();
+  const list = computed(() => getFilmEntityList(filmStore.waitingList));
   const showPreload = ref(false);
 </script>
 

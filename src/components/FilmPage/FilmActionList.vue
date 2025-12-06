@@ -11,16 +11,16 @@
     <template #content>
       <ul class="list">
         <li>
-          <ActionFavorite :filmId="filmId" class="item" />
+          <ActionFavorite :id="id" class="item" />
         </li>
         <li>
-          <ActionWatching :filmId="filmId" class="item" />
+          <ActionWatching :id="id" class="item" />
         </li>
         <li>
-          <ActionWatchList :filmId="filmId" class="item" />
+          <ActionWatchList :id="id" class="item" />
         </li>
         <li>
-          <ActionWaitingList :filmId="filmId" class="item" />
+          <ActionWaitingList :id="id" class="item" />
         </li>
       </ul>
     </template>
@@ -37,7 +37,7 @@
   import IconFavorite from '@/components/icons/IconFavorite.vue';
 
   const route = useRoute();
-  const filmId = route.params.id;
+  const id = route.params.id;
 </script>
 
 <style scoped>
