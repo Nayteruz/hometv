@@ -7,7 +7,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      '@types': resolve(__dirname, 'src/types'),
     },
+    extensions: ['.mjs', '.ts', '.js', '.jsx', '.tsx', '.json', '.vue'],
   },
   base: '/hometv/',
   server: {

@@ -4,17 +4,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { onMounted, ref } from 'vue';
   import { useRoute } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
 
   const filmStore = useFilmStore();
   const route = useRoute();
-  const player_init_item = ref(null);
+  const player_init_item = ref<HTMLElement | null>(null);
 
   const kinoBoxPlayer = (el) => {
-    filmStore.setFilmPageId(route.params.id);
+    filmStore.setFilmPageId(Number(route.params.id) || 0);
     let script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = '//kinobox.tv/kinobox.min.js';

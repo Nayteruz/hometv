@@ -1,41 +1,26 @@
 <template>
-  <button
-    :style="svgSize"
-    :type="props.type"
-    :class="[
-      'button',
-      props.class,
-      { border: props.border, isOpen: props.isOpen },
-    ]"
-  >
+  <button :style="svgSize" :class="['button', customClass, { border, isOpen }]">
     <slot></slot>
   </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { computed } from 'vue';
 
-  const props = defineProps({
-    type: {
-      type: String,
-      default: 'button',
-    },
-    class: {
-      type: String,
-      default: '',
-    },
-    size: {
-      type: Number,
-      default: 16,
-    },
-    border: {
-      type: Boolean,
-      default: false,
-    },
-    isOpen: {
-      type: Boolean,
-      default: false,
-    },
+  interface Props {
+    type?: 'button' | 'submit' | 'reset';
+    customClass?: string;
+    size?: number;
+    border?: boolean;
+    isOpen?: boolean;
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    type: 'button',
+    customClass: '',
+    size: 16,
+    border: false,
+    isOpen: false,
   });
 
   const svgSize = computed(() => ({

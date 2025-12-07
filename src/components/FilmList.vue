@@ -14,31 +14,30 @@
   </div>
 </template>
 
-<script setup>
-  import { useFilmStore } from '@/stores/filmStore';
+<script setup lang="ts">
+  import { useFilmStore } from '@/stores/filmStore.ts';
   import FilmItem from '@/components/FilmPage/FilmItem.vue';
   import PreloadCards from '@/components/PreloadCards.vue';
   import { inject, ref, onMounted, onBeforeUnmount } from 'vue';
+  import type { IFilmEntity } from '@/types';
+
+  interface IFilmListProps {
+    showPreload: boolean;
+    items: IFilmEntity[];
+    isRating: boolean;
+  }
+
+  const props = withDefaults(defineProps<IFilmListProps>(), {
+    showPreload: false,
+    items: () => [],
+    isRating: true,
+  });
 
   const filmStore = useFilmStore();
   const emitter = inject('emitter');
-  const props = defineProps({
-    showPreload: {
-      type: Boolean,
-      default: false,
-    },
-    items: {
-      type: Array,
-      default: () => [],
-    },
-    isRating: {
-      type: Boolean,
-      default: true,
-    },
-  });
   const loading = ref(false);
 
-  emitter.on('isLoading', (emit) => {
+  emitter.on('isLoading', (emit: boolean) => {
     loading.value = emit;
   });
 

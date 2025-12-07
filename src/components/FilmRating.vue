@@ -4,15 +4,16 @@
   >
 </template>
 
-<script setup>
+<script setup lang="ts">
   import IconStar from '@/components/icons/IconStar.vue';
 
-  const props = defineProps({
-    rating: String,
-    isRating: {
-      type: Boolean,
-      default: true,
-    },
+  interface IRatingProps {
+    rating: string;
+    isRating: boolean;
+  }
+
+  const props = withDefaults(defineProps<IRatingProps>(), {
+    isRating: true,
   });
 </script>
 

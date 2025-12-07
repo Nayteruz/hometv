@@ -17,7 +17,7 @@
   </header>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { useRoute } from 'vue-router';
   import { computed, ref } from 'vue';
   import HomeButton from './HomeButton.vue';
@@ -31,9 +31,9 @@
   import MenuPopup from './MenuPopup.vue';
 
   const route = useRoute();
-  const searchQueryRoute = computed(() => route.query.q);
+  const searchQueryRoute = computed(() => route.query.q || '');
   const isSearchVisible = ref(
-    searchQueryRoute.value | (route.name === 'searchPage') ? true : false
+    searchQueryRoute.value || route.name === 'searchPage' ? true : false
   );
 
   const toggleSearch = () => {

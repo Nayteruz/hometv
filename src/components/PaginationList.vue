@@ -40,7 +40,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
   import IconArrowSmall from '@/components/icons/IconArrowSmall.vue';
   import IconArrowBig from '@/components/icons/IconArrowBig.vue';

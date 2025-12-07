@@ -1,4 +1,9 @@
-export const addDataLastAndExcludeCopy = (list, item) => {
+import type { IFilmEntity, IFilmRaw, IFilmRawList } from '@/types';
+
+export const addDataLastAndExcludeCopy = (
+  list: IFilmRawList,
+  item: IFilmRaw
+) => {
   const filmId = Number(item?.kinopoiskId || item?.filmId || item?.id);
   const itemWithTime = { ...item, sortTime: Date.now() };
 
@@ -9,7 +14,7 @@ export const addDataLastAndExcludeCopy = (list, item) => {
   return [...excludedList, itemWithTime];
 };
 
-export const addDataFirst = (list, item) => {
+export const addDataFirst = (list: IFilmRawList, item: IFilmRaw) => {
   const filmId = Number(item?.kinopoiskId || item?.filmId || item?.id);
   const itemWithTime = { ...item, sortTime: Date.now() };
 
@@ -24,7 +29,7 @@ export const addDataFirst = (list, item) => {
   return [itemWithTime, ...list];
 };
 
-export const addFirstAndExcludeCopy = (list, item) => {
+export const addFirstAndExcludeCopy = (list: IFilmRawList, item: IFilmRaw) => {
   const filmId = Number(item?.kinopoiskId || item?.filmId || item?.id);
   const itemWithTime = { ...item, sortTime: Date.now() };
 
@@ -35,7 +40,7 @@ export const addFirstAndExcludeCopy = (list, item) => {
   return [itemWithTime, ...excludedList];
 };
 
-export const removeData = (list, itemId) => {
+export const removeData = (list: IFilmRawList, itemId: string) => {
   const id = Number(itemId);
 
   return list.filter(
@@ -43,11 +48,11 @@ export const removeData = (list, itemId) => {
   );
 };
 
-const getCountryList = (countries) => {
+const getCountryList = (countries: Record<string, any>[]): string[] => {
   return countries.map((country) => country?.country || country || '');
 };
 
-const getName = (filmRaw) => {
+const getName = (filmRaw: IFilmRaw): string => {
   return (
     filmRaw.nameRu ||
     filmRaw.nameEn ||
@@ -57,11 +62,11 @@ const getName = (filmRaw) => {
   );
 };
 
-const getGenreList = (genres) => {
+const getGenreList = (genres: Record<string, any>[]): string[] => {
   return genres.map((genre) => genre?.genre || genre || '');
 };
 
-export const getFilmRating = (filmRaw) => {
+export const getFilmRating = (filmRaw: IFilmRaw): string => {
   const rating =
     filmRaw?.rating ||
     filmRaw?.ratingKinopoisk ||
@@ -79,8 +84,8 @@ export const getFilmRating = (filmRaw) => {
   return rating;
 };
 
-export const getFilmType = (filmRaw) => {
-  switch (filmRaw.type) {
+export const getFilmType = (type: string) => {
+  switch (type) {
     case 'FILM':
       return 'Фильм';
     case 'TV_SERIES':
@@ -90,11 +95,11 @@ export const getFilmType = (filmRaw) => {
     case 'TV_SHOW':
       return 'ТВ-шоу';
     default:
-      return filmRaw.type;
+      return type;
   }
 };
 
-export const getFilmEntity = (filmRaw) => {
+export const getFilmEntity = (filmRaw: IFilmRaw): IFilmEntity => {
   return {
     id: Number(filmRaw.kinopoiskId || filmRaw.filmId || filmRaw.id),
     name: getName(filmRaw),
@@ -104,10 +109,10 @@ export const getFilmEntity = (filmRaw) => {
     rating: getFilmRating(filmRaw),
     countries: getCountryList(filmRaw?.countries || []),
     genres: getGenreList(filmRaw?.genres || []),
-    type: getFilmType(filmRaw),
+    type: getFilmType(filmRaw.type),
   };
 };
 
-export const getFilmEntityList = (filmRawList) => {
+export const getFilmEntityList = (filmRawList: Record<string, any>[]) => {
   return filmRawList.map(getFilmEntity);
 };

@@ -2,7 +2,7 @@
   <li
     :class="[
       'card',
-      { focused: isFocused | isFocusedOnHover, unwatch: isUnwatch },
+      { focused: isFocused || isFocusedOnHover, unwatch: isUnwatch },
     ]"
     @mouseover="onOver"
     @mouseleave="onLeave"
@@ -29,26 +29,29 @@
   </li>
 </template>
 
-<script setup>
+<script setup lang="ts">
+  import { computed, ref, watch } from 'vue';
+  import { useRouter } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
   import FavoriteActionButton from '@/components/FavoriteActionButton.vue';
   import WatchActionButton from '@/components/WatchActionButton.vue';
-  import { computed, ref, watch } from 'vue';
-  import { useRouter } from 'vue-router';
   import FilmRating from '@/components/FilmRating.vue';
+  import type { IFilmEntity } from '@/types';
   import { getFilmPageTitle } from '@/components/utils';
 
-  const props = defineProps({
-    itemFilm: Object,
-    currentIndex: Number,
-    isRating: {
-      type: Boolean,
-      default: true,
-    },
+  interface IFilmItemProps {
+    itemFilm: IFilmEntity;
+    isRating: boolean;
+    currentIndex: number;
+  }
+
+  const props = withDefaults(defineProps<IFilmItemProps>(), {
+    isRating: true,
   });
+
   const router = useRouter();
   const filmStore = useFilmStore();
-  const itemRef = ref(null);
+  const itemRef = ref<HTMLElement | null>(null);
   const isFocused = computed(
     () => props.currentIndex === filmStore.currentFocusIndex
   );

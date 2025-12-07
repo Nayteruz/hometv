@@ -14,8 +14,8 @@
   </div>
 </template>
 
-<script setup>
-  import { useFilmStore } from '@/stores/filmStore';
+<script setup lang="ts">
+  import { useFilmStore } from '@/stores/filmStore.ts';
   import HeaderFilm from '@/components/Header/HeaderFilm.vue';
   import GenreList from '@/components/GenreList.vue';
   import ToTop from '@/components/ToTop.vue';
@@ -23,8 +23,8 @@
   import { onBeforeUnmount, onMounted } from 'vue';
   const filmStore = useFilmStore();
 
-  const clickOutside = (e) => {
-    if (e.target.closest('.search-form')) {
+  const clickOutside = (e: MouseEvent) => {
+    if (e.target?.closest('.search-form')) {
       return;
     }
     filmStore.setShowLastSearchList(false);

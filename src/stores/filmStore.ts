@@ -16,6 +16,7 @@ import {
 } from '@/plugins/firebaseActions';
 import { getFilters } from '@/components/api';
 import { removeData, addFirstAndExcludeCopy, getFilmEntityList } from './utils';
+import type { IFilmEntity } from '@/types';
 
 export const useFilmStore = defineStore('filmStore', {
   state: () => ({
@@ -53,23 +54,20 @@ export const useFilmStore = defineStore('filmStore', {
         }
       });
     },
-    favoriteList() {
-      return this.favorites;
-    },
   },
   actions: {
-    setGenreId(genreId) {
+    setGenreId(genreId: number | null) {
       this.genreIdStore = genreId;
     },
-    setFilmPageId(value) {
-      this.filmPageId = value;
+    setFilmPageId(id: number) {
+      this.filmPageId = id;
     },
-    setShowLastSearchList(value) {
+    setShowLastSearchList(value: boolean) {
       this.isShowLastSearchList = value;
     },
     async getGenreList() {
       if (localStorage.getItem('genres')) {
-        this.genreListStore = JSON.parse(localStorage.getItem('genres'));
+        this.genreListStore = JSON.parse(localStorage.getItem('genres') || '');
         return this.genreListStore;
       } else {
         try {
@@ -86,7 +84,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async addFavorite(itemFilm) {
+    async addFavorite(itemFilm: IFilmEntity) {
       if (!this.user || !itemFilm) {
         return;
       }
@@ -94,7 +92,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedFavorites = await this.safeUpdateUserData(
           'favorites',
-          (currentFavorites) =>
+          (currentFavorites: IFilmEntity[]) =>
             addFirstAndExcludeCopy(currentFavorites, itemFilm)
         );
 
@@ -105,7 +103,7 @@ export const useFilmStore = defineStore('filmStore', {
         console.warn('Ошибка добавления в избранное: ' + e);
       }
     },
-    async removeFavorite(filmId) {
+    async removeFavorite(filmId: number) {
       if (!this.user || !filmId) {
         return;
       }

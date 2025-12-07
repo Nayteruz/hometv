@@ -9,15 +9,18 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { computed } from 'vue';
   import FavoriteActionButton from '../FavoriteActionButton.vue';
   import FilmRating from '../FilmRating.vue';
   import WatchActionButton from '../WatchActionButton.vue';
+  import type { IFilmEntity } from '@/types';
 
-  const props = defineProps({
-    filmInfo: Object,
-  });
+  interface IFIlmImageProps {
+    filmInfo: IFilmEntity;
+  }
+
+  const props = defineProps<IFIlmImageProps>();
 
   const filmInfo = computed(() => props.filmInfo);
 </script>

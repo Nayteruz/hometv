@@ -9,11 +9,11 @@
   </span>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { computed } from 'vue';
   import IconEye from './icons/IconEye.vue';
   import IconEyeSlash from './icons/IconEyeSlash.vue';
-  import { useFilmStore } from '@/stores/filmStore';
+  import { useFilmStore } from '@/stores/filmStore.ts';
 
   const props = defineProps({
     id: Number,

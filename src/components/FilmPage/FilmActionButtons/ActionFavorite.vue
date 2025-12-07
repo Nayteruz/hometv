@@ -10,17 +10,19 @@
   </ButtonBlue>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { computed, ref } from 'vue';
-  import { getFilmInfo } from '@/components/api';
+  import { getFilmInfo } from '@/components/api.ts';
   import ButtonBlue from '@/components/ButtonBlue.vue';
   import IconFavorite from '@/components/icons/IconFavorite.vue';
-  import { hasId } from '@/components/utils';
-  import { useFilmStore } from '@/stores/filmStore';
+  import { hasId } from '@/components/utils.ts';
+  import { useFilmStore } from '@/stores/filmStore.ts';
 
-  const props = defineProps({
-    id: String,
-  });
+  interface IActionFavoriteProps {
+    id: number;
+  }
+
+  const props = defineProps<IActionFavoriteProps>();
 
   const filmStore = useFilmStore();
   const isSelected = computed(() => hasId(filmStore.favorites, props.id));

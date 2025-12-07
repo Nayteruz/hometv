@@ -1,25 +1,3 @@
-<template>
-  <ButtonBack />
-  <h1 v-title>{{ filmName }}</h1>
-  <div class="film__wrap">
-    <FilmImage :filmInfo="filmInfo" :class="{ unwatch: isUnwatch }" />
-    <div class="film__note">
-      <div class="film__btns">
-        <FilmPlayerSelect />
-      </div>
-      <div class="film__description">
-        <h3>Описание:</h3>
-        {{ filmInfo.description }}
-      </div>
-      <FilmGenres :genres="filmInfo.genres || []" title="Жанры" />
-      <div class="film__similar" v-if="similars.length > 0">
-        <h3>Похожие фильмы</h3>
-        <FilmList :items="similars" :isRating="false" />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
   import { useFilmStore } from '@/stores/filmStore';
   import FilmPlayerSelect from '@/components/FilmPage/FilmPlayerSelect.vue';
@@ -89,6 +67,28 @@
     loadSequelsAndPrequels();
   });
 </script>
+
+<template>
+  <ButtonBack />
+  <h1 v-title>{{ filmName }}</h1>
+  <div class="film__wrap">
+    <FilmImage :filmInfo="filmInfo" :class="{ unwatch: isUnwatch }" />
+    <div class="film__note">
+      <div class="film__btns">
+        <FilmPlayerSelect />
+      </div>
+      <div class="film__description">
+        <h3>Описание:</h3>
+        {{ filmInfo.description }}
+      </div>
+      <FilmGenres :genres="filmInfo.genres || []" title="Жанры" />
+      <div class="film__similar" v-if="similars.length > 0">
+        <h3>Похожие фильмы</h3>
+        <FilmList :items="similars" :isRating="false" />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped lang="scss">
   .film__wrap {

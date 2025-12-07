@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { onMounted, ref, onBeforeUnmount } from 'vue';
   import { useRoute } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';

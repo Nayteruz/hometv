@@ -27,7 +27,7 @@
   </PopupContainer>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { useRoute } from 'vue-router';
   import ActionFavorite from './FilmActionButtons/ActionFavorite.vue';
   import ActionWatching from './FilmActionButtons/ActionWatching.vue';

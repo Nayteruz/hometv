@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
   import { onMounted, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';

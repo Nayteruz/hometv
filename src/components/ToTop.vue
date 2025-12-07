@@ -2,7 +2,7 @@
   <button class="button" @click="onTop"></button>
 </template>
 
-<script setup>
+<script setup lang="ts">
   const onTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

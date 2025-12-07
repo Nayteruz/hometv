@@ -20,34 +20,28 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+  interface IPopupContainerProps {
+    width?: string;
+    position?: 'left' | 'right' | 'center';
+    maxWidth?: string;
+    buttonClass?: string | string[] | Record<string, boolean>;
+  }
+
   import { ref, computed, onMounted, onUnmounted } from 'vue';
   import ButtonBlue from '@/components/ButtonBlue.vue';
 
-  const props = defineProps({
-    width: {
-      type: String,
-      default: 'auto',
-    },
-    position: {
-      type: String,
-      default: 'left',
-      validator: (value) => ['left', 'right', 'center'].includes(value),
-    },
-    maxWidth: {
-      type: String,
-      default: '400px',
-    },
-    buttonClass: {
-      type: [String, Array, Object],
-      default: '',
-    },
+  const props = withDefaults(defineProps<IPopupContainerProps>(), {
+    width: 'auto',
+    position: 'left',
+    maxWidth: '400px',
+    buttonClass: () => '',
   });
 
   const emit = defineEmits(['open', 'close', 'toggle']);
 
   const isOpen = ref(false);
-  const containerRef = ref(null);
+  const containerRef = ref<HTMLElement | null>(null);
 
   const popupStyle = computed(() => ({
     width: props.width,
@@ -72,17 +66,18 @@
     }
   };
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = (event: MouseEvent): void => {
     if (
       isOpen.value &&
       containerRef.value &&
+      event.target instanceof Node &&
       !containerRef.value.contains(event.target)
     ) {
       closePopup();
     }
   };
 
-  const handleEscapeKey = (event) => {
+  const handleEscapeKey = (event: KeyboardEvent) => {
     if (event.key === 'Escape' && isOpen.value) {
       closePopup();
     }

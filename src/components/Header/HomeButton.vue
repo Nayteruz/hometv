@@ -1,8 +1,11 @@
 <template>
-  <ButtonBlue @click="click" :size="18"><IconHome />Home</ButtonBlue>
+  <ButtonBlue @click="click" :size="18">
+    <IconHome />
+    Home
+  </ButtonBlue>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
   import { useRouter } from 'vue-router';
   import IconHome from '@/components/icons/IconHome.vue';

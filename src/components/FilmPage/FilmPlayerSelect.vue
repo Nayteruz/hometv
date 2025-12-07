@@ -16,7 +16,7 @@
   <FilmPlayerClub v-if="playerNum === 5" />
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { ref } from 'vue';
   import FilmPlayerClub from '@/components/FilmPage/FilmPlayerClub.vue';
   import PlayersList from '@/components/PlayersList.vue';

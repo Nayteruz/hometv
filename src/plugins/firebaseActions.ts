@@ -1,7 +1,7 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { firebaseDb } from '@/plugins/firebase';
 
-export const userDataGet = async function (uid) {
+export const userDataGet = async function (uid: string) {
   const docRef = doc(firebaseDb, 'users', uid);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
@@ -11,7 +11,7 @@ export const userDataGet = async function (uid) {
   }
 };
 
-export const userDataSet = async function (data, uid) {
+export const userDataSet = async (data: Record<string, any>, uid: string) => {
   await setDoc(doc(firebaseDb, 'users', uid), {
     name: data.user_name || '',
     email: data.email || '',
@@ -20,7 +20,7 @@ export const userDataSet = async function (data, uid) {
   });
 };
 
-export const translateErrorCode = function (code) {
+export const translateErrorCode = function (code: string) {
   switch (code) {
     case 'auth/wrong-password':
       return 'Неверный пароль';

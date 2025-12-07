@@ -35,7 +35,7 @@
   </PopupContainer>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import IconDots from '@/components/icons/IconDots.vue';
   import PopupContainer from '@/components/PopupContainer.vue';
   import IconFilm from '@/components/icons/IconFilm.vue';
