@@ -8,8 +8,8 @@
   import IconStar from '@/components/icons/IconStar.vue';
 
   interface IRatingProps {
-    rating: string;
-    isRating: boolean;
+    rating: string | number;
+    isRating?: boolean;
   }
 
   const props = withDefaults(defineProps<IRatingProps>(), {

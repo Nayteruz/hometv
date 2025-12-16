@@ -2,8 +2,8 @@
   <div class="image">
     <div class="icon-actions">
       <FavoriteActionButton class="favorite" :id="filmInfo.id" />
-      <WatchActionButton class="watch" :id="filmInfo.id" />
-      <FilmRating :rating="filmInfo.rating" class="rating" />
+      <WatchActionButton class="watch" :id="filmInfo.id || 0" />
+      <FilmRating :rating="filmInfo.rating || 0" class="rating" />
     </div>
     <img v-if="filmInfo?.image" :src="filmInfo?.image" alt="filmTitle" />
   </div>

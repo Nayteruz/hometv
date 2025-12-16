@@ -41,12 +41,17 @@ export const getSimilars = async (id: number) => {
   return getFilmEntityList(data.items || []) || [];
 };
 
+export const getRelations = async (id: number) => {
+  const data = await getDataByUrl(`${BASE_API_URL_FILMS2v2}/${id}/relations`);
+  return getFilmEntityList(data.items || []) || [];
+};
+
 export const getSequelsAndPrequels = async (id: number) => {
   const data = await getDataByUrl(
     `${BASE_API_URL_FILMS2v1}/${id}/sequels_and_prequels`,
     'Not found'
   );
-  return getFilmEntityList(data.items || []);
+  return getFilmEntityList(data || []);
 };
 
 export const getCollections = async (page: number = 1) => {

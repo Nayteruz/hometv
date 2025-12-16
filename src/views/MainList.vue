@@ -1,7 +1,7 @@
 <template>
   <h1 v-title>{{ pagesTitle.MAIN }}</h1>
   <PaginationList :total="totalPages" />
-  <FilmList :items="films" :showPreload="showPreload" />
+  <FilmList :items="films" :showPreload="showPreload" :isRating="true" />
   <PaginationList :total="totalPages" />
   <div
     v-if="filmStore.pageNum < totalPages"

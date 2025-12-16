@@ -1,5 +1,5 @@
 export interface IFilmEntity {
-  id: Number;
+  id: number;
   name: string;
   description: string;
   year: string;

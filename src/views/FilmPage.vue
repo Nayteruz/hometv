@@ -8,6 +8,7 @@
     getFilmInfo,
     getSequelsAndPrequels,
     getSimilars,
+    getRelations,
   } from '@/components/api';
   import ButtonBack from '@/components/ButtonBack.vue';
   import FilmImage from '@/components/FilmPage/FilmImage.vue';
@@ -34,22 +35,26 @@
     }
   };
 
-  const loadSimilars = async () => {
+  const loadExtraList = async () => {
+    const filmId = route.params.id;
     try {
-      similars.value = await getSimilars(route.params.id);
-    } catch (error) {
-      console.error('Error load similars', error);
-      similars.value = [];
-    }
-  };
+      const data = await Promise.allSettled([
+        getSimilars(filmId),
+        getSequelsAndPrequels(filmId),
+        getRelations(filmId),
+      ]);
 
-  const loadSequelsAndPrequels = async () => {
-    try {
-      const data = await getSequelsAndPrequels(route.params.id);
-      const sequels = data.items || [];
-      similars.value = [...sequels, ...similars.value];
+      const allFilms = data
+        .filter((item) => item.status === 'fulfilled')
+        .flatMap((item) => item.value);
+
+      const uniqueFilms = Array.from(
+        new Map(allFilms.map((film) => [film.id, film])).values()
+      );
+
+      similars.value = uniqueFilms;
     } catch (error) {
-      console.error('Error load sequels and prequels', error);
+      console.error('Error load extra list', error);
     }
   };
 
@@ -63,8 +68,7 @@
 
   onMounted(() => {
     loadFilm();
-    loadSimilars();
-    loadSequelsAndPrequels();
+    loadExtraList();
   });
 </script>
 
@@ -84,7 +88,7 @@
       <FilmGenres :genres="filmInfo.genres || []" title="Жанры" />
       <div class="film__similar" v-if="similars.length > 0">
         <h3>Похожие фильмы</h3>
-        <FilmList :items="similars" :isRating="false" />
+        <FilmList :items="similars" :isRating="false" :showPreload="false" />
       </div>
     </div>
   </div>
