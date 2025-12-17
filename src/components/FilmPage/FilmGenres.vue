@@ -10,18 +10,24 @@
 </template>
 
 <script setup lang="ts">
+  import type { Genre } from '@/stores/types';
   import { useRouter } from 'vue-router';
 
   const router = useRouter();
 
-  const props = defineProps({
-    genres: Array,
-    title: String,
-  });
+  const props = withDefaults(
+    defineProps<{ genres: string[]; title: string }>(),
+    {
+      title: 'Жанры',
+      genres: () => [],
+    }
+  );
 
-  const changeGenre = (name) => {
-    const genres = JSON.parse(localStorage.getItem('genres'));
-    const id = genres.filter((g) => g.genre === name)[0].id;
+  const changeGenre = (name: string) => {
+    const genres = JSON.parse(
+      localStorage.getItem('genres') || '[]'
+    ) as Genre[];
+    const id = genres.filter((g) => g.genre === name)?.[0]?.id || -1;
     window.scrollTo(0, 0);
     router.push({ name: 'searchPage', query: { genres: id } });
   };

@@ -8,16 +8,14 @@
   </span>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { computed, ref } from 'vue';
   import IconFavorite from '@/components/icons/IconFavorite.vue';
   import { useFilmStore } from '@/stores/filmStore';
   import { getFilmInfo } from '@/components/api';
   import { hasId } from '@/components/utils';
 
-  const props = defineProps({
-    id: Number,
-  });
+  const props = withDefaults(defineProps<{ id: number }>(), { id: 0 });
 
   const isLoading = ref(false);
   const filmStore = useFilmStore();

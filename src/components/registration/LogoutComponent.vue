@@ -2,7 +2,7 @@
   <div class="registration--form">
     <h3 class="heading">
       Вы вошли как:
-      <strong class="name">{{ filmStore.user.name }}</strong>
+      <strong class="name">{{ filmStore.user?.name || 'Загрузка...' }}</strong>
       <button class="edit" @click="toggleView"><IconEdit /></button>
     </h3>
     <div v-if="viewApiContainer" class="container">
@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { ref } from 'vue';
   import { useFilmStore } from '@/stores/filmStore';
   import IconEdit from '@/components/icons/IconEdit.vue';
@@ -25,7 +25,7 @@
 
   const viewApiContainer = ref(false);
 
-  const userName = ref(filmStore.user.name);
+  const userName = ref(filmStore.user?.name || '');
   const apiKey = ref(filmStore.apiKey);
 
   const updateUser = async () => {

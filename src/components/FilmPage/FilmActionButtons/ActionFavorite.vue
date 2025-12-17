@@ -18,11 +18,7 @@
   import { hasId } from '@/components/utils.ts';
   import { useFilmStore } from '@/stores/filmStore.ts';
 
-  interface IActionFavoriteProps {
-    id: number;
-  }
-
-  const props = defineProps<IActionFavoriteProps>();
+  const props = defineProps<{ id: number }>();
 
   const filmStore = useFilmStore();
   const isSelected = computed(() => hasId(filmStore.favorites, props.id));

@@ -1,9 +1,9 @@
 <template>
   <div class="image">
     <div class="icon-actions">
-      <FavoriteActionButton class="favorite" :id="filmInfo.id" />
-      <WatchActionButton class="watch" :id="filmInfo.id || 0" />
-      <FilmRating :rating="filmInfo.rating || 0" class="rating" />
+      <FavoriteActionButton class="favorite" :id="filmInfo?.id" />
+      <WatchActionButton class="watch" :id="filmInfo?.id || 0" />
+      <FilmRating :rating="filmInfo?.rating || 0" class="rating" />
     </div>
     <img v-if="filmInfo?.image" :src="filmInfo?.image" alt="filmTitle" />
   </div>
@@ -17,7 +17,7 @@
   import type { IFilmEntity } from '@/types';
 
   interface IFIlmImageProps {
-    filmInfo: IFilmEntity;
+    filmInfo: IFilmEntity | undefined;
   }
 
   const props = defineProps<IFIlmImageProps>();

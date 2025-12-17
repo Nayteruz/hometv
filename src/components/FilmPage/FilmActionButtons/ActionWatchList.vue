@@ -10,7 +10,7 @@
   </ButtonBlue>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { getFilmInfo } from '@/components/api';
   import ButtonBlue from '@/components/ButtonBlue.vue';
   import IconWillWatch from '@/components/icons/IconVolumeHigh.vue';
@@ -18,9 +18,7 @@
   import { useFilmStore } from '@/stores/filmStore';
   import { computed, ref } from 'vue';
 
-  const props = defineProps({
-    id: String,
-  });
+  const props = withDefaults(defineProps<{ id: number }>(), { id: 0 });
 
   const filmStore = useFilmStore();
   const isSelected = computed(() => hasId(filmStore.watchList, props.id));

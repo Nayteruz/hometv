@@ -15,7 +15,7 @@
   import IconEyeSlash from './icons/IconEyeSlash.vue';
   import { useFilmStore } from '@/stores/filmStore.ts';
 
-  const props = withDefaults(defineProps<{ id: number }>(), {});
+  const props = withDefaults(defineProps<{ id: number }>(), { id: 0 });
 
   const filmStore = useFilmStore();
   const isUnwatch = computed(() => filmStore.isSkipped(props.id));

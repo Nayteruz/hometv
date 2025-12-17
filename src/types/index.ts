@@ -8,6 +8,9 @@ export interface IFilmEntity {
   countries: string[];
   genres: string[];
   type: string;
+  kinopoiskId?: number;
+  filmId?: number;
+  sortTime?: number;
 }
 
 export type IFilmRaw = Record<string, any>;

@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { firebaseDb } from '@/plugins/firebase';
+import type { ICreateAuthData } from '@/stores/types';
 
 export const userDataGet = async function (uid: string) {
   const docRef = doc(firebaseDb, 'users', uid);
@@ -11,12 +12,12 @@ export const userDataGet = async function (uid: string) {
   }
 };
 
-export const userDataSet = async (data: Record<string, any>, uid: string) => {
+export const userDataSet = async (data: ICreateAuthData, uid: string) => {
   await setDoc(doc(firebaseDb, 'users', uid), {
-    name: data.user_name || '',
+    name: data.userName || '',
     email: data.email || '',
     favorites: [],
-    api_key: data.api_key || '',
+    api_key: data.apiKey || '',
   });
 };
 

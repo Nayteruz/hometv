@@ -14,15 +14,15 @@
   </div>
 </template>
 
-<script setup>
-  import { useFilmStore } from '@/stores/filmStore';
+<script setup lang="ts">
   import { useRouter } from 'vue-router';
+  import { useFilmStore } from '@/stores/filmStore';
   import ButtonBlue from '../ButtonBlue.vue';
 
   const filmStore = useFilmStore();
   const router = useRouter();
 
-  const clickLastSearch = (value) => {
+  const clickLastSearch = (value: string) => {
     filmStore.pageNum = 1;
     filmStore.searchQueryStore = value;
     router.push({
@@ -64,6 +64,7 @@
     background: rgba(22, 48, 97, 0.9);
     border-radius: 5px;
     display: none;
+    scroll-behavior: none;
 
     &.opened {
       display: block;
@@ -89,9 +90,11 @@
           background: none;
           width: 100%;
           text-align: left;
+          border-radius: 0;
 
           &:hover {
             background: #2c4f91;
+            color: #fff;
           }
         }
       }

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
   import FilmPlayerSelect from '@/components/FilmPage/FilmPlayerSelect.vue';
   import FilmList from '@/components/FilmList.vue';
@@ -14,29 +14,33 @@
   import FilmImage from '@/components/FilmPage/FilmImage.vue';
   import FilmGenres from '@/components/FilmPage/FilmGenres.vue';
   import { getFilmPageTitle } from '@/components/utils';
+  import type { IFilmEntity } from '@/types';
 
   const filmStore = useFilmStore();
   const route = useRoute();
-  const filmInfo = ref([]);
-  const similars = ref([]);
+  const filmInfo = ref<IFilmEntity | undefined>();
+  const similars = ref<IFilmEntity[]>([]);
 
   const filmName = computed(() => getFilmPageTitle(filmInfo.value));
+  const filmId = Array.isArray(route.params.id)
+    ? Number(route.params.id[0]) || 0
+    : Number(route.params.id) || 0;
 
   const loadFilm = async () => {
     try {
-      const data = getFilmInfo(route.params.id);
+      const data = getFilmInfo(filmId);
       filmInfo.value = await data;
       filmStore.authChange().then(() => {
         filmStore.addLastViews(filmInfo.value);
       });
     } catch (error) {
       console.error('Error load film info', error);
-      filmInfo.value = [];
+      filmInfo.value = undefined;
     }
   };
 
   const loadExtraList = async () => {
-    const filmId = route.params.id;
+    if (!filmId) return;
     try {
       const data = await Promise.allSettled([
         getSimilars(filmId),
@@ -58,13 +62,14 @@
     }
   };
 
-  const isUnwatch = computed(() =>
-    filmStore.isSkipped(
+  const isUnwatch = computed(() => {
+    const skipValue =
       filmInfo.value?.kinopoiskId ||
-        filmInfo.value?.filmId ||
-        filmInfo.value?.id
-    )
-  );
+      filmInfo.value?.filmId ||
+      filmInfo.value?.id ||
+      0;
+    filmStore.isSkipped(skipValue);
+  });
 
   onMounted(() => {
     loadFilm();
@@ -83,9 +88,9 @@
       </div>
       <div class="film__description">
         <h3>Описание:</h3>
-        {{ filmInfo.description }}
+        {{ filmInfo?.description || '' }}
       </div>
-      <FilmGenres :genres="filmInfo.genres || []" title="Жанры" />
+      <FilmGenres :genres="filmInfo?.genres || []" title="Жанры" />
       <div class="film__similar" v-if="similars.length > 0">
         <h3>Похожие фильмы</h3>
         <FilmList :items="similars" :isRating="false" :showPreload="false" />

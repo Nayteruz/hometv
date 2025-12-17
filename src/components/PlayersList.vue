@@ -48,15 +48,15 @@
 
   const filmStore = useFilmStore();
   const route = useRoute();
-  const filmId = route.params.id;
+  const filmId = Number(route.params.id) || 0;
 
-  const playerNames = Object.keys(players);
-  const playersData = ref({});
-  const loadingPlayers = ref({});
-  const selectedPlayer = ref(null);
+  const playerNames: string[] = Object.keys(players);
+  const playersData = ref<Record<string, any>>({});
+  const loadingPlayers = ref<Record<string, boolean>>({});
+  const selectedPlayer = ref<string | null>(null);
   const playerList = ref(null);
 
-  const selectPlayer = async (name) => {
+  const selectPlayer = async (name: string) => {
     selectedPlayer.value = name;
     const playerData = playersData.value[name];
 
@@ -67,13 +67,13 @@
     await loadPlayer(name);
   };
 
-  const getApiKey = (name) => {
+  const getApiKey = (name: string) => {
     if (name === 'Alloha') return filmStore.apiAloha;
     if (name === 'HDVB') return filmStore.apiHDBV;
     return undefined;
   };
 
-  const loadPlayer = async (name) => {
+  const loadPlayer = async (name: string) => {
     loadingPlayers.value[name] = true;
 
     const playerByName = playersData.value[name];
@@ -82,11 +82,11 @@
     }
 
     try {
-      const getSrc = players[name];
+      const getSrc = players[name as keyof typeof players];
       const api = getApiKey(name);
 
       let iframeSrc =
-        typeof getSrc === 'function' ? await getSrc(filmId, api) : null;
+        typeof getSrc === 'function' ? await getSrc(filmId, api || '') : null;
 
       if (playerByName) {
         playersData.value[name] = {
@@ -127,8 +127,8 @@
 
   const preloadFirstPlayer = async () => {
     if (playerNames.length > 0) {
-      selectedPlayer.value = playerNames[0];
-      await loadPlayer(playerNames[0]);
+      selectedPlayer.value = playerNames[0] || '';
+      await loadPlayer(playerNames[0] || '');
     }
   };
 

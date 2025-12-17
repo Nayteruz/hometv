@@ -5,16 +5,18 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { onMounted, ref, type Ref } from 'vue';
   import { useRoute } from 'vue-router';
 
   const route = useRoute();
-  const player_init_item = ref(null);
+  const player_init_item = ref<HTMLElement | null>(null);
 
-  function kinoTopPlayer(el) {
+  function kinoTopPlayer(el: Ref<HTMLElement | null>) {
+    if (!el.value) return;
+
     el.value.innerHTML = '';
     let filmElem = document.createElement('div');
-    filmElem.setAttribute('data-kinopoisk', route.params.id);
+    filmElem.setAttribute('data-kinopoisk', String(route.params.id));
     filmElem.setAttribute('id', 'kinoplayertop');
 
     let script = document.createElement('script');

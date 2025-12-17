@@ -1,34 +1,3 @@
-<template>
-  <li
-    :class="[
-      'card',
-      { focused: isFocused || isFocusedOnHover, unwatch: isUnwatch },
-    ]"
-    @mouseover="onOver"
-    @mouseleave="onLeave"
-    tabindex="0"
-    ref="itemRef"
-  >
-    <a
-      :href="`/film/${props.itemFilm.id}`"
-      class="card-link"
-      @click.prevent="goToPageFilm"
-    ></a>
-    <div class="icon-actions">
-      <FavoriteActionButton class="favorite" :id="id" />
-      <WatchActionButton class="watch" :id="id" />
-      <FilmRating :rating="props.itemFilm.rating" :isRating="props.isRating" />
-    </div>
-    <div class="image-wrapper">
-      <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"></svg>
-      <img :src="itemFilm.image" :alt="props.itemFilm.name" />
-    </div>
-    <div class="name-wrapper">
-      <h3>{{ filmName }}</h3>
-    </div>
-  </li>
-</template>
-
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue';
   import { useRouter } from 'vue-router';
@@ -235,3 +204,34 @@
     }
   }
 </style>
+
+<template>
+  <li
+    :class="[
+      'card',
+      { focused: isFocused || isFocusedOnHover, unwatch: isUnwatch },
+    ]"
+    @mouseover="onOver"
+    @mouseleave="onLeave"
+    tabindex="0"
+    ref="itemRef"
+  >
+    <a
+      :href="`/film/${props.itemFilm.id}`"
+      class="card-link"
+      @click.prevent="goToPageFilm"
+    ></a>
+    <div class="icon-actions">
+      <FavoriteActionButton class="favorite" :id="id" />
+      <WatchActionButton class="watch" :id="id" />
+      <FilmRating :rating="props.itemFilm.rating" :isRating="props.isRating" />
+    </div>
+    <div class="image-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"></svg>
+      <img :src="itemFilm.image" :alt="props.itemFilm.name" />
+    </div>
+    <div class="name-wrapper">
+      <h3>{{ filmName }}</h3>
+    </div>
+  </li>
+</template>

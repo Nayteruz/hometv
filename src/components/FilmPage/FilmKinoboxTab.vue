@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { onMounted, ref, type Ref } from 'vue';
   import { useRoute } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
 
@@ -13,15 +13,15 @@
   const route = useRoute();
   const player_init_item = ref<HTMLElement | null>(null);
 
-  const kinoBoxPlayer = (el) => {
+  const kinoBoxPlayer = (el: Ref<HTMLElement | null>) => {
     filmStore.setFilmPageId(Number(route.params.id) || 0);
     let script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = '//kinobox.tv/kinobox.min.js';
-    el.value.appendChild(script);
+    el.value!.appendChild(script);
 
-    /* eslint-disable */
     setTimeout(() => {
+      // @ts-ignore
       new Kinobox('.kinobox_player', {
         search: { kinopoisk: route.params.id },
       }).init();

@@ -12,15 +12,15 @@
 
   const filmStore = useFilmStore();
   const route = useRoute();
-  const filmId = route.params.id;
-  const playerContainer = ref(null);
-  let script = null;
+  const filmId = Number(route.params.id) || 0;
+  const playerContainer = ref<HTMLElement | null>(null);
+  let script: HTMLScriptElement | null = null;
 
   function initPlayer() {
     filmStore.setFilmPageId(filmId);
 
     // Создаем необходимую структуру HTML
-    playerContainer.value.innerHTML = `
+    playerContainer.value!.innerHTML = `
           <div data-kinopoisk="${filmId}" id="kinobd"></div>
         `;
 

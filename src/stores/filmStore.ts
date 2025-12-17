@@ -17,9 +17,17 @@ import {
 import { getFilters } from '@/components/api';
 import { removeData, addFirstAndExcludeCopy, getFilmEntityList } from './utils';
 import type { IFilmEntity } from '@/types';
+import type {
+  IAuthData,
+  ICreateAuthData,
+  IEditAuthData,
+  IFilmStoreState,
+  ISearchListItem,
+} from './types';
+import type { FirebaseError } from 'firebase/app';
 
 export const useFilmStore = defineStore('filmStore', {
-  state: () => ({
+  state: (): IFilmStoreState => ({
     user: null,
     apiKey: '404dc583-7efc-4c93-8f21-a782f977b9e7',
     apiAloha: 'e7b61f129f4a392ac4bf6726a9dd6a',
@@ -31,7 +39,7 @@ export const useFilmStore = defineStore('filmStore', {
     genreIdStore: null,
     genreListStore: [],
     searchQueryStore: '',
-    filters: null,
+    filters: { genres: [] },
     filmPageId: 0,
     favorites: [],
     currentFocusIndex: -1,
@@ -111,7 +119,8 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedFavorites = await this.safeUpdateUserData(
           'favorites',
-          (currentFavorites) => removeData(currentFavorites, filmId)
+          (currentFavorites: IFilmEntity[]) =>
+            removeData(currentFavorites, filmId)
         );
 
         if (updatedFavorites) {
@@ -122,7 +131,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async addLastSearchList(searchValue) {
+    async addLastSearchList(searchValue: string) {
       if (!searchValue || !this.user) {
         return;
       }
@@ -130,7 +139,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedSearchList = await this.safeUpdateUserData(
           'lastSearchList',
-          (currentSearchList) => {
+          (currentSearchList: ISearchListItem[]) => {
             const filtered = currentSearchList.filter(
               (item) => item.value.toLowerCase() !== searchValue.toLowerCase()
             );
@@ -150,7 +159,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async addLastViews(itemFilm) {
+    async addLastViews(itemFilm?: IFilmEntity) {
       if (!itemFilm || !this.user) {
         return;
       }
@@ -158,7 +167,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedLastViews = await this.safeUpdateUserData(
           'lastViews',
-          (currentLastViews) =>
+          (currentLastViews: IFilmEntity[]) =>
             addFirstAndExcludeCopy(currentLastViews, itemFilm)
         );
 
@@ -170,7 +179,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async addSkip(itemId) {
+    async addSkip(itemId: number) {
       if (!this.user || !itemId) {
         return;
       }
@@ -178,7 +187,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedSkippedIds = await this.safeUpdateUserData(
           'skippedIds',
-          (currentSkippedIds) => {
+          (currentSkippedIds: number[]) => {
             const skippedSet = new Set(currentSkippedIds);
             skippedSet.add(itemId);
             return Array.from(skippedSet).slice(0, 100);
@@ -193,7 +202,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async removeSkip(itemId) {
+    async removeSkip(itemId: number) {
       if (!this.user || !itemId) {
         return;
       }
@@ -201,7 +210,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedSkippedIds = await this.safeUpdateUserData(
           'skippedIds',
-          (currentSkippedIds) => {
+          (currentSkippedIds: number[]) => {
             const skippedSet = new Set(currentSkippedIds);
             skippedSet.delete(itemId);
             return Array.from(skippedSet);
@@ -216,7 +225,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async addWatching(itemFilm) {
+    async addWatching(itemFilm: IFilmEntity) {
       if (!itemFilm || !this.user) {
         return;
       }
@@ -224,7 +233,8 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedWatching = await this.safeUpdateUserData(
           'watchingList',
-          (currentWatching) => addFirstAndExcludeCopy(currentWatching, itemFilm)
+          (currentWatching: IFilmEntity[]) =>
+            addFirstAndExcludeCopy(currentWatching, itemFilm)
         );
 
         if (updatedWatching) {
@@ -235,7 +245,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async removeWatching(filmId) {
+    async removeWatching(filmId: number) {
       if (!this.user || !filmId) {
         return;
       }
@@ -243,7 +253,8 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedWatching = await this.safeUpdateUserData(
           'watchingList',
-          (currentWatching) => removeData(currentWatching, filmId)
+          (currentWatching: IFilmEntity[]) =>
+            removeData(currentWatching, filmId)
         );
 
         if (updatedWatching) {
@@ -254,7 +265,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async addWatchList(itemFilm) {
+    async addWatchList(itemFilm: IFilmEntity) {
       if (!itemFilm || !this.user) {
         return;
       }
@@ -262,7 +273,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedWatchList = await this.safeUpdateUserData(
           'watchList',
-          (currentWatchList) =>
+          (currentWatchList: IFilmEntity[]) =>
             addFirstAndExcludeCopy(currentWatchList, itemFilm)
         );
 
@@ -274,7 +285,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async removeWatchList(filmId) {
+    async removeWatchList(filmId: number) {
       if (!this.user || !filmId) {
         return;
       }
@@ -282,7 +293,8 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedWatchList = await this.safeUpdateUserData(
           'watchList',
-          (currentWatching) => removeData(currentWatching, filmId)
+          (currentWatching: IFilmEntity[]) =>
+            removeData(currentWatching, filmId)
         );
 
         if (updatedWatchList) {
@@ -293,7 +305,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async addWaitList(itemFilm) {
+    async addWaitList(itemFilm: IFilmEntity) {
       if (!itemFilm || !this.user) {
         return;
       }
@@ -301,7 +313,7 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedWaitList = await this.safeUpdateUserData(
           'waitingList',
-          (currentWatchList) =>
+          (currentWatchList: IFilmEntity[]) =>
             addFirstAndExcludeCopy(currentWatchList, itemFilm)
         );
 
@@ -313,7 +325,7 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    async removeWaitList(filmId) {
+    async removeWaitList(filmId: number) {
       if (!this.user || !filmId) {
         return;
       }
@@ -321,7 +333,8 @@ export const useFilmStore = defineStore('filmStore', {
       try {
         const updatedWaitList = await this.safeUpdateUserData(
           'waitingList',
-          (currentWatching) => removeData(currentWatching, filmId)
+          (currentWatching: IFilmEntity[]) =>
+            removeData(currentWatching, filmId)
         );
 
         if (updatedWaitList) {
@@ -332,11 +345,11 @@ export const useFilmStore = defineStore('filmStore', {
       }
     },
 
-    isSkipped(itemId) {
+    isSkipped(itemId: number) {
       return this.skippedIds.has(itemId);
     },
 
-    async authWithEmailAndPassword(data) {
+    async authWithEmailAndPassword(data: IAuthData) {
       await signInWithEmailAndPassword(this.auth, data.email, data.password)
         .then(() => {
           this.getUserData();
@@ -345,11 +358,11 @@ export const useFilmStore = defineStore('filmStore', {
           this.errorMessage = translateErrorCode(error.code);
         });
     },
-    async createAuthWithEmailAndPassword(data) {
+    async createAuthWithEmailAndPassword(data: ICreateAuthData) {
       await createUserWithEmailAndPassword(this.auth, data.email, data.password)
         .then(async (userCredential) => {
           this.user = await userCredential.user;
-          await userDataSet(data, this.user.uid);
+          await userDataSet(data, this.user!.uid);
           await this.getUserData();
         })
         .catch((error) => {
@@ -357,7 +370,7 @@ export const useFilmStore = defineStore('filmStore', {
         });
     },
 
-    async editAuthNameOrApiKey(data) {
+    async editAuthNameOrApiKey(data: IEditAuthData) {
       try {
         if (this.user) {
           const docRef = doc(firebaseDb, 'users', this.user.uid);
@@ -368,7 +381,7 @@ export const useFilmStore = defineStore('filmStore', {
         }
         await this.getUserData();
       } catch (error) {
-        this.errorMessage = translateErrorCode(error.code);
+        this.errorMessage = translateErrorCode((error as FirebaseError).code);
       }
     },
 
@@ -381,7 +394,7 @@ export const useFilmStore = defineStore('filmStore', {
           alert('Ошибка logout: ' + error);
         });
     },
-    async authChange(callback) {
+    async authChange(callback?: () => void) {
       onAuthStateChanged(this.auth, async (user) => {
         if (user) {
           this.user = user;
@@ -391,8 +404,12 @@ export const useFilmStore = defineStore('filmStore', {
         }
       });
     },
-    async getUserData(callback) {
-      let data = await userDataGet(this.user.uid);
+    async getUserData(callback?: () => void) {
+      if (!this.user) {
+        return;
+      }
+
+      let data = await userDataGet(this.user!.uid);
       this.user.name = data?.name || '';
       this.user.email = data?.email ?? '';
 
@@ -425,13 +442,13 @@ export const useFilmStore = defineStore('filmStore', {
 
       typeof callback === 'function' ? callback() : '';
     },
-    removeUserData(callback) {
+    removeUserData(callback?: () => void) {
       this.user = null;
       this.favorites = [];
       typeof callback === 'function' ? callback() : '';
     },
     searchQueryWithGenre() {
-      let qr = {};
+      let qr: { q?: string; genres?: number } = {};
       if (this.searchQueryStore) {
         qr.q = this.searchQueryStore;
       }
@@ -440,23 +457,25 @@ export const useFilmStore = defineStore('filmStore', {
       }
       return qr;
     },
-    setCurrentFocus(index) {
+    setCurrentFocus(index: number) {
       this.currentFocusIndex = index;
     },
-    setFocusIds(href) {
-      this.focusIds = {
-        ...this.focusIds,
-        [href]: this.currentFocusIndex,
-      };
-    },
-    setMountedCurrentFocus(href) {
-      this.setCurrentFocus(this.focusIds[href]);
+    // setFocusIds(href) {
+    //   this.focusIds = {
+    //     ...this.focusIds,
+    //     [href]: this.currentFocusIndex,
+    //   };
+    // },
+    setMountedCurrentFocus(href: string) {
+      this.setCurrentFocus(this.focusIds[href] || 0);
     },
     async searchPageTitle() {
+      const genres = this.genreListStore || [];
+
       let genre_name = this.genreIdStore
-        ? await this.genreListStore.filter(
-            (genre) => +genre.id === +this.genreIdStore
-          )[0].genre
+        ? genres.filter(
+            (genre) => Number(genre.id) === Number(this.genreIdStore || 0)
+          )?.[0]?.genre
         : null;
       if (this.searchQueryStore && this.genreIdStore) {
         return `Поиск по слову "${this.searchQueryStore}", жанр "${genre_name}"`;
@@ -468,7 +487,7 @@ export const useFilmStore = defineStore('filmStore', {
         return 'Ничего не указано для поиска';
       }
     },
-    async safeUpdateUserData(fieldName, updateCallback) {
+    async safeUpdateUserData(fieldName: string, updateCallback: Function) {
       if (!this.user) {
         console.warn('Необходимо авторизоваться');
         return null;

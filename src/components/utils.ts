@@ -1,6 +1,6 @@
 import type { IFilmEntity } from '@/types';
 
-export const getFilmPageTitle = (filmInfo: IFilmEntity): string => {
+export const getFilmPageTitle = (filmInfo?: IFilmEntity): string => {
   const name = filmInfo?.name || '';
   const year = filmInfo?.year || '';
   return `${name} ${year ? `(${year})` : ''}`;

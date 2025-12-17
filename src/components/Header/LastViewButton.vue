@@ -2,7 +2,7 @@
   <ButtonBlue @click="click" :size="26"><IconFilm /></ButtonBlue>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
   import { useRouter } from 'vue-router';
   import IconFilm from '@/components/icons/IconFilm.vue';

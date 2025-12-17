@@ -37,7 +37,7 @@
   import IconFavorite from '@/components/icons/IconFavorite.vue';
 
   const route = useRoute();
-  const id = route.params.id;
+  const id = Number(route.params.id);
 </script>
 
 <style scoped>

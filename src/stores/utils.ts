@@ -40,11 +40,9 @@ export const addFirstAndExcludeCopy = (list: IFilmRawList, item: IFilmRaw) => {
   return [itemWithTime, ...excludedList];
 };
 
-export const removeData = (list: IFilmRawList, itemId: string) => {
-  const id = Number(itemId);
-
+export const removeData = (list: IFilmRawList, itemId: number) => {
   return list.filter(
-    (film) => Number(film?.kinopoiskId || film?.filmId || film?.id) !== id
+    (film) => Number(film?.kinopoiskId || film?.filmId || film?.id) !== itemId
   );
 };
 

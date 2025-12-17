@@ -15,16 +15,15 @@
 </template>
 
 <script setup lang="ts">
-  import { useFilmStore } from '@/stores/filmStore.ts';
   import FilmItem from '@/components/FilmPage/FilmItem.vue';
   import PreloadCards from '@/components/PreloadCards.vue';
-  import { inject, ref, onMounted, onBeforeUnmount } from 'vue';
+  import { inject, ref } from 'vue';
   import type { IFilmEntity } from '@/types';
 
   interface IFilmListProps {
     showPreload: boolean;
     items: IFilmEntity[];
-    isRating: boolean;
+    isRating?: boolean;
   }
 
   const props = withDefaults(defineProps<IFilmListProps>(), {
@@ -33,20 +32,11 @@
     isRating: true,
   });
 
-  const filmStore = useFilmStore();
   const emitter = inject('emitter');
   const loading = ref(false);
 
-  emitter.on('isLoading', (emit: boolean) => {
+  (emitter as any).on('isLoading', (emit: boolean) => {
     loading.value = emit;
-  });
-
-  onMounted(() => {
-    filmStore.hasFilmList = true;
-  });
-
-  onBeforeUnmount(() => {
-    filmStore.hasFilmList = false;
   });
 </script>
 

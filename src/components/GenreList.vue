@@ -2,7 +2,7 @@
   <div class="genres-wrap">
     <ul class="genres">
       <li
-        :class="{ active: +genre.id === +filmStore.genreIdStore }"
+        :class="{ active: isActive(genre.id) }"
         v-for="genre in filmStore.genreListStore"
         :key="genre.id"
       >
@@ -22,10 +22,14 @@
   const route = useRoute();
   const router = useRouter();
   const filmStore = useFilmStore();
-  const routeGenre = computed(() => route.query.genres);
+  const routeGenre = computed(() => Number(route.query.genres));
 
-  const setGenre = (genreId) => {
-    if (+filmStore.genreIdStore === +genreId) {
+  const isActive = (genreId: number) => {
+    return Number(filmStore.genreIdStore) === Number(genreId);
+  };
+
+  const setGenre = (genreId: number) => {
+    if (Number(filmStore.genreIdStore) === Number(genreId)) {
       filmStore.genreIdStore = null;
     } else {
       filmStore.genreIdStore = genreId;

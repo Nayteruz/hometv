@@ -26,18 +26,15 @@
   </form>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
   import { computed, onMounted, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import ButtonBlue from '../ButtonBlue.vue';
   import SearchPopup from './SearchPopup.vue';
 
-  const props = defineProps({
-    visibleSearch: {
-      type: Boolean,
-      default: false,
-    },
+  const props = withDefaults(defineProps<{ visibleSearch?: boolean }>(), {
+    visibleSearch: false,
   });
 
   const route = useRoute();

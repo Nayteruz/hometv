@@ -26,7 +26,7 @@
   const totalPages = ref(0);
   const showPreload = ref(false);
   const searchQueryRoute = computed(() => route.query.q);
-  const genreIdRoute = computed(() => route.query.genres);
+  const genreIdRoute = computed(() => Number(route.query.genres));
   const pageTitle = ref('');
 
   const getRequest = async () => {

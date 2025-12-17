@@ -14,12 +14,12 @@ export const breakpoints = {
 };
 
 export const players = {
-  Alloha: (id: string, api: string) =>
+  Alloha: (id: number, api: string) =>
     `https://harald-as.newplayjj.com/?kp=${id}&token=${api}`,
-  Collaps: (id: string) => `https://api.atomics.ws/embed/kp/${id}`,
-  VideoCDN: (id: string) =>
+  Collaps: (id: number) => `https://api.atomics.ws/embed/kp/${id}`,
+  VideoCDN: (id: number) =>
     `https://p.lumex.space/j3mqebEPqCLB?domain=nayteruz.github.io&kp_id=${id}`,
-  Coll: async (id: string) => {
+  Coll: async (id: number) => {
     const url = `https://api.bhcesh.me/list?token=4c250f7ac0a8c8a658c789186b9a58a5&kinopoisk_id=${id}`;
     try {
       const res = await fetch(url);
@@ -36,7 +36,7 @@ export const players = {
     }
     return null;
   },
-  kodi: async (id: string) => {
+  kodi: async (id: number) => {
     const url = `https://kodikapi.com/search?token=41dd95f84c21719b09d6c71182237a25&kinopoisk_id=${id}`;
     try {
       const res = await fetch(url);
@@ -54,7 +54,7 @@ export const players = {
     return null;
   },
 
-  HDVB: async (id: string, api: string) => {
+  HDVB: async (id: number, api: string) => {
     const url = `https://apivb.com/api/videos.json?id_kp=${id}&token=${api}`;
     try {
       const res = await fetch(url);
@@ -67,9 +67,9 @@ export const players = {
     }
     return null;
   },
-  Kodik: (id: string) => `https:////kodik.cc/find-player?kinopoiskID=${id}`,
-  Трейлер: (id: string) => `https://api.atomics.ws/embed/trailer-kp/${id}`,
-};
+  Kodik: (id: number) => `https:////kodik.cc/find-player?kinopoiskID=${id}`,
+  Трейлер: (id: number) => `https://api.atomics.ws/embed/trailer-kp/${id}`,
+} as const;
 
 export const pagesTitle = {
   MAIN: 'Список последних новинок',

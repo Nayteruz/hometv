@@ -1,3 +1,4 @@
+import type { IFiltersData } from '@/stores/types';
 import { getFilmEntity, getFilmEntityList } from '@/stores/utils';
 
 const films = '404dc583-7efc-4c93-8f21-a782f977b9e7';
@@ -24,7 +25,7 @@ const getDataByUrl = async (
   return await response.json();
 };
 
-export const getFilters = async () => {
+export const getFilters = async (): Promise<IFiltersData> => {
   return await getDataByUrl(`${BASE_API_URL_FILMS2v2}/filters`);
 };
 
