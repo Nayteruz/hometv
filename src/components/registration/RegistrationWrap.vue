@@ -16,7 +16,7 @@
   </PopupContainer>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { onMounted, ref, inject } from 'vue';
   import IconUser from '@/components/icons/IconUser.vue';
   import RegistrationComponent from './RegistrationComponent.vue';
@@ -27,9 +27,9 @@
 
   const filmStore = useFilmStore();
   const formView = ref('sign');
-  const emitter = inject('emitter');
+  const emitter = inject('emitter') as any;
 
-  const setForm = (e) => {
+  const setForm = (e: string) => {
     filmStore.errorMessage = '';
     formView.value = e;
   };

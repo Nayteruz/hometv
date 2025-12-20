@@ -48,10 +48,9 @@ export interface IFilmStoreState {
   errorMessage: string;
   pageNum: number;
   limit: number;
-  genreIdStore: number | null;
-  genreListStore: Genre[];
-  searchQueryStore: string;
-  filters: IFiltersData;
+  genreId: number | null;
+  genres: Genre[];
+  searchInputText: string;
   filmPageId: number;
   favorites: IFilmEntity[];
   currentFocusIndex: number;
@@ -63,5 +62,32 @@ export interface IFilmStoreState {
   watchingList: IFilmEntity[];
   watchList: IFilmEntity[];
   waitingList: IFilmEntity[];
+  skippedIds: Set<number>;
+}
+
+export interface IFirebaseUserData {
+  name?: string;
+  email?: string;
+  api_key?: string;
+  apiKey?: string;
+  favorites?: any[];
+  watchingList?: any[];
+  watchList?: any[];
+  waitingList?: any[];
+  lastSearchList?: Array<{ id: number; value: string }>;
+  lastViews?: any[];
+  skippedIds?: number[];
+}
+
+export interface IInitializedUserData {
+  name: string;
+  email: string;
+  apiKey: string;
+  favorites: IFilmEntity[];
+  watchingList: IFilmEntity[];
+  watchList: IFilmEntity[];
+  waitingList: IFilmEntity[];
+  lastSearchList: Array<{ id: number; value: string }>;
+  lastViews: IFilmEntity[];
   skippedIds: Set<number>;
 }

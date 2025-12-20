@@ -12,10 +12,15 @@ import {
   userDataGet,
   userDataSet,
   translateErrorCode,
-  ignore_genre,
 } from '@/plugins/firebaseActions';
 import { getFilters } from '@/components/api';
-import { removeData, addFirstAndExcludeCopy, getFilmEntityList } from './utils';
+import {
+  removeData,
+  addFirstAndExcludeCopy,
+  getFilmEntityList,
+  filterGenres,
+  initUserData,
+} from './utils';
 import type { IFilmEntity } from '@/types';
 import type {
   IAuthData,
@@ -36,10 +41,9 @@ export const useFilmStore = defineStore('filmStore', {
     errorMessage: '',
     pageNum: 1,
     limit: 20,
-    genreIdStore: null,
-    genreListStore: [],
-    searchQueryStore: '',
-    filters: { genres: [] },
+    genreId: null,
+    genres: [],
+    searchInputText: '',
     filmPageId: 0,
     favorites: [],
     currentFocusIndex: -1,
@@ -54,18 +58,36 @@ export const useFilmStore = defineStore('filmStore', {
     skippedIds: new Set(),
   }),
   getters: {
-    filterGenres() {
-      if (!this.genreListStore.length) return [];
-      this.genreListStore = this.genreListStore.filter((x) => {
-        if (ignore_genre.indexOf(x.genre) === -1) {
-          return x;
-        }
-      });
+    selectedGenreName(state): string {
+      const selectedGenre = state.genres.find((g) => g.id === state.genreId);
+      return selectedGenre ? selectedGenre.genre : '';
+    },
+
+    searchHeading(): string {
+      if (this.searchInputText && this.genreId) {
+        return `Поиск по слову "${this.searchInputText}", жанр "${this.selectedGenreName}"`;
+      } else if (this.searchInputText && !this.genreId) {
+        return `Поиск по слову "${this.searchInputText}"`;
+      } else if (this.genreId && !this.searchInputText) {
+        return `Поиск по жанру "${this.selectedGenreName}"`;
+      } else {
+        return 'Ничего не указано для поиска';
+      }
+    },
+    searchQuery() {
+      let qr: { q?: string; genres?: number } = {};
+      if (this.searchInputText) {
+        qr.q = this.searchInputText;
+      }
+      if (this.genreId) {
+        qr.genres = this.genreId;
+      }
+      return qr;
     },
   },
   actions: {
     setGenreId(genreId: number | null) {
-      this.genreIdStore = genreId;
+      this.genreId = genreId;
     },
     setFilmPageId(id: number) {
       this.filmPageId = id;
@@ -75,17 +97,14 @@ export const useFilmStore = defineStore('filmStore', {
     },
     async getGenreList() {
       if (localStorage.getItem('genres')) {
-        this.genreListStore = JSON.parse(localStorage.getItem('genres') || '');
-        return this.genreListStore;
+        this.genres = JSON.parse(localStorage.getItem('genres') || '');
+        return this.genres;
       } else {
         try {
           const data = await getFilters();
-          this.filters = data;
-          this.genreListStore = data.genres;
-          this.filterGenres;
-          localStorage.setItem('genres', JSON.stringify(this.genreListStore));
-
-          return this.genreListStore;
+          this.genres = filterGenres(data.genres);
+          localStorage.setItem('genres', JSON.stringify(this.genres));
+          return this.genres;
         } catch (error) {
           console.error('Error load genres', error);
         }
@@ -144,10 +163,9 @@ export const useFilmStore = defineStore('filmStore', {
               (item) => item.value.toLowerCase() !== searchValue.toLowerCase()
             );
 
-            return [{ id: Date.now(), value: searchValue }, ...filtered].slice(
-              0,
-              30
-            );
+            const items = [{ id: Date.now(), value: searchValue }, ...filtered];
+
+            return items.slice(0, 30);
           }
         );
 
@@ -370,13 +388,14 @@ export const useFilmStore = defineStore('filmStore', {
         });
     },
 
+    // 404dc583-7efc-4c93-8f21-a782f977b9e7
     async editAuthNameOrApiKey(data: IEditAuthData) {
       try {
         if (this.user) {
           const docRef = doc(firebaseDb, 'users', this.user.uid);
           await updateDoc(docRef, {
             name: data.userName || '',
-            api_key: data.apiKey || this.apiKey,
+            apiKey: data.apiKey || this.apiKey,
           });
         }
         await this.getUserData();
@@ -409,36 +428,29 @@ export const useFilmStore = defineStore('filmStore', {
         return;
       }
 
-      let data = await userDataGet(this.user!.uid);
-      this.user.name = data?.name || '';
-      this.user.email = data?.email ?? '';
+      const {
+        name,
+        email,
+        favorites,
+        watchingList,
+        watchList,
+        waitingList,
+        lastSearchList,
+        lastViews,
+        skippedIds,
+        apiKey,
+      } = initUserData(await userDataGet(this.user!.uid));
 
-      this.favorites = getFilmEntityList(data?.favorites ?? []).sort(
-        (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
-      );
-
-      this.watchingList = getFilmEntityList(data?.watchingList ?? []).sort(
-        (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
-      );
-
-      this.watchList = getFilmEntityList(data?.watchList ?? []).sort(
-        (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
-      );
-
-      this.waitingList = getFilmEntityList(data?.waitingList ?? []).sort(
-        (a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0)
-      );
-
-      this.lastSearchList = (data?.lastSearchList || []).slice(0, 30);
-      this.lastViews = getFilmEntityList(data?.lastViews ?? [])
-        .slice(0, 40)
-        .sort((a, b) => (b?.sortTime ?? 0) - (a?.sortTime ?? 0));
-
-      this.skippedIds = new Set((data?.skippedIds ?? []).slice(0, 100));
-
-      if (data?.api_key) {
-        this.apiKey = data.api_key;
-      }
+      this.user.name = name;
+      this.user.email = email;
+      this.favorites = favorites;
+      this.watchingList = watchingList;
+      this.watchList = watchList;
+      this.waitingList = waitingList;
+      this.lastSearchList = lastSearchList;
+      this.lastViews = lastViews;
+      this.skippedIds = skippedIds;
+      this.apiKey = apiKey;
 
       typeof callback === 'function' ? callback() : '';
     },
@@ -447,45 +459,11 @@ export const useFilmStore = defineStore('filmStore', {
       this.favorites = [];
       typeof callback === 'function' ? callback() : '';
     },
-    searchQueryWithGenre() {
-      let qr: { q?: string; genres?: number } = {};
-      if (this.searchQueryStore) {
-        qr.q = this.searchQueryStore;
-      }
-      if (this.genreIdStore) {
-        qr.genres = this.genreIdStore;
-      }
-      return qr;
-    },
     setCurrentFocus(index: number) {
       this.currentFocusIndex = index;
     },
-    // setFocusIds(href) {
-    //   this.focusIds = {
-    //     ...this.focusIds,
-    //     [href]: this.currentFocusIndex,
-    //   };
-    // },
     setMountedCurrentFocus(href: string) {
       this.setCurrentFocus(this.focusIds[href] || 0);
-    },
-    async searchPageTitle() {
-      const genres = this.genreListStore || [];
-
-      let genre_name = this.genreIdStore
-        ? genres.filter(
-            (genre) => Number(genre.id) === Number(this.genreIdStore || 0)
-          )?.[0]?.genre
-        : null;
-      if (this.searchQueryStore && this.genreIdStore) {
-        return `Поиск по слову "${this.searchQueryStore}", жанр "${genre_name}"`;
-      } else if (this.searchQueryStore && !this.genreIdStore) {
-        return `Поиск по слову "${this.searchQueryStore}"`;
-      } else if (this.genreIdStore && !this.searchQueryStore) {
-        return `Поиск по жанру "${genre_name}"`;
-      } else {
-        return 'Ничего не указано для поиска';
-      }
     },
     async safeUpdateUserData(fieldName: string, updateCallback: Function) {
       if (!this.user) {

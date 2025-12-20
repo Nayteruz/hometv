@@ -11,7 +11,7 @@
   ></div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { onMounted, ref, watch, inject } from 'vue';
   import { useRouter } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
@@ -19,11 +19,12 @@
   import PaginationList from '@/components/PaginationList.vue';
   import { getCollections } from '@/components/api';
   import { pagesTitle } from '@/components/const';
+  import type { IFilmEntity } from '@/types';
 
   const filmStore = useFilmStore();
-  const emitter = inject('emitter');
+  const emitter = inject('emitter') as any;
   const router = useRouter();
-  const films = ref([]);
+  const films = ref<IFilmEntity[]>([]);
   const totalPages = ref(0);
   const showPreload = ref(false);
 
@@ -35,7 +36,7 @@
     }
   };
 
-  async function getListFilms(page, more = '') {
+  async function getListFilms(page: number = 0, more: string = '') {
     if (more === 'loading') {
       emitter.emit('isLoading', true);
     }
@@ -73,7 +74,8 @@
   );
 
   watch(
-    () => router.currentRoute.value.href,
+    // () => router.currentRoute.value.href,
+    () => router.currentRoute.value.fullPath,
     () => {
       filmStore.films = films.value;
     }

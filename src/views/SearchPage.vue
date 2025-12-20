@@ -11,55 +11,58 @@
   ></div>
 </template>
 
-<script setup>
-  import { onMounted, ref, computed, inject } from 'vue';
+<script setup lang="ts">
+  import { onMounted, ref, inject } from 'vue';
   import { useFilmStore } from '@/stores/filmStore';
   import { useRoute } from 'vue-router';
   import FilmList from '@/components/FilmList.vue';
   import PaginationList from '@/components/PaginationList.vue';
   import { getSearchFilms } from '@/components/api';
+  import type { IFilmEntity } from '@/types';
 
   const route = useRoute();
-  const films = ref([]);
-  const emitter = inject('emitter');
+  const films = ref<IFilmEntity[]>([]);
+  const emitter = inject('emitter') as any;
   const filmStore = useFilmStore();
   const totalPages = ref(0);
   const showPreload = ref(false);
-  const searchQueryRoute = computed(() => route.query.q);
-  const genreIdRoute = computed(() => Number(route.query.genres));
   const pageTitle = ref('');
 
   const getRequest = async () => {
-    const params = {};
+    const params: Record<string, string> = {};
 
-    if (filmStore.searchQueryStore) {
-      params.keyword = filmStore.searchQueryStore;
+    if (filmStore.searchInputText) {
+      params.keyword = filmStore.searchInputText;
     }
-    if (filmStore.genreIdStore) {
-      params.genres = filmStore.genreIdStore;
+    if (filmStore.genreId) {
+      params.genres = String(filmStore.genreId);
     }
     if (filmStore.pageNum) {
-      params.page = filmStore.pageNum;
+      params.page = String(filmStore.pageNum);
     }
 
     try {
-      return getSearchFilms(params);
+      return getSearchFilms<{
+        total: number;
+        items: IFilmEntity[];
+        totalPages: number;
+      }>(params);
     } catch (error) {
       console.error('Error load films', error);
     }
   };
 
-  const getListFilms = async (more = false, page) => {
+  const getListFilms = async (more: boolean = false, page: number) => {
     filmStore.pageNum = page || filmStore.pageNum;
-    if (filmStore.genreIdStore || filmStore.searchQueryStore || more) {
+    if (filmStore.genreId || filmStore.searchInputText || more) {
       showPreload.value = true;
       const response = await getRequest();
-      totalPages.value = response.totalPages;
+      totalPages.value = response?.totalPages || 0;
       if (more) {
-        films.value = [...films.value, ...response.items];
+        films.value = [...films.value, ...(response?.items || [])];
       } else {
         films.value = [];
-        films.value = response.items;
+        films.value = response?.items || [];
       }
       showPreload.value = false;
     }
@@ -76,12 +79,12 @@
   emitter.on('clickPage', setNextPage);
 
   onMounted(async () => {
-    filmStore.searchQueryStore = searchQueryRoute.value;
-    filmStore.genreIdStore = genreIdRoute.value;
+    filmStore.searchInputText = String(route.query.q) || '';
+    filmStore.genreId = Number(route.query.genres);
     await getListFilms(false, 1);
     emitter.on('searchSubmit', () => {
       getListFilms(false, 1);
     });
-    pageTitle.value = await filmStore.searchPageTitle();
+    pageTitle.value = filmStore.searchHeading;
   });
 </script>

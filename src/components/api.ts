@@ -64,7 +64,9 @@ export const getCollections = async (page: number = 1) => {
   return { ...data, items: getFilmEntityList(data.items) || [] };
 };
 
-export const getSearchFilms = async (params: Record<string, string>) => {
+export const getSearchFilms = async <T>(
+  params: Record<string, string>
+): Promise<T> => {
   const url = new URL(BASE_API_URL_FILMS2v2);
 
   Object.entries(params).forEach(([key, value]) => {

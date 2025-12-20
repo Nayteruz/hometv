@@ -47,14 +47,14 @@
   import { inject, computed } from 'vue';
 
   const filmStore = useFilmStore();
-  const emitter = inject('emitter');
+  const emitter = inject('emitter') as any;
   const page = computed(() => {
     return filmStore.pageNum;
   });
 
   const props = defineProps(['total']);
 
-  const getList = (max) => {
+  const getList = (max: number) => {
     let list = [];
 
     if (props.total > 6) {
@@ -89,7 +89,7 @@
     return list;
   };
 
-  const emitPage = (num, action = '') => {
+  const emitPage = (num: number | string | null, action: string = '') => {
     if (num === '...') return;
     let p;
     if (action === 'prev') {

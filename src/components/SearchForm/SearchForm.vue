@@ -1,34 +1,6 @@
-<template>
-  <form
-    action="#"
-    :class="['search-form', { show: props.visibleSearch }]"
-    @submit.prevent="searchSubmit"
-  >
-    <div class="input-wrap">
-      <input
-        ref="searchInput"
-        autocomplete="off"
-        type="text"
-        @keyup.enter="searchSubmit"
-        @focus="showLastList"
-        placeholder="Название фильма / ID КиноПоиск"
-        v-model.trim="filmStore.searchQueryStore"
-        name="keyword"
-      />
-      <ButtonBlue
-        :class="['clear-input', { show: filmStore.searchQueryStore }]"
-        @click="clearInput"
-        >×</ButtonBlue
-      >
-    </div>
-    <ButtonBlue type="submit" :border="true">Найти</ButtonBlue>
-    <SearchPopup />
-  </form>
-</template>
-
 <script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
-  import { computed, onMounted, ref } from 'vue';
+  import { onMounted, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import ButtonBlue from '../ButtonBlue.vue';
   import SearchPopup from './SearchPopup.vue';
@@ -42,18 +14,17 @@
   const filmStore = useFilmStore();
 
   onMounted(() => {
-    filmStore.searchQueryStore = searchQueryRoute.value;
+    filmStore.searchInputText = String(route.query.q || '');
   });
 
-  const searchQueryRoute = computed(() => route.query.q);
-  const searchInput = ref(null);
+  const searchInput = ref<HTMLInputElement | null>(null);
 
   const searchSubmit = async () => {
-    filmStore.addLastSearchList(filmStore.searchQueryStore);
+    filmStore.addLastSearchList(filmStore.searchInputText);
     filmStore.pageNum = 1;
     router.push({
       name: 'searchPage',
-      query: filmStore.searchQueryWithGenre(),
+      query: filmStore.searchQuery,
     });
     filmStore.setShowLastSearchList(false);
   };
@@ -63,8 +34,8 @@
   };
 
   const clearInput = () => {
-    filmStore.searchQueryStore = '';
-    searchInput.value.focus();
+    filmStore.searchInputText = '';
+    searchInput.value?.focus();
   };
 </script>
 
@@ -130,3 +101,31 @@
     position: relative;
   }
 </style>
+
+<template>
+  <form
+    action="#"
+    :class="['search-form', { show: props.visibleSearch }]"
+    @submit.prevent="searchSubmit"
+  >
+    <div class="input-wrap">
+      <input
+        ref="searchInput"
+        autocomplete="off"
+        type="text"
+        @keydown.enter="searchSubmit"
+        @focus="showLastList"
+        placeholder="Название фильма / ID КиноПоиск"
+        v-model.trim="filmStore.searchInputText"
+        name="keyword"
+      />
+      <ButtonBlue
+        :class="['clear-input', { show: filmStore.searchInputText }]"
+        @click="clearInput"
+        >×</ButtonBlue
+      >
+    </div>
+    <ButtonBlue type="submit" :border="true">Найти</ButtonBlue>
+    <SearchPopup />
+  </form>
+</template>

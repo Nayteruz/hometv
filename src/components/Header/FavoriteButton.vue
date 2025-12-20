@@ -21,7 +21,7 @@
 
   const click = () => {
     filmStore.pageNum = 1;
-    filmStore.genreIdStore = null;
+    filmStore.genreId = null;
     router.push({ name: 'favorite' });
   };
 </script>

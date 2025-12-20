@@ -3,7 +3,7 @@
     <ul class="genres">
       <li
         :class="{ active: isActive(genre.id) }"
-        v-for="genre in filmStore.genreListStore"
+        v-for="genre in filmStore.genres"
         :key="genre.id"
       >
         <span @click="setGenre(genre.id)">
@@ -16,28 +16,27 @@
 
 <script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
-  import { onMounted, computed } from 'vue';
+  import { onMounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
 
   const route = useRoute();
   const router = useRouter();
   const filmStore = useFilmStore();
-  const routeGenre = computed(() => Number(route.query.genres));
 
   const isActive = (genreId: number) => {
-    return Number(filmStore.genreIdStore) === Number(genreId);
+    return Number(filmStore.genreId) === Number(genreId);
   };
 
   const setGenre = (genreId: number) => {
-    if (Number(filmStore.genreIdStore) === Number(genreId)) {
-      filmStore.genreIdStore = null;
+    if (Number(filmStore.genreId) === Number(genreId)) {
+      filmStore.genreId = null;
     } else {
-      filmStore.genreIdStore = genreId;
+      filmStore.genreId = genreId;
     }
     filmStore.pageNum = 1;
     router.push({
       name: 'searchPage',
-      query: filmStore.searchQueryWithGenre(),
+      query: filmStore.searchQuery,
     });
   };
 
@@ -46,7 +45,7 @@
   }
 
   onMounted(async () => {
-    filmStore.genreIdStore = routeGenre.value;
+    filmStore.genreId = Number(route.query.genres);
     await getGenreList();
   });
 </script>

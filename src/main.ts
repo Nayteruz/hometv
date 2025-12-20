@@ -7,8 +7,11 @@ import router from '@/router';
 import mitt from 'mitt';
 import '@/registerServiceWorker';
 import '@/plugins/index';
+import type { EventsEmitter } from './types';
 
-const emitter = mitt();
+interface GlobalEvents extends Record<EventsEmitter, any> {}
+
+const emitter = mitt<GlobalEvents>();
 const app = createApp(App);
 app.directive('intersection', VIntersection);
 app.directive('title', VTitle);

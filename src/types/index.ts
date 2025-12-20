@@ -16,3 +16,5 @@ export interface IFilmEntity {
 export type IFilmRaw = Record<string, any>;
 
 export type IFilmRawList = IFilmRaw[];
+
+export type EventsEmitter = 'isLoading' | 'clickPage';

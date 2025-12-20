@@ -24,10 +24,10 @@
 
   const clickLastSearch = (value: string) => {
     filmStore.pageNum = 1;
-    filmStore.searchQueryStore = value;
+    filmStore.searchInputText = value;
     router.push({
       name: 'searchPage',
-      query: { q: filmStore.searchQueryStore },
+      query: { q: filmStore.searchInputText },
     });
     filmStore.setShowLastSearchList(false);
   };

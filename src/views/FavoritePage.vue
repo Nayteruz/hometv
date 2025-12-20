@@ -4,7 +4,7 @@
   <h3 v-if="filmStore.favorites.length === 0">Список пуст</h3>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { ref, watch } from 'vue';
   import { useFilmStore } from '@/stores/filmStore';
   import { pagesTitle } from '@/components/const';

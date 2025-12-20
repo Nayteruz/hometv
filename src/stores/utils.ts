@@ -1,4 +1,6 @@
+import { GENRES_IGNORED } from '@/plugins/firebaseActions';
 import type { IFilmEntity, IFilmRaw, IFilmRawList } from '@/types';
+import type { IFirebaseUserData, IInitializedUserData } from './types';
 
 export const addDataLastAndExcludeCopy = (
   list: IFilmRawList,
@@ -113,4 +115,58 @@ export const getFilmEntity = (filmRaw: IFilmRaw): IFilmEntity => {
 
 export const getFilmEntityList = (filmRawList: Record<string, any>[]) => {
   return filmRawList.map(getFilmEntity);
+};
+
+export const filterGenres = (list: any[]) => {
+  if (!list.length) return [];
+
+  return list.filter((x) => !GENRES_IGNORED.includes(x.genre));
+};
+
+export const initUserData = (data: IFirebaseUserData | null | undefined) => {
+  const defaultData: IInitializedUserData = {
+    name: '',
+    email: '',
+    apiKey: '',
+    favorites: [],
+    watchingList: [],
+    watchList: [],
+    waitingList: [],
+    lastSearchList: [],
+    lastViews: [],
+    skippedIds: new Set<number>(),
+  };
+
+  if (!data) {
+    return defaultData;
+  }
+
+  const sortByTime = (a: IFilmEntity, b: IFilmEntity) =>
+    (b?.sortTime ?? 0) - (a?.sortTime ?? 0);
+
+  const favorites = getFilmEntityList(data.favorites ?? []).sort(sortByTime);
+  const watchingList = getFilmEntityList(data.watchingList ?? []).sort(
+    sortByTime
+  );
+  const watchList = getFilmEntityList(data.watchList ?? []).sort(sortByTime);
+  const waitingList = getFilmEntityList(data.waitingList ?? []).sort(
+    sortByTime
+  );
+  const lastViews = getFilmEntityList(data.lastViews ?? [])
+    .sort(sortByTime)
+    .slice(0, 40);
+
+  return {
+    name: data.name || defaultData.name,
+    email: data.email || defaultData.email,
+    // TODO потом удалить api_key
+    apiKey: data.api_key || data.apiKey || defaultData.apiKey,
+    favorites,
+    watchingList,
+    watchList,
+    waitingList,
+    lastSearchList: (data.lastSearchList || []).slice(0, 30),
+    lastViews,
+    skippedIds: new Set<number>((data.skippedIds || []).slice(0, 100)),
+  };
 };

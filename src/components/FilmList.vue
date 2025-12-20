@@ -32,10 +32,10 @@
     isRating: true,
   });
 
-  const emitter = inject('emitter');
+  const emitter = inject('emitter') as any;
   const loading = ref(false);
 
-  (emitter as any).on('isLoading', (emit: boolean) => {
+  emitter.on('isLoading', (emit: boolean) => {
     loading.value = emit;
   });
 </script>

@@ -38,7 +38,7 @@ export const translateErrorCode = function (code: string) {
   }
 };
 
-export const ignore_genre = [
+export const GENRES_IGNORED = [
   '',
   'для взрослых',
   'мюзикл',
