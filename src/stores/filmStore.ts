@@ -76,9 +76,7 @@ export const useFilmStore = defineStore('filmStore', {
     },
     searchQuery() {
       let qr: { q?: string; genres?: number } = {};
-      if (this.searchInputText) {
-        qr.q = this.searchInputText;
-      }
+      qr.q = this.searchInputText || '';
       if (this.genreId) {
         qr.genres = this.genreId;
       }

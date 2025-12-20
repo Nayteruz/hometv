@@ -20,7 +20,7 @@
   const searchInput = ref<HTMLInputElement | null>(null);
 
   const searchSubmit = async () => {
-    filmStore.addLastSearchList(filmStore.searchInputText);
+    filmStore.addLastSearchList(filmStore.searchInputText || '');
     filmStore.pageNum = 1;
     router.push({
       name: 'searchPage',
