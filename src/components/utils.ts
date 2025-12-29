@@ -1,8 +1,16 @@
+import { FILM_TYPE_LABELS } from '@/stores/const';
 import type { IFilmEntity } from '@/types';
 
 export const getFilmPageTitle = (filmInfo?: IFilmEntity): string => {
   const name = filmInfo?.name || '';
   const year = filmInfo?.year || '';
+  const startYear = filmInfo?.startYear || '';
+  const endYear = filmInfo?.endYear || '...';
+
+  if (filmInfo?.type === FILM_TYPE_LABELS.TV_SERIES) {
+    return `${name} ${startYear ? `(сериал ${startYear} - ${endYear})` : ''}`;
+  }
+
   return `${name} ${year ? `(${year})` : ''}`;
 };
 

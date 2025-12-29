@@ -1,6 +1,7 @@
 import { GENRES_IGNORED } from '@/plugins/firebaseActions';
 import type { IFilmEntity, IFilmRaw, IFilmRawList } from '@/types';
 import type { IFirebaseUserData, IInitializedUserData } from './types';
+import { FILM_TYPE_LABELS } from './const';
 
 export const addDataLastAndExcludeCopy = (
   list: IFilmRawList,
@@ -87,13 +88,13 @@ export const getFilmRating = (filmRaw: IFilmRaw): string => {
 export const getFilmType = (type: string) => {
   switch (type) {
     case 'FILM':
-      return 'Фильм';
+      return FILM_TYPE_LABELS.FILM;
     case 'TV_SERIES':
-      return 'Сериал';
+      return FILM_TYPE_LABELS.TV_SERIES;
     case 'MINI_SERIES':
-      return 'Мини-сериал';
+      return FILM_TYPE_LABELS.MINI_SERIES;
     case 'TV_SHOW':
-      return 'ТВ-шоу';
+      return FILM_TYPE_LABELS.TV_SHOW;
     default:
       return type;
   }
@@ -110,6 +111,8 @@ export const getFilmEntity = (filmRaw: IFilmRaw): IFilmEntity => {
     countries: getCountryList(filmRaw?.countries || []),
     genres: getGenreList(filmRaw?.genres || []),
     type: getFilmType(filmRaw.type),
+    startYear: filmRaw.startYear,
+    endYear: filmRaw.endYear,
   };
 };
 

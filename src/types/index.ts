@@ -11,6 +11,8 @@ export interface IFilmEntity {
   kinopoiskId?: number;
   filmId?: number;
   sortTime?: number;
+  startYear?: number;
+  endYear?: number | null;
 }
 
 export type IFilmRaw = Record<string, any>;
