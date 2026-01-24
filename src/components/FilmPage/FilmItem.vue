@@ -25,6 +25,7 @@
     () => props.currentIndex === filmStore.currentFocusIndex
   );
   const filmName = computed(() => getFilmPageTitle(props.itemFilm));
+  const filmHref = computed(() => `/hometv/film/${props.itemFilm.id}`);
   const isFocusedOnHover = ref(false);
   const id = computed(() => props.itemFilm.id);
 
@@ -216,11 +217,7 @@
     tabindex="0"
     ref="itemRef"
   >
-    <a
-      :href="`/film/${props.itemFilm.id}`"
-      class="card-link"
-      @click.prevent="goToPageFilm"
-    ></a>
+    <a :href="filmHref" class="card-link" @click.prevent="goToPageFilm"></a>
     <div class="icon-actions">
       <FavoriteActionButton class="favorite" :id="id" />
       <WatchActionButton class="watch" :id="id" />
