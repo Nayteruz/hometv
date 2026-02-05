@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/hometv/dev-sw.js?dev-sw', { scope: '/hometv/', type: 'classic' })
