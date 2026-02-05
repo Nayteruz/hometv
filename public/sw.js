@@ -2,10 +2,10 @@ const CACHE_NAME = 'hometv-cache-v1';
 const BASE_PATH = '/hometv/';
 const urlsToCache = [
   '/',
-  'index.html',
-  'manifest.json',
-  'img/icons/android-chrome-192x192.png',
-  'img/icons/android-chrome-512x512.png',
+  '/index.html',
+  '/manifest.json',
+  '/img/icons/android-chrome-192x192.png',
+  '/img/icons/android-chrome-512x512.png',
 ];
 
 self.addEventListener('install', (event) => {
