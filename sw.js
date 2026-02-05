@@ -7,9 +7,6 @@ const urlsToCache = [
   BASE_URL + 'manifest.json',
   BASE_URL + 'img/icons/android-chrome-192x192.png',
   BASE_URL + 'img/icons/android-chrome-512x512.png',
-  // Основные ресурсы Vue
-  BASE_URL + 'assets/index.*.css',
-  BASE_URL + 'assets/index.*.js',
 ];
 
 self.addEventListener('install', (event) => {
