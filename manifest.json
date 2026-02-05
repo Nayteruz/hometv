@@ -1,7 +1,7 @@
 {
-  "name": "HomeTv",
-  "short_name": "HomeTv",
-  "description": "HomeTv",
+  "name": "Фильмы и сериалы",
+  "short_name": "Фильмы и сериалы",
+  "description": "Фильмы и сериалы",
   "icons": [
     {
       "src": "./img/icons/favicon-16x16.png",
@@ -33,6 +33,6 @@
   "theme_color": "#163060",
   "background_color": "#101421",
   "display": "standalone",
-  "scope": "./",
-  "start_url": "./"
+  "scope": "/hometv/",
+  "start_url": "/hometv/"
 }
