@@ -11,6 +11,34 @@ import type { EventsEmitter } from './types';
 
 interface GlobalEvents extends Record<EventsEmitter, any> {}
 
+// Регистрация Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    // Регистрируем SW с правильным scope
+    navigator.serviceWorker
+      .register('/hometv/sw.js', {
+        scope: '/hometv/',
+      })
+      .then((registration) => {
+        console.log('✅ Service Worker зарегистрирован:', registration);
+
+        // Проверяем обновления
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('Обновление Service Worker обнаружено:', newWorker);
+        });
+      })
+      .catch((error) => {
+        console.error('❌ Ошибка регистрации Service Worker:', error);
+      });
+  });
+
+  // Периодическая проверка обновлений
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('Service Worker обновлен, перезагрузите страницу');
+  });
+}
+
 const emitter = mitt<GlobalEvents>();
 const app = createApp(App);
 app.directive('intersection', VIntersection);
