@@ -20,11 +20,6 @@
   const searchInput = ref<HTMLInputElement | null>(null);
 
   const searchSubmit = async () => {
-    setTimeout(() => {
-      // Ваш код поиска
-      console.log(filmStore.searchInputText);
-    }, 123);
-    console.log(filmStore.searchInputText, searchInput.value);
     filmStore.addLastSearchList(filmStore.searchInputText || '');
     filmStore.pageNum = 1;
     router.push({
