@@ -20,6 +20,11 @@
   const searchInput = ref<HTMLInputElement | null>(null);
 
   const searchSubmit = async () => {
+    setTimeout(() => {
+      // Ваш код поиска
+      console.log(filmStore.searchInputText);
+    }, 123);
+    console.log(filmStore.searchInputText, searchInput.value);
     filmStore.addLastSearchList(filmStore.searchInputText || '');
     filmStore.pageNum = 1;
     router.push({
@@ -31,6 +36,14 @@
 
   const showLastList = () => {
     filmStore.setShowLastSearchList(true);
+    searchInput.value?.focus();
+  };
+
+  const changeSearchValue = (e: KeyboardEvent) => {
+    const input = e.target as HTMLInputElement;
+    const value = input.value.trim();
+    filmStore.searchInputText = value;
+    searchSubmit();
   };
 
   const clearInput = () => {
@@ -113,7 +126,7 @@
         ref="searchInput"
         autocomplete="off"
         type="text"
-        @keydown.enter="searchSubmit"
+        @keydown.enter.prevent="changeSearchValue"
         @focus="showLastList"
         placeholder="Название фильма / ID КиноПоиск"
         v-model.trim="filmStore.searchInputText"
