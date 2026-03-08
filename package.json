@@ -8,8 +8,7 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.ts",
     "lint:fix": "eslint . --ext .vue,.js,.ts --fix",
-    "type-check": "vue-tsc --noEmit",
-    "deploy": "npm run build && gh-pages -d dist -m 'deploy'"
+    "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
     "core-js": "^3.45.0",
@@ -30,7 +29,6 @@
     "@vue/tsconfig": "^0.8.1",
     "eslint": "^9.39.1",
     "eslint-plugin-vue": "^10.6.2",
-    "gh-pages": "^6.3.0",
     "globals": "^16.5.0",
     "sass": "^1.90.0",
     "typescript": "^5.9.3",
