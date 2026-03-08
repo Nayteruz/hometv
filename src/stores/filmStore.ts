@@ -34,9 +34,9 @@ import type { FirebaseError } from 'firebase/app';
 export const useFilmStore = defineStore('filmStore', {
   state: (): IFilmStoreState => ({
     user: null,
-    apiKey: '404dc583-7efc-4c93-8f21-a782f977b9e7',
-    apiAloha: 'e7b61f129f4a392ac4bf6726a9dd6a',
-    apiHDBV: '8a22f8e7684404c3815e3ffa940f00a0',
+    apiKey: import.meta.env.VITE_API_FILM_LIST_KEY,
+    apiAloha: import.meta.env.VITE_API_ALOHA_KEY,
+    apiHDBV: import.meta.env.VITE_API_HDTV_KEY,
     auth: getAuth(),
     errorMessage: '',
     pageNum: 1,
@@ -118,7 +118,7 @@ export const useFilmStore = defineStore('filmStore', {
         const updatedFavorites = await this.safeUpdateUserData(
           'favorites',
           (currentFavorites: IFilmEntity[]) =>
-            addFirstAndExcludeCopy(currentFavorites, itemFilm)
+            addFirstAndExcludeCopy(currentFavorites, itemFilm),
         );
 
         if (updatedFavorites) {
@@ -137,7 +137,7 @@ export const useFilmStore = defineStore('filmStore', {
         const updatedFavorites = await this.safeUpdateUserData(
           'favorites',
           (currentFavorites: IFilmEntity[]) =>
-            removeData(currentFavorites, filmId)
+            removeData(currentFavorites, filmId),
         );
 
         if (updatedFavorites) {
@@ -158,13 +158,13 @@ export const useFilmStore = defineStore('filmStore', {
           'lastSearchList',
           (currentSearchList: ISearchListItem[]) => {
             const filtered = currentSearchList.filter(
-              (item) => item.value.toLowerCase() !== searchValue.toLowerCase()
+              (item) => item.value.toLowerCase() !== searchValue.toLowerCase(),
             );
 
             const items = [{ id: Date.now(), value: searchValue }, ...filtered];
 
             return items.slice(0, 30);
-          }
+          },
         );
 
         if (updatedSearchList) {
@@ -184,7 +184,7 @@ export const useFilmStore = defineStore('filmStore', {
         const updatedLastViews = await this.safeUpdateUserData(
           'lastViews',
           (currentLastViews: IFilmEntity[]) =>
-            addFirstAndExcludeCopy(currentLastViews, itemFilm)
+            addFirstAndExcludeCopy(currentLastViews, itemFilm),
         );
 
         if (updatedLastViews) {
@@ -207,7 +207,7 @@ export const useFilmStore = defineStore('filmStore', {
             const skippedSet = new Set(currentSkippedIds);
             skippedSet.add(itemId);
             return Array.from(skippedSet).slice(0, 100);
-          }
+          },
         );
 
         if (updatedSkippedIds) {
@@ -230,7 +230,7 @@ export const useFilmStore = defineStore('filmStore', {
             const skippedSet = new Set(currentSkippedIds);
             skippedSet.delete(itemId);
             return Array.from(skippedSet);
-          }
+          },
         );
 
         if (updatedSkippedIds) {
@@ -250,7 +250,7 @@ export const useFilmStore = defineStore('filmStore', {
         const updatedWatching = await this.safeUpdateUserData(
           'watchingList',
           (currentWatching: IFilmEntity[]) =>
-            addFirstAndExcludeCopy(currentWatching, itemFilm)
+            addFirstAndExcludeCopy(currentWatching, itemFilm),
         );
 
         if (updatedWatching) {
@@ -270,7 +270,7 @@ export const useFilmStore = defineStore('filmStore', {
         const updatedWatching = await this.safeUpdateUserData(
           'watchingList',
           (currentWatching: IFilmEntity[]) =>
-            removeData(currentWatching, filmId)
+            removeData(currentWatching, filmId),
         );
 
         if (updatedWatching) {
@@ -290,7 +290,7 @@ export const useFilmStore = defineStore('filmStore', {
         const updatedWatchList = await this.safeUpdateUserData(
           'watchList',
           (currentWatchList: IFilmEntity[]) =>
-            addFirstAndExcludeCopy(currentWatchList, itemFilm)
+            addFirstAndExcludeCopy(currentWatchList, itemFilm),
         );
 
         if (updatedWatchList) {
@@ -310,7 +310,7 @@ export const useFilmStore = defineStore('filmStore', {
         const updatedWatchList = await this.safeUpdateUserData(
           'watchList',
           (currentWatching: IFilmEntity[]) =>
-            removeData(currentWatching, filmId)
+            removeData(currentWatching, filmId),
         );
 
         if (updatedWatchList) {
@@ -330,7 +330,7 @@ export const useFilmStore = defineStore('filmStore', {
         const updatedWaitList = await this.safeUpdateUserData(
           'waitingList',
           (currentWatchList: IFilmEntity[]) =>
-            addFirstAndExcludeCopy(currentWatchList, itemFilm)
+            addFirstAndExcludeCopy(currentWatchList, itemFilm),
         );
 
         if (updatedWaitList) {
@@ -350,7 +350,7 @@ export const useFilmStore = defineStore('filmStore', {
         const updatedWaitList = await this.safeUpdateUserData(
           'waitingList',
           (currentWatching: IFilmEntity[]) =>
-            removeData(currentWatching, filmId)
+            removeData(currentWatching, filmId),
         );
 
         if (updatedWaitList) {
