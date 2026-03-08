@@ -1,33 +1,36 @@
-name: Deploy to GitHub Pages
-
+name: Deploy Vite App to GitHub Pages
 on:
   push:
-    branches:
-      - master
-
+    branches: [master]
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: 18
-
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
       - name: Install dependencies
-        run: npm install
-
-      - name: Build
+        run: npm ci
+      - name: Build project
         env:
           VITE_API_FILM_LIST_KEY: ${{ secrets.VITE_API_FILM_LIST_KEY }}
           VITE_API_ALOHA_KEY: ${{ secrets.VITE_API_ALOHA_KEY }}
           VITE_API_HDTV_KEY: ${{ secrets.VITE_API_HDTV_KEY }}
         run: npm run build
-
+      - name: Copy index.html to dist as 404.html
+        run: cp ./dist/index.html ./dist/404.html
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          force_orphan: true
