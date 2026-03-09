@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import { useFilmStore } from '@/stores/filmStore';
+  import { useAuthStore } from '@/stores/authStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import FilmPlayerSelect from '@/components/FilmPage/FilmPlayerSelect.vue';
   import FilmList from '@/components/FilmList.vue';
   import { computed, onMounted, ref } from 'vue';
@@ -16,7 +17,8 @@
   import { getFilmPageTitle } from '@/components/utils';
   import type { IFilmEntity } from '@/types';
 
-  const filmStore = useFilmStore();
+  const authStore = useAuthStore();
+  const filmLists = useUserListsStore();
   const route = useRoute();
   const filmInfo = ref<IFilmEntity | undefined>();
   const similars = ref<IFilmEntity[]>([]);
@@ -30,8 +32,8 @@
     try {
       const data = getFilmInfo(filmId);
       filmInfo.value = await data;
-      filmStore.authChange().then(() => {
-        filmStore.addLastViews(filmInfo.value);
+      authStore.authChange().then(() => {
+        filmLists.addLastViews(filmInfo.value);
       });
     } catch (error) {
       console.error('Error load film info', error);
@@ -68,7 +70,7 @@
       filmInfo.value?.filmId ||
       filmInfo.value?.id ||
       0;
-    filmStore.isSkipped(skipValue);
+    filmLists.isSkipped(skipValue);
   });
 
   onMounted(() => {

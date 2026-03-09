@@ -2,7 +2,7 @@
   <div class="registration--form">
     <h3 class="heading">
       Вы вошли как:
-      <strong class="name">{{ filmStore.user?.name || 'Загрузка...' }}</strong>
+      <strong class="name">{{ authStore.user?.name || 'Загрузка...' }}</strong>
       <button class="edit" @click="toggleView"><IconEdit /></button>
     </h3>
     <div v-if="viewApiContainer" class="container">
@@ -18,15 +18,15 @@
 
 <script setup lang="ts">
   import { ref } from 'vue';
-  import { useFilmStore } from '@/stores/filmStore';
+  import { useAuthStore } from '@/stores/authStore';
   import IconEdit from '@/components/icons/IconEdit.vue';
 
-  const filmStore = useFilmStore();
+  const authStore = useAuthStore();
 
   const viewApiContainer = ref(false);
 
-  const userName = ref(filmStore.user?.name || '');
-  const apiKey = ref(filmStore.apiKey);
+  const userName = ref(authStore.user?.name || '');
+  const apiKey = ref(authStore.apiKey);
 
   const updateUser = async () => {
     if (userName.value.length < 3) {
@@ -34,7 +34,7 @@
     }
 
     viewApiContainer.value = false;
-    await filmStore.editAuthNameOrApiKey({
+    await authStore.editAuthNameOrApiKey({
       userName: userName.value,
       apiKey: apiKey.value,
     });

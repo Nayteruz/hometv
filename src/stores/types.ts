@@ -1,9 +1,16 @@
 import type { IFilmEntity } from '@/types';
 import { getAuth, type User as FirebaseUser } from 'firebase/auth';
 
-interface AppUser extends FirebaseUser {
+export interface AppUser extends FirebaseUser {
   name?: string;
   email: string | null;
+}
+
+export interface IAuthStoreState {
+  user: AppUser | null;
+  auth: ReturnType<typeof getAuth>;
+  errorMessage: string;
+  apiKey: string;
 }
 
 export interface Genre {
@@ -40,29 +47,19 @@ export interface IEditAuthData {
 }
 
 export interface IFilmStoreState {
-  user: AppUser | null;
   apiKey: string;
   apiAloha: string;
   apiHDBV: string;
-  auth: ReturnType<typeof getAuth>;
-  errorMessage: string;
   pageNum: number;
   limit: number;
   genreId: number | null;
   genres: Genre[];
   searchInputText: string;
   filmPageId: number;
-  favorites: IFilmEntity[];
   currentFocusIndex: number;
   films: IFilmEntity[];
   focusIds: FocusIds;
   isShowLastSearchList: boolean;
-  lastSearchList: ISearchListItem[];
-  lastViews: IFilmEntity[];
-  watchingList: IFilmEntity[];
-  watchList: IFilmEntity[];
-  waitingList: IFilmEntity[];
-  skippedIds: Set<number>;
 }
 
 export interface IFirebaseUserData {
@@ -70,12 +67,12 @@ export interface IFirebaseUserData {
   email?: string;
   api_key?: string;
   apiKey?: string;
-  favorites?: any[];
-  watchingList?: any[];
-  watchList?: any[];
-  waitingList?: any[];
+  favorites?: IFilmEntity[];
+  watchingList?: IFilmEntity[];
+  watchList?: IFilmEntity[];
+  waitingList?: IFilmEntity[];
   lastSearchList?: Array<{ id: number; value: string }>;
-  lastViews?: any[];
+  lastViews?: IFilmEntity[];
   skippedIds?: number[];
 }
 
@@ -89,5 +86,15 @@ export interface IInitializedUserData {
   waitingList: IFilmEntity[];
   lastSearchList: Array<{ id: number; value: string }>;
   lastViews: IFilmEntity[];
+  skippedIds: Set<number>;
+}
+
+export interface IUserListsStoreState {
+  favorites: IFilmEntity[];
+  lastSearchList: ISearchListItem[];
+  lastViews: IFilmEntity[];
+  watchingList: IFilmEntity[];
+  watchList: IFilmEntity[];
+  waitingList: IFilmEntity[];
   skippedIds: Set<number>;
 }

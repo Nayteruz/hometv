@@ -6,12 +6,12 @@
 
 <script setup lang="ts">
   import { computed, ref } from 'vue';
-  import { useFilmStore } from '@/stores/filmStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import FilmList from '@/components/FilmList.vue';
   import { pagesTitle } from '@/components/const';
 
-  const filmStore = useFilmStore();
-  const list = computed(() => filmStore.lastViews);
+  const filmLists = useUserListsStore();
+  const list = computed(() => filmLists.lastViews);
   const showPreload = ref(false);
 </script>
 

@@ -13,18 +13,18 @@
   import { computed } from 'vue';
   import IconEye from './icons/IconEye.vue';
   import IconEyeSlash from './icons/IconEyeSlash.vue';
-  import { useFilmStore } from '@/stores/filmStore.ts';
+  import { useUserListsStore } from '@/stores/userListsStore';
 
   const props = withDefaults(defineProps<{ id: number }>(), { id: 0 });
 
-  const filmStore = useFilmStore();
-  const isUnwatch = computed(() => filmStore.isSkipped(props.id));
+  const filmLists = useUserListsStore();
+  const isUnwatch = computed(() => filmLists.isSkipped(props.id));
 
   const toggleWatch = () => {
     if (isUnwatch.value) {
-      filmStore.removeSkip(props.id);
+      filmLists.removeSkip(props.id);
     } else {
-      filmStore.addSkip(props.id);
+      filmLists.addSkip(props.id);
     }
   };
 </script>

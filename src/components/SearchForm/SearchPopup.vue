@@ -1,11 +1,11 @@
 <template>
   <div
     :class="['search-popup', { opened: filmStore.isShowLastSearchList }]"
-    v-if="filmStore.lastSearchList.length"
+    v-if="filmLists.lastSearchList.length"
   >
     <button type="button" class="close-list" @click="hideLastList">×</button>
     <ul>
-      <li v-for="item in filmStore.lastSearchList" :key="item.id">
+      <li v-for="item in filmLists.lastSearchList" :key="item.id">
         <ButtonBlue @click="clickLastSearch(item.value)">{{
           item.value
         }}</ButtonBlue>
@@ -17,9 +17,11 @@
 <script setup lang="ts">
   import { useRouter } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import ButtonBlue from '../ButtonBlue.vue';
 
   const filmStore = useFilmStore();
+  const filmLists = useUserListsStore();
   const router = useRouter();
 
   const clickLastSearch = (value: string) => {

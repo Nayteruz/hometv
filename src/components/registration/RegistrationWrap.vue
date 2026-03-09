@@ -5,7 +5,7 @@
     </template>
     <template #content>
       <div class="registration-wrap--pop">
-        <LogoutComponent v-if="filmStore.user" />
+        <LogoutComponent v-if="authStore.user" />
         <SignInComponent v-else-if="formView === 'sign'" @setForm="setForm" />
         <RegistrationComponent
           v-else-if="formView === 'reg'"
@@ -22,15 +22,15 @@
   import RegistrationComponent from './RegistrationComponent.vue';
   import SignInComponent from './SignInComponent.vue';
   import LogoutComponent from './LogoutComponent.vue';
-  import { useFilmStore } from '@/stores/filmStore';
+  import { useAuthStore } from '@/stores/authStore';
   import PopupContainer from '../PopupContainer.vue';
 
-  const filmStore = useFilmStore();
+  const authStore = useAuthStore();
   const formView = ref('sign');
   const emitter = inject('emitter') as any;
 
   const setForm = (e: string) => {
-    filmStore.errorMessage = '';
+    authStore.errorMessage = '';
     formView.value = e;
   };
 
@@ -39,7 +39,7 @@
   };
 
   onMounted(async () => {
-    await filmStore.authChange(updateFavorite);
+    await authStore.authChange(updateFavorite);
     await emitter.emit('setUserData');
   });
 </script>

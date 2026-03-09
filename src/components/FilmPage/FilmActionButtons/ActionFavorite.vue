@@ -16,25 +16,27 @@
   import ButtonBlue from '@/components/ButtonBlue.vue';
   import IconFavorite from '@/components/icons/IconFavorite.vue';
   import { hasId } from '@/components/utils.ts';
-  import { useFilmStore } from '@/stores/filmStore.ts';
+  import { useAuthStore } from '@/stores/authStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
 
   const props = defineProps<{ id: number }>();
 
-  const filmStore = useFilmStore();
-  const isSelected = computed(() => hasId(filmStore.favorites, props.id));
+  const authStore = useAuthStore();
+  const filmLists = useUserListsStore();
+  const isSelected = computed(() => hasId(filmLists.favorites, props.id));
   const isLoading = ref(false);
 
   async function toggleFavorite() {
-    if (!filmStore.user) {
+    if (!authStore.user) {
       alert('Необходима авторизация');
       return;
     }
     isLoading.value = true;
     if (!isSelected.value) {
       const data = await getFilmInfo(props.id);
-      await filmStore.addFavorite(await data);
+      await filmLists.addFavorite(await data);
     } else {
-      await filmStore.removeFavorite(props.id);
+      await filmLists.removeFavorite(props.id);
     }
     isLoading.value = false;
   }

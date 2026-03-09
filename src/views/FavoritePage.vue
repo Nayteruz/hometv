@@ -1,24 +1,18 @@
 <template>
   <h1>{{ pagesTitle.FAVORITE }}</h1>
-  <FilmList :items="filmStore.favorites" :showPreload="showPreload" />
-  <h3 v-if="filmStore.favorites.length === 0">Список пуст</h3>
+  <FilmList :items="list" :showPreload="showPreload" />
+  <h3 v-if="list.length === 0">Список пуст</h3>
 </template>
 
 <script setup lang="ts">
-  import { ref, watch } from 'vue';
-  import { useFilmStore } from '@/stores/filmStore';
+  import { ref, computed } from 'vue';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import { pagesTitle } from '@/components/const';
   import FilmList from '@/components/FilmList.vue';
 
-  const filmStore = useFilmStore();
+  const filmLists = useUserListsStore();
   const showPreload = ref(false);
-
-  watch(
-    () => filmStore.favorites,
-    () => {
-      filmStore.films = filmStore.favorites;
-    }
-  );
+  const list = computed(() => filmLists.favorites);
 </script>
 
 <style scoped lang="scss">

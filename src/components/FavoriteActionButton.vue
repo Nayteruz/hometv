@@ -11,27 +11,29 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue';
   import IconFavorite from '@/components/icons/IconFavorite.vue';
-  import { useFilmStore } from '@/stores/filmStore';
+  import { useAuthStore } from '@/stores/authStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import { getFilmInfo } from '@/components/api';
   import { hasId } from '@/components/utils';
 
   const props = withDefaults(defineProps<{ id: number }>(), { id: 0 });
 
   const isLoading = ref(false);
-  const filmStore = useFilmStore();
-  const isFavorite = computed(() => hasId(filmStore.favorites, props.id));
+  const authStore = useAuthStore();
+  const filmLists = useUserListsStore();
+  const isFavorite = computed(() => hasId(filmLists.favorites, props.id));
 
   async function toggleFavorite() {
-    if (!filmStore.user) {
+    if (!authStore.user) {
       alert('Необходима авторизация');
       return;
     }
     isLoading.value = true;
     if (!isFavorite.value) {
       const data = await getFilmInfo(props.id);
-      await filmStore.addFavorite(await data);
+      await filmLists.addFavorite(await data);
     } else {
-      await filmStore.removeFavorite(props.id);
+      await filmLists.removeFavorite(props.id);
     }
     isLoading.value = false;
   }

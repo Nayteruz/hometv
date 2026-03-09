@@ -15,16 +15,15 @@
 
 <script setup>
   import { ref } from 'vue';
-  import '@/plugins/index';
-  import { useFilmStore } from '@/stores/filmStore';
+  import { useAuthStore } from '@/stores/authStore';
 
   const emit = defineEmits(['setForm']);
   const email = ref('');
   const password = ref('');
-  const filmStore = useFilmStore();
+  const authStore = useAuthStore();
 
   const signIn = async () => {
-    await filmStore.authWithEmailAndPassword({
+    await authStore.authWithEmailAndPassword({
       email: email.value,
       password: password.value,
     });

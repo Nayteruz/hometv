@@ -2,6 +2,10 @@ import { GENRES_IGNORED } from '@/plugins/firebaseActions';
 import type { IFilmEntity, IFilmRaw, IFilmRawList } from '@/types';
 import type { IFirebaseUserData, IInitializedUserData } from './types';
 import { FILM_TYPE_LABELS } from './const';
+import { firebaseDb } from '@/plugins';
+import { userDataGet } from '@/plugins/firebaseActions';
+import { updateDoc, doc } from 'firebase/firestore';
+import { useAuthStore } from '@/stores/authStore';
 
 export const addDataLastAndExcludeCopy = (
   list: IFilmRawList,
@@ -173,3 +177,29 @@ export const initUserData = (data: IFirebaseUserData | null | undefined) => {
     skippedIds: new Set<number>((data.skippedIds || []).slice(0, 100)),
   };
 };
+
+export async function safeUpdateUserData(
+  fieldName: string,
+  updateCallback: Function
+) {
+  const authStore = useAuthStore();
+
+  if (!authStore.user) {
+    console.warn('Необходимо авторизоваться');
+    return null;
+  }
+
+  try {
+    const userData = await userDataGet(authStore.user.uid);
+    const currentData = userData?.[fieldName] || [];
+    const updatedData = updateCallback(currentData);
+
+    const docRef = doc(firebaseDb, 'users', authStore.user.uid);
+    await updateDoc(docRef, { [fieldName]: updatedData });
+
+    return updatedData;
+  } catch (e) {
+    console.error(`Ошибка обновления ${fieldName}:`, e);
+    throw e;
+  }
+}

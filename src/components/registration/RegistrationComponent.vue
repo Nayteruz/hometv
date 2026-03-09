@@ -27,16 +27,18 @@
   import { ref } from 'vue';
   import IconGoogle from '@/components/icons/IconGoogle.vue';
   import { useFilmStore } from '@/stores/filmStore';
+  import { useAuthStore } from '@/stores/authStore';
 
   const emit = defineEmits(['setForm']);
   const filmStore = useFilmStore();
+  const authStore = useAuthStore();
   const email = ref('');
   const password = ref('');
   const user_name = ref('');
   const api_key = ref('');
 
   const register = async () => {
-    await filmStore.createAuthWithEmailAndPassword({
+    await authStore.createAuthWithEmailAndPassword({
       email: email.value,
       password: password.value,
       user_name: user_name.value,

@@ -5,14 +5,14 @@
 </template>
 
 <script setup>
-  import { useFilmStore } from '@/stores/filmStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import { computed, ref } from 'vue';
   import FilmList from '@/components/FilmList.vue';
   import { pagesTitle } from '@/components/const';
   import { getFilmEntityList } from '@/stores/utils';
 
-  const filmStore = useFilmStore();
-  const list = computed(() => getFilmEntityList(filmStore.watchList));
+  const filmLists = useUserListsStore();
+  const list = computed(() => getFilmEntityList(filmLists.watchList));
   const showPreload = ref(false);
 </script>
 

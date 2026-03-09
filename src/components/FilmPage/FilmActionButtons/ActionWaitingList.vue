@@ -15,26 +15,28 @@
   import ButtonBlue from '@/components/ButtonBlue.vue';
   import IconClock from '@/components/icons/IconClock.vue';
   import { hasId } from '@/components/utils';
-  import { useFilmStore } from '@/stores/filmStore';
+  import { useAuthStore } from '@/stores/authStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import { computed, ref } from 'vue';
 
   const props = defineProps<{ id: number }>();
 
-  const filmStore = useFilmStore();
-  const isSelected = computed(() => hasId(filmStore.waitingList, props.id));
+  const authStore = useAuthStore();
+  const filmLists = useUserListsStore();
+  const isSelected = computed(() => hasId(filmLists.waitingList, props.id));
   const isLoading = ref(false);
 
   async function toggleAction() {
-    if (!filmStore.user) {
+    if (!authStore.user) {
       alert('Необходима авторизация');
       return;
     }
     isLoading.value = true;
     if (!isSelected.value) {
       const data = await getFilmInfo(props.id);
-      await filmStore.addWaitList(await data);
+      await filmLists.addWaitList(await data);
     } else {
-      await filmStore.removeWaitList(props.id);
+      await filmLists.removeWaitList(props.id);
     }
     isLoading.value = false;
   }

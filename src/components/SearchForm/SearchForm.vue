@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import { onMounted, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import ButtonBlue from '../ButtonBlue.vue';
@@ -12,6 +13,7 @@
   const route = useRoute();
   const router = useRouter();
   const filmStore = useFilmStore();
+  const filmLists = useUserListsStore();
 
   onMounted(() => {
     filmStore.searchInputText = String(route.query.q || '');
@@ -20,7 +22,7 @@
   const searchInput = ref<HTMLInputElement | null>(null);
 
   const searchSubmit = async () => {
-    filmStore.addLastSearchList(filmStore.searchInputText || '');
+    filmLists.addLastSearchList(filmStore.searchInputText || '');
     filmStore.pageNum = 1;
     router.push({
       name: 'searchPage',

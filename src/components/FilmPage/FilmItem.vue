@@ -2,6 +2,7 @@
   import { computed, ref, watch } from 'vue';
   import { useRouter } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import FavoriteActionButton from '@/components/FavoriteActionButton.vue';
   import WatchActionButton from '@/components/WatchActionButton.vue';
   import FilmRating from '@/components/FilmRating.vue';
@@ -20,6 +21,7 @@
 
   const router = useRouter();
   const filmStore = useFilmStore();
+  const filmLists = useUserListsStore();
   const itemRef = ref<HTMLElement | null>(null);
   const isFocused = computed(
     () => props.currentIndex === filmStore.currentFocusIndex
@@ -29,7 +31,7 @@
   const isFocusedOnHover = ref(false);
   const id = computed(() => props.itemFilm.id);
 
-  const isUnwatch = computed(() => filmStore.isSkipped(id.value));
+  const isUnwatch = computed(() => filmLists.isSkipped(id.value));
 
   const goToPageFilm = () => {
     router.push(`/film/${id.value}`);

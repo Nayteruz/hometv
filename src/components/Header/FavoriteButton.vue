@@ -6,6 +6,8 @@
 
 <script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
+  import { useAuthStore } from '@/stores/authStore';
+  import { useUserListsStore } from '@/stores/userListsStore';
   import { useRouter } from 'vue-router';
   import IconFavorite from '../icons/IconFavorite.vue';
   import { computed } from 'vue';
@@ -13,10 +15,12 @@
 
   const router = useRouter();
   const filmStore = useFilmStore();
+  const authStore = useAuthStore();
+  const filmLists = useUserListsStore();
 
-  const favoriteCount = computed(() => filmStore.favorites.length);
+  const favoriteCount = computed(() => filmLists.favorites.length);
   const isDisabled = computed(() =>
-    filmStore.user === null ? 'disabled' : ''
+    authStore.user === null ? 'disabled' : ''
   );
 
   const click = () => {
