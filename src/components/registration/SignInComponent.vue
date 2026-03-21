@@ -3,12 +3,12 @@
     <h3 class="name">Авторизация</h3>
     <p><input type="text" placeholder="Email" v-model="email" /></p>
     <p><input type="password" placeholder="Password" v-model="password" /></p>
-    <p class="err-string" v-if="filmStore.errorMessage">
-      {{ filmStore.errorMessage }}
+    <p class="err-string" v-if="authStore.errorMessage">
+      {{ authStore.errorMessage }}
     </p>
     <div class="btns">
       <button class="sign" @click.prevent="signIn">Войти</button>
-      <button class="reg" @click.prevent="setFormView">Регистрация</button>
+      <button class="reg" @click.stop="setFormView">Регистрация</button>
     </div>
   </div>
 </template>

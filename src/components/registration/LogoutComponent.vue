@@ -45,7 +45,7 @@
   };
 
   const logout = async () => {
-    await filmStore.authLogout();
+    await authStore.authLogout();
   };
 </script>
 
