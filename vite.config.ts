@@ -15,9 +15,6 @@ export default defineConfig({
   server: {
     port: 8000,
     open: false,
-    headers: {
-      'Service-Worker-Allowed': '/',
-    },
   },
   build: {
     outDir: 'dist',

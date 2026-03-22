@@ -1,12 +1,13 @@
-const CACHE_NAME = 'hometv-cache-v1';
+const CACHE_NAME = 'hometv-cache-v2';
 const BASE_PATH = '/hometv/';
+
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.ico',
-  '/img/icons/android-chrome-192x192.png',
-  '/img/icons/android-chrome-512x512.png',
+  BASE_PATH,
+  BASE_PATH + 'index.html',
+  BASE_PATH + 'manifest.json',
+  BASE_PATH + 'favicon.ico',
+  BASE_PATH + 'img/icons/android-chrome-192x192.png',
+  BASE_PATH + 'img/icons/android-chrome-512x512.png',
 ];
 
 self.addEventListener('install', (event) => {
@@ -16,7 +17,7 @@ self.addEventListener('install', (event) => {
       return cache.addAll(urlsToCache);
     }),
   );
-  self.skipWaiting(); // Немедленная активация
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -33,31 +34,28 @@ self.addEventListener('activate', (event) => {
           }),
         );
       })
-      .then(() => self.clients.claim()), // Немедленный контроль над страницами
+      .then(() => self.clients.claim()),
   );
 });
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Только кэшируем запросы к нашему домену
   if (url.origin !== location.origin) return;
 
   event.respondWith(
     caches.match(event.request).then((response) => {
-      // Если есть в кэше - возвращаем
       if (response) return response;
 
-      // Для SPA: все навигационные запросы ведут к index.html
+      // Для SPA: навигационные запросы → index.html с правильным путём
       if (
         event.request.mode === 'navigate' ||
         (event.request.method === 'GET' &&
-          event.request.headers.get('accept').includes('text/html'))
+          event.request.headers.get('accept')?.includes('text/html'))
       ) {
         return caches.match(BASE_PATH + 'index.html');
       }
 
-      // Для остальных - запрашиваем из сети
       return fetch(event.request);
     }),
   );
