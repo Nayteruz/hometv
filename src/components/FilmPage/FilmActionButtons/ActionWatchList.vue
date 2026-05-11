@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-  import { getFilmInfo } from '@/components/api';
+  import { api } from '@/components/api';
   import ButtonBlue from '@/components/ButtonBlue.vue';
   import IconWillWatch from '@/components/icons/IconVolumeHigh.vue';
   import { hasId } from '@/components/utils';
@@ -33,7 +33,7 @@
     }
     isLoading.value = true;
     if (!isSelected.value) {
-      const data = await getFilmInfo(props.id);
+      const data = await api.getFilmInfo(props.id);
       await filmLists.addWatchList(await data);
     } else {
       await filmLists.removeWatchList(props.id);

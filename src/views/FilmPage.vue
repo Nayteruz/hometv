@@ -3,66 +3,48 @@
   import { useUserListsStore } from '@/stores/userListsStore';
   import FilmPlayerSelect from '@/components/FilmPage/FilmPlayerSelect.vue';
   import FilmList from '@/components/FilmList.vue';
-  import { computed, onMounted, ref } from 'vue';
+  import { computed, watch } from 'vue';
   import { useRoute } from 'vue-router';
-  import {
-    getFilmInfo,
-    getSequelsAndPrequels,
-    getSimilars,
-    getRelations,
-  } from '@/components/api';
+  import { useQuery } from '@tanstack/vue-query';
+  import { api } from '@/components/api';
   import ButtonBack from '@/components/ButtonBack.vue';
   import FilmImage from '@/components/FilmPage/FilmImage.vue';
   import FilmGenres from '@/components/FilmPage/FilmGenres.vue';
   import { getFilmPageTitle } from '@/components/utils';
-  import type { IFilmEntity } from '@/types';
+  import PreloadCard from '@/components/PreloadCard.vue';
 
   const authStore = useAuthStore();
   const filmLists = useUserListsStore();
   const route = useRoute();
-  const filmInfo = ref<IFilmEntity | undefined>();
-  const similars = ref<IFilmEntity[]>([]);
 
-  const filmName = computed(() => getFilmPageTitle(filmInfo.value));
   const filmId = Array.isArray(route.params.id)
     ? Number(route.params.id[0]) || 0
     : Number(route.params.id) || 0;
 
-  const loadFilm = async () => {
-    try {
-      const data = getFilmInfo(filmId);
-      filmInfo.value = await data;
-      authStore.authChange().then(() => {
-        filmLists.addLastViews(filmInfo.value);
-      });
-    } catch (error) {
-      console.error('Error load film info', error);
-      filmInfo.value = undefined;
-    }
-  };
+  const { data: filmInfo, isLoading } = useQuery({
+    queryKey: ['filmInfo', filmId],
+    queryFn: () => api.getFilmInfo(filmId),
+    enabled: !!filmId,
+  });
 
-  const loadExtraList = async () => {
-    if (!filmId) return;
-    try {
-      const data = await Promise.allSettled([
-        getSimilars(filmId),
-        getSequelsAndPrequels(filmId),
-        getRelations(filmId),
-      ]);
+  const { data: similars } = useQuery({
+    queryKey: ['filmExtras', filmId],
+    queryFn: () =>
+      Promise.allSettled([
+        api.getSimilars(filmId),
+        api.getSequelsAndPrequels(filmId),
+        api.getRelations(filmId),
+      ]).then((results) => {
+        const allFilms = results
+          .filter((r) => r.status === 'fulfilled')
+          .flatMap((r) => r.value);
 
-      const allFilms = data
-        .filter((item) => item.status === 'fulfilled')
-        .flatMap((item) => item.value);
+        return Array.from(new Map(allFilms.map((f) => [f.id, f])).values());
+      }),
+    enabled: !!filmId,
+  });
 
-      const uniqueFilms = Array.from(
-        new Map(allFilms.map((film) => [film.id, film])).values()
-      );
-
-      similars.value = uniqueFilms;
-    } catch (error) {
-      console.error('Error load extra list', error);
-    }
-  };
+  const filmName = computed(() => getFilmPageTitle(filmInfo.value));
 
   const isUnwatch = computed(() => {
     const skipValue =
@@ -70,20 +52,33 @@
       filmInfo.value?.filmId ||
       filmInfo.value?.id ||
       0;
-    filmLists.isSkipped(skipValue);
+    return filmLists.isSkipped(skipValue);
   });
 
-  onMounted(() => {
-    loadFilm();
-    loadExtraList();
+  watch(filmInfo, (film) => {
+    if (!film) return;
+    authStore.authChange().then(() => {
+      filmLists.addLastViews(film);
+    });
   });
 </script>
 
 <template>
   <ButtonBack />
-  <h1 v-title>{{ filmName }}</h1>
+  <PreloadCard
+    v-if="isLoading"
+    class="title-preload"
+    :width="'50%'"
+    :height="37"
+  />
+  <h1 v-else v-title>{{ filmName }}</h1>
   <div class="film__wrap">
-    <FilmImage :filmInfo="filmInfo" :class="{ unwatch: isUnwatch }" />
+    <PreloadCard v-if="isLoading" />
+    <FilmImage
+      v-else
+      :filmInfo="filmInfo"
+      :class="{ image: true, unwatch: isUnwatch }"
+    />
     <div class="film__note">
       <div class="film__btns">
         <FilmPlayerSelect />
@@ -93,15 +88,26 @@
         {{ filmInfo?.description || '' }}
       </div>
       <FilmGenres :genres="filmInfo?.genres || []" title="Жанры" />
-      <div class="film__similar" v-if="similars.length > 0">
+      <div class="film__similar" v-if="similars?.length">
         <h3>Похожие фильмы</h3>
-        <FilmList :items="similars" :isRating="false" :showPreload="false" />
+        <FilmList
+          :items="similars"
+          :isRating="false"
+          :showPreload="false"
+          heightItemAuto
+        />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+  .title-preload {
+    margin: 30px 15px 30px;
+  }
+  .film-list-similar {
+    grid-auto-rows: auto;
+  }
   .film__wrap {
     display: grid;
     grid-template-columns: minmax(250px, 350px) 1fr;
@@ -114,6 +120,10 @@
     @media all and (max-width: 500px) {
       margin: 0 5px;
     }
+  }
+
+  .image {
+    min-height: 450px;
   }
 
   .film__note {

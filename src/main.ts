@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import { VueQueryPlugin } from '@tanstack/vue-query';
 import VIntersection from '@/directives/VIntersection';
 import VTitle from '@/directives/VTitle';
 import App from '@/App.vue';
@@ -16,6 +17,7 @@ const app = createApp(App);
 app.directive('intersection', VIntersection);
 app.directive('title', VTitle);
 app.use(createPinia());
+app.use(VueQueryPlugin);
 app.use(router);
 
 app.provide('emitter', emitter);

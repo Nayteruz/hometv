@@ -24,7 +24,7 @@
   const filmLists = useUserListsStore();
   const itemRef = ref<HTMLElement | null>(null);
   const isFocused = computed(
-    () => props.currentIndex === filmStore.currentFocusIndex
+    () => props.currentIndex === filmStore.currentFocusIndex,
   );
   const filmName = computed(() => getFilmPageTitle(props.itemFilm));
   const filmHref = computed(() => `/hometv/film/${props.itemFilm.id}`);
@@ -94,8 +94,6 @@
     overflow: hidden;
     border-radius: 10px;
     flex: 1 1 auto;
-    min-height: 300px;
-    max-height: min(400px, 45vh);
     position: relative;
 
     img,

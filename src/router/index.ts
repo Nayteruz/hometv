@@ -12,6 +12,12 @@ import { ROUTER_PAGES } from '@/components/const';
 
 const router = createRouter({
   history: createWebHistory('/hometv'),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    }
+    return { top: 0 };
+  },
   routes: [
     {
       path: ROUTER_PAGES.HOME.path,

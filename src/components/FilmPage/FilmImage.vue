@@ -1,7 +1,7 @@
 <template>
   <div class="image">
     <div class="icon-actions">
-      <FavoriteActionButton class="favorite" :id="filmInfo?.id" />
+      <FavoriteActionButton class="favorite" :id="filmInfo?.id || 0" />
       <WatchActionButton class="watch" :id="filmInfo?.id || 0" />
       <FilmRating :rating="filmInfo?.rating || 0" class="rating" />
     </div>
@@ -39,6 +39,7 @@
       height: 100%;
       min-height: 170px;
       max-height: 500px;
+      aspect-ratio: 2 / 3;
       border-radius: 10px;
       border: 2px solid #5077bf;
       @media all and (max-width: 768px) {

@@ -1,89 +1,76 @@
 <template>
   <h1 v-title>{{ pagesTitle.MAIN }}</h1>
   <PaginationList :total="totalPages" />
-  <FilmList :items="films" :showPreload="showPreload" :isRating="true" />
+  <FilmList :items="films" :showPreload="isFetching" :isRating="true" />
   <PaginationList :total="totalPages" />
   <div
-    v-if="filmStore.pageNum < totalPages"
+    v-if="hasNextPage"
     v-intersection="{ getMoreFilms }"
-    ref="observer"
     class="observer"
   ></div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref, watch, inject } from 'vue';
+  import { computed, inject, watch } from 'vue';
   import { useRouter } from 'vue-router';
+  import { useInfiniteQuery } from '@tanstack/vue-query';
   import { useFilmStore } from '@/stores/filmStore';
   import FilmList from '@/components/FilmList.vue';
   import PaginationList from '@/components/PaginationList.vue';
-  import { getCollections } from '@/components/api';
   import { pagesTitle } from '@/components/const';
-  import type { IFilmEntity } from '@/types';
+  import { api } from '@/components/api';
 
   const filmStore = useFilmStore();
   const emitter = inject('emitter') as any;
   const router = useRouter();
-  const films = ref<IFilmEntity[]>([]);
-  const totalPages = ref(0);
-  const showPreload = ref(false);
 
-  const getRequest = async () => {
-    try {
-      return getCollections(filmStore.pageNum);
-    } catch (error) {
-      console.error('Error load films', error);
-    }
-  };
+  const { data, isFetching, fetchNextPage, hasNextPage } = useInfiniteQuery({
+    queryKey: ['collections'],
+    queryFn: ({ pageParam = 1 }) => api.getCollections(pageParam),
+    getNextPageParam: (lastPage, allPages) => {
+      const nextPage = allPages.length + 1;
+      return nextPage <= lastPage.totalPages ? nextPage : undefined;
+    },
+    initialPageParam: 1,
+  });
 
-  async function getListFilms(page: number = 0, more: string = '') {
-    if (more === 'loading') {
-      emitter.emit('isLoading', true);
-    }
-    showPreload.value = more === 'preload';
-    filmStore.pageNum = page || filmStore.pageNum;
-    const response = await getRequest();
-    totalPages.value = response.totalPages;
-    if (more === 'preload') {
-      films.value = [...films.value, ...response.items];
-    } else {
-      films.value = [];
-      films.value = response.items;
-    }
-    showPreload.value = false;
-    if (more === 'loading' && (await response.items)) {
-      emitter.emit('isLoading', false);
-    }
-  }
+  // Плоский список из всех накопленных страниц
+  const films = computed(
+    () => data.value?.pages.flatMap((page) => page.items) ?? [],
+  );
 
+  const totalPages = computed(() => data.value?.pages[0]?.totalPages ?? 0);
+
+  // Инфинит-скролл
   function getMoreFilms() {
-    getListFilms(filmStore.pageNum + 1, 'preload');
+    if (hasNextPage.value && !isFetching.value) {
+      fetchNextPage();
+    }
   }
 
-  function setNextPage() {
-    getListFilms(filmStore.pageNum, 'loading');
+  // Клик по пагинации — переходим на конкретную страницу
+  // useInfiniteQuery накапливает до нужной страницы
+  async function setNextPage() {
+    const targetPage = filmStore.pageNum;
+    const loadedPages = data.value?.pages.length ?? 0;
+    for (let i = loadedPages; i < targetPage; i++) {
+      await fetchNextPage();
+    }
   }
 
   emitter.on('clickPage', setNextPage);
 
-  watch(
-    () => films.value,
-    () => {
-      filmStore.films = films.value;
-    }
-  );
+  // Синхронизируем стор
+  watch(films, (val) => {
+    filmStore.films = val;
+  });
 
   watch(
-    // () => router.currentRoute.value.href,
     () => router.currentRoute.value.fullPath,
     () => {
       filmStore.films = films.value;
-    }
+    },
   );
-
-  onMounted(() => {
-    getListFilms();
-  });
 </script>
 
 <style scoped lang="scss">

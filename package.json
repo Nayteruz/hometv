@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/vue-query": "^5.100.10",
     "core-js": "^3.45.0",
     "firebase": "^12.6.0",
     "mitt": "^3.0.1",

@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
   import { computed, ref } from 'vue';
-  import { getFilmInfo } from '@/components/api.ts';
+  import { api } from '@/components/api.ts';
   import ButtonBlue from '@/components/ButtonBlue.vue';
   import IconFavorite from '@/components/icons/IconFavorite.vue';
   import { hasId } from '@/components/utils.ts';
@@ -33,7 +33,7 @@
     }
     isLoading.value = true;
     if (!isSelected.value) {
-      const data = await getFilmInfo(props.id);
+      const data = await api.getFilmInfo(props.id);
       await filmLists.addFavorite(await data);
     } else {
       await filmLists.removeFavorite(props.id);

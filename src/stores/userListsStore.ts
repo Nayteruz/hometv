@@ -54,7 +54,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       try {
         const updated = await safeUpdateUserData(
           'favorites',
-          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm)
+          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm),
         );
         if (updated) this.favorites = getFilmEntityList(updated);
       } catch (e) {
@@ -67,7 +67,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       try {
         const updated = await safeUpdateUserData(
           'favorites',
-          (cur: IFilmEntity[]) => removeData(cur, filmId)
+          (cur: IFilmEntity[]) => removeData(cur, filmId),
         );
         if (updated) this.favorites = getFilmEntityList(updated);
       } catch (e) {
@@ -83,13 +83,13 @@ export const useUserListsStore = defineStore('userListsStore', {
           'lastSearchList',
           (cur: ISearchListItem[]) => {
             const filtered = cur.filter(
-              (item) => item.value.toLowerCase() !== searchValue.toLowerCase()
+              (item) => item.value.toLowerCase() !== searchValue.toLowerCase(),
             );
             return [{ id: Date.now(), value: searchValue }, ...filtered].slice(
               0,
-              30
+              30,
             );
-          }
+          },
         );
         if (updated) this.lastSearchList = updated;
       } catch (e) {
@@ -103,7 +103,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       try {
         const updated = await safeUpdateUserData(
           'lastViews',
-          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm)
+          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm),
         );
         if (updated) this.lastViews = getFilmEntityList(updated.slice(0, 40));
       } catch (e) {
@@ -117,7 +117,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       try {
         const updated = await safeUpdateUserData(
           'watchingList',
-          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm)
+          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm),
         );
         if (updated) this.watchingList = updated;
       } catch (e) {
@@ -130,7 +130,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       try {
         const updated = await safeUpdateUserData(
           'watchingList',
-          (cur: IFilmEntity[]) => removeData(cur, filmId)
+          (cur: IFilmEntity[]) => removeData(cur, filmId),
         );
         if (updated) this.watchingList = getFilmEntityList(updated);
       } catch (e) {
@@ -144,7 +144,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       try {
         const updated = await safeUpdateUserData(
           'watchList',
-          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm)
+          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm),
         );
         if (updated) this.watchList = updated;
       } catch (e) {
@@ -157,7 +157,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       try {
         const updated = await safeUpdateUserData(
           'watchList',
-          (cur: IFilmEntity[]) => removeData(cur, filmId)
+          (cur: IFilmEntity[]) => removeData(cur, filmId),
         );
         if (updated) this.watchList = getFilmEntityList(updated);
       } catch (e) {
@@ -171,7 +171,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       try {
         const updated = await safeUpdateUserData(
           'waitingList',
-          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm)
+          (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm),
         );
         if (updated) this.waitingList = updated;
       } catch (e) {
@@ -184,7 +184,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       try {
         const updated = await safeUpdateUserData(
           'waitingList',
-          (cur: IFilmEntity[]) => removeData(cur, filmId)
+          (cur: IFilmEntity[]) => removeData(cur, filmId),
         );
         if (updated) this.waitingList = getFilmEntityList(updated);
       } catch (e) {
@@ -202,7 +202,7 @@ export const useUserListsStore = defineStore('userListsStore', {
             const s = new Set(cur);
             s.add(itemId);
             return Array.from(s).slice(0, 100);
-          }
+          },
         );
         if (updated) this.skippedIds = new Set(updated);
       } catch (e) {
@@ -219,7 +219,7 @@ export const useUserListsStore = defineStore('userListsStore', {
             const s = new Set(cur);
             s.delete(itemId);
             return Array.from(s);
-          }
+          },
         );
         if (updated) this.skippedIds = new Set(updated);
       } catch (e) {

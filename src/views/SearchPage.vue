@@ -17,7 +17,7 @@
   import { useRoute } from 'vue-router';
   import FilmList from '@/components/FilmList.vue';
   import PaginationList from '@/components/PaginationList.vue';
-  import { getSearchFilms } from '@/components/api';
+  import { api } from '@/components/api';
   import type { IFilmEntity } from '@/types';
 
   const route = useRoute();
@@ -42,7 +42,7 @@
     }
 
     try {
-      return getSearchFilms<{
+      return api.getSearchFilms<{
         total: number;
         items: IFilmEntity[];
         totalPages: number;

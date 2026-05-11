@@ -11,9 +11,9 @@
   const router = useRouter();
   const filmStore = useFilmStore();
   const countByLine = ref(0);
-  const maxCountFilms = ref(filmStore.films.length);
+  const maxCountFilms = ref(filmStore.films?.length || 0);
   const pageHref = ref(
-    router.currentRoute.value.href || document.location.pathname
+    router.currentRoute.value?.href || document.location.pathname,
   );
 
   const onDown = () => {
@@ -22,20 +22,20 @@
     } else {
       filmStore.currentFocusIndex = Math.min(
         maxCountFilms.value - 1,
-        filmStore.currentFocusIndex + countByLine.value
+        filmStore.currentFocusIndex + countByLine.value,
       );
     }
   };
   const onUp = () => {
     filmStore.currentFocusIndex = Math.max(
       0,
-      filmStore.currentFocusIndex - countByLine.value
+      filmStore.currentFocusIndex - countByLine.value,
     );
   };
   const onRight = () => {
     filmStore.currentFocusIndex = Math.min(
       maxCountFilms.value - 1,
-      filmStore.currentFocusIndex + 1
+      filmStore.currentFocusIndex + 1,
     );
   };
   const onLeft = () => {
@@ -47,7 +47,7 @@
     if (index === -1) {
       return;
     }
-    const id = filmStore.films[index].id;
+    const id = filmStore.films?.[index]?.id || 0;
 
     router.push(`/film/${id}`);
   };
@@ -88,8 +88,8 @@
   watch(
     () => filmStore.films,
     (films) => {
-      maxCountFilms.value = films.length;
-    }
+      maxCountFilms.value = films?.length || 0;
+    },
   );
 
   onMounted(() => {

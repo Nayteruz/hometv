@@ -13,7 +13,7 @@
   import IconFavorite from '@/components/icons/IconFavorite.vue';
   import { useAuthStore } from '@/stores/authStore';
   import { useUserListsStore } from '@/stores/userListsStore';
-  import { getFilmInfo } from '@/components/api';
+  import { api } from '@/components/api';
   import { hasId } from '@/components/utils';
 
   const props = withDefaults(defineProps<{ id: number }>(), { id: 0 });
@@ -30,7 +30,7 @@
     }
     isLoading.value = true;
     if (!isFavorite.value) {
-      const data = await getFilmInfo(props.id);
+      const data = await api.getFilmInfo(props.id);
       await filmLists.addFavorite(await data);
     } else {
       await filmLists.removeFavorite(props.id);

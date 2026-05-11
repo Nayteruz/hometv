@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getFilters } from '@/components/api';
+import { api } from '@/components/api';
 import { filterGenres } from './utils';
 import type { IFilmStoreState } from './types';
 
@@ -56,25 +56,36 @@ export const useFilmStore = defineStore('filmStore', {
       this.isShowLastSearchList = value;
     },
     async getGenreList() {
-      if (localStorage.getItem('genres')) {
-        this.genres = JSON.parse(localStorage.getItem('genres') || '');
+      if (this.genres.length) {
         return this.genres;
-      } else {
+      }
+
+      const stored = localStorage.getItem('genres');
+      if (stored) {
         try {
-          const data = await getFilters();
-          this.genres = filterGenres(data.genres);
-          localStorage.setItem('genres', JSON.stringify(this.genres));
+          this.genres = JSON.parse(stored);
           return this.genres;
-        } catch (error) {
-          console.error('Error load genres', error);
+        } catch (e) {
+          console.warn('Corrupted genres in localStorage, clearing', e);
+          localStorage.removeItem('genres');
         }
+      }
+
+      try {
+        const data = await api.getFilters();
+        this.genres = filterGenres(data.genres);
+        localStorage.setItem('genres', JSON.stringify(this.genres));
+        return this.genres;
+      } catch (error) {
+        console.error('Error loading genres', error);
+        return [];
       }
     },
     setCurrentFocus(index: number) {
       this.currentFocusIndex = index;
     },
     setMountedCurrentFocus(href: string) {
-      this.setCurrentFocus(this.focusIds[href] || 0);
+      this.setCurrentFocus(this.focusIds?.[href] || 0);
     },
   },
 });
