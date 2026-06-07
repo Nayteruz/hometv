@@ -3,17 +3,11 @@
     <li :class="{ selected: playerNum === 1 }" @click="playerNum = 1">
       Плееры
     </li>
-    <!-- <li :class="{ selected: playerNum === 2 }" @click="playerNum = 2">Kinotop</li> -->
-    <!-- <li :class="{ selected: playerNum === 3 }" @click="playerNum = 3">KinoBD</li> -->
-    <!-- <li :class="{ selected: playerNum === 4 }" @click="playerNum = 4">KinoBox</li> -->
-    <li :class="{ selected: playerNum === 5 }" @click="playerNum = 5">Lumex</li>
+    <li :class="{ selected: playerNum === 2 }" @click="playerNum = 2">Lumex</li>
     <li class="actions"><FilmActionList /></li>
   </ul>
   <PlayersList v-if="playerNum === 1" />
-  <!-- <FilmKinoTop v-if="playerNum === 2" /> -->
-  <!-- <FilmKinoBD v-if="playerNum === 3" /> -->
-  <!-- <FilmKinoBoxTab v-if="playerNum === 4" /> -->
-  <FilmPlayerClub v-if="playerNum === 5" />
+  <FilmPlayerClub v-if="playerNum === 2" />
 </template>
 
 <script setup lang="ts">
@@ -21,12 +15,6 @@
   import FilmPlayerClub from '@/components/FilmPage/FilmPlayerClub.vue';
   import PlayersList from '@/components/PlayersList.vue';
   import FilmActionList from './FilmActionList.vue';
-  // написано что теперь платно только можно
-  // import FilmKinoBoxTab from '@/components/FilmPage/FilmKinoboxTab.vue';
-  // заблочили их походу
-  // import FilmKinoTop from '@/components/FilmPage/FilmKinoTop.vue';
-  // import FilmKinoBD from '@/components/FilmPage/FilmKinoBD.vue';
-
   const playerNum = ref(0);
 </script>
 

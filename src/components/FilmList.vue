@@ -20,7 +20,7 @@
 <script setup lang="ts">
   import FilmItem from '@/components/FilmPage/FilmItem.vue';
   import PreloadCards from '@/components/PreloadCards.vue';
-  import { inject, ref } from 'vue';
+  import { inject, ref, onBeforeUnmount } from 'vue';
   import type { IFilmEntity } from '@/types';
 
   interface IFilmListProps {
@@ -40,8 +40,13 @@
   const emitter = inject('emitter') as any;
   const loading = ref(false);
 
-  emitter.on('isLoading', (emit: boolean) => {
+  const setIsLoading = (emit: boolean) => {
     loading.value = emit;
+  };
+  emitter.on('isLoading', setIsLoading);
+
+  onBeforeUnmount(() => {
+    emitter.off('isLoading', setIsLoading);
   });
 </script>
 

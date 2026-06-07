@@ -52,7 +52,7 @@
     router.push(`/film/${id}`);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
       case keyboardKeyList.ArrowDown:
         onDown();

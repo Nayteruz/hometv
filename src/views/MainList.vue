@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, inject, watch } from 'vue';
+  import { computed, inject, watch, onBeforeUnmount } from 'vue';
   import { useRouter } from 'vue-router';
   import { useInfiniteQuery } from '@tanstack/vue-query';
   import { useFilmStore } from '@/stores/filmStore';
@@ -59,6 +59,10 @@
   }
 
   emitter.on('clickPage', setNextPage);
+
+  onBeforeUnmount(() => {
+    emitter.off('clickPage', setNextPage);
+  });
 
   // Синхронизируем стор
   watch(films, (val) => {

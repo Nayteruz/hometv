@@ -41,7 +41,7 @@ const fetchJson = async (url: string, signal?: AbortSignal): Promise<any> => {
 
 // ---------- Endpoints ----------
 const ENDPOINTS = {
-  filters: `${BASE}v2.2/filters`,
+  filters: `${BASE}v2.2/films/filters`,
   filmInfo: (id: number) => `${BASE}v2.2/films/${id}`,
   similars: (id: number) => `${BASE}v2.2/films/${id}/similars`,
   relations: (id: number) => `${BASE}v2.2/films/${id}/relations`,

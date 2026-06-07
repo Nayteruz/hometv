@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref, inject } from 'vue';
+  import { onMounted, ref, inject, onBeforeUnmount } from 'vue';
   import { useFilmStore } from '@/stores/filmStore';
   import { useRoute } from 'vue-router';
   import FilmList from '@/components/FilmList.vue';
@@ -76,15 +76,22 @@
     getListFilms(false, filmStore.pageNum);
   };
 
+  const onSearchSubmit = () => {
+    getListFilms(false, 1);
+  };
+
   emitter.on('clickPage', setNextPage);
+
+  onBeforeUnmount(() => {
+    emitter.off('clickPage', setNextPage);
+    emitter.off('searchSubmit', onSearchSubmit);
+  });
 
   onMounted(async () => {
     filmStore.searchInputText = String(route.query.q) || '';
     filmStore.genreId = Number(route.query.genres);
     await getListFilms(false, 1);
-    emitter.on('searchSubmit', () => {
-      getListFilms(false, 1);
-    });
+    emitter.on('searchSubmit', onSearchSubmit);
     pageTitle.value = filmStore.searchHeading;
   });
 </script>
