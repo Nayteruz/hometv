@@ -5,7 +5,12 @@
       <WatchActionButton class="watch" :id="filmInfo?.id || 0" />
       <FilmRating :rating="filmInfo?.rating || 0" class="rating" />
     </div>
-    <img v-if="filmInfo?.image" :src="filmInfo?.image" alt="filmTitle" />
+    <img
+      v-if="filmInfo?.image"
+      :src="filmInfo?.image"
+      alt="filmTitle"
+      @error="(e) => ((e.target as HTMLImageElement).src = NoPoster)"
+    />
   </div>
 </template>
 
@@ -15,6 +20,7 @@
   import FilmRating from '../FilmRating.vue';
   import WatchActionButton from '../WatchActionButton.vue';
   import type { IFilmEntity } from '@/types';
+  import NoPoster from '../icons/NoPoster.jpg';
 
   interface IFIlmImageProps {
     filmInfo: IFilmEntity | undefined;

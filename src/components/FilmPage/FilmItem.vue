@@ -8,6 +8,7 @@
   import FilmRating from '@/components/FilmRating.vue';
   import type { IFilmEntity } from '@/types';
   import { getFilmPageTitle } from '@/components/utils';
+  import NoPoster from '../icons/NoPoster.jpg';
 
   interface IFilmItemProps {
     itemFilm: IFilmEntity;
@@ -225,7 +226,11 @@
     </div>
     <div class="image-wrapper">
       <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"></svg>
-      <img :src="itemFilm.image" :alt="props.itemFilm.name" />
+      <img
+        :src="itemFilm.image"
+        :alt="props.itemFilm.name"
+        @error="(e) => ((e.target as HTMLImageElement).src = NoPoster)"
+      />
     </div>
     <div class="name-wrapper">
       <h3>{{ filmName }}</h3>
