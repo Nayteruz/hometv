@@ -77,8 +77,8 @@ export const useAuthStore = defineStore('authStore', {
         });
     },
 
-    async authChange(callback?: () => void) {
-      onAuthStateChanged(this.auth, async (user) => {
+    authChange(callback?: () => void) {
+      return onAuthStateChanged(this.auth, async (user) => {
         if (user) {
           this.user = user as AppUser;
           this.getUserData(callback);

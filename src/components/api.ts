@@ -80,7 +80,7 @@ export const api = {
 
   async getSequelsAndPrequels(id: number): Promise<IFilmEntity[]> {
     const data = await fetchJson(ENDPOINTS.sequelsPrequels(id));
-    return getFilmEntityList(data) ?? [];
+    return getFilmEntityList(data || []);
   },
 
   async getCollections(

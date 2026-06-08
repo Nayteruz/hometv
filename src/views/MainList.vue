@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, inject, watch, onBeforeUnmount } from 'vue';
+  import { computed, inject, ref, watch, onBeforeUnmount } from 'vue';
   import { useRouter } from 'vue-router';
   import { useInfiniteQuery } from '@tanstack/vue-query';
   import { useFilmStore } from '@/stores/filmStore';
@@ -48,13 +48,23 @@
     }
   }
 
+  const isNavigating = ref(false);
+
   // Клик по пагинации — переходим на конкретную страницу
   // useInfiniteQuery накапливает до нужной страницы
   async function setNextPage() {
-    const targetPage = filmStore.pageNum;
-    const loadedPages = data.value?.pages.length ?? 0;
-    for (let i = loadedPages; i < targetPage; i++) {
-      await fetchNextPage();
+    if (isNavigating.value || isFetching.value) return;
+    isNavigating.value = true;
+    emitter.emit('isLoading', true);
+    try {
+      const targetPage = filmStore.pageNum;
+      const loadedPages = data.value?.pages.length ?? 0;
+      for (let i = loadedPages; i < targetPage; i++) {
+        await fetchNextPage();
+      }
+    } finally {
+      emitter.emit('isLoading', false);
+      isNavigating.value = false;
     }
   }
 
