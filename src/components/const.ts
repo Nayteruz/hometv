@@ -22,11 +22,13 @@ export const players = {
   Collaps2: (id: number) => `https://api.namy.ws/embed/kp/${id}`,
   VeoVeo: (id: number, api: string) =>
     `https://api.rstprgapipt.com/balancer-api/iframe?kp=${id}&token=${api}`,
+  VideoSeeD: (id: number, api: string) =>
+    `https://tv-2-kinoserial.net/embed_auto/${id}/?token=${api}`,
   // VideoCDN: (id: number) => // Пока что не работает
   //`https://p.lumex.space/LDSZJq4uCNvY?kp_id=${id}&domain=nayteruz.github.io`,
   Tobaco: (id: string) => `https://api.tobaco.ws/embed/kp/${id}`,
-  Coll: (id: number) =>
-    `https://api.bhcesh.me/list?token=4c250f7ac0a8c8a658c789186b9a58a5&kinopoisk_id=${id}`,
+  Coll: (id: number, api: string) =>
+    `https://api.bhcesh.me/list?token=${api}&kinopoisk_id=${id}`,
   kodi: (id: number) =>
     `https://kodikapi.com/search?token=41dd95f84c21719b09d6c71182237a25&kinopoisk_id=${id}`,
   HDVB: (id: number, api: string) =>

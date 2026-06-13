@@ -52,6 +52,8 @@ export interface IFilmStoreState {
   apiHDBV: string;
   apiBugall: string;
   apiVeoVeo: string;
+  apiColl: string;
+  apiVideoSeed: string;
   pageNum: number;
   limit: number;
   genreId: number | null;

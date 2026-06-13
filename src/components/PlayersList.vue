@@ -72,6 +72,8 @@
     if (name === 'HDVB') return filmStore.apiHDBV;
     if (name === 'Bugall') return filmStore.apiBugall;
     if (name === 'VeoVeo') return filmStore.apiVeoVeo;
+    if (name === 'Coll') return filmStore.apiColl;
+    if (name === 'VideoSeeD') return filmStore.apiVideoSeed;
     return undefined;
   };
 
