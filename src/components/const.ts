@@ -19,6 +19,9 @@ export const players = {
   Bugall: (id: number, api: string) =>
     `https://api.apbugall.org/?token=${api}&kp=${id}`,
   Collaps: (id: number) => `https://api.atomics.ws/embed/kp/${id}`,
+  Collaps2: (id: number) => `https://api.namy.ws/embed/kp/${id}`,
+  VeoVeo: (id: number, api: string) =>
+    `https://api.rstprgapipt.com/balancer-api/iframe?kp=${id}&token=${api}`,
   // VideoCDN: (id: number) => // Пока что не работает
   //`https://p.lumex.space/LDSZJq4uCNvY?kp_id=${id}&domain=nayteruz.github.io`,
   Tobaco: (id: string) => `https://api.tobaco.ws/embed/kp/${id}`,
