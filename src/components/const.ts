@@ -16,60 +16,41 @@ export const breakpoints = {
 export const players = {
   Alloha: (id: number, api: string) =>
     `https://harald-as.newplayjj.com/?kp=${id}&token=${api}`,
+  Bugall: (id: number, api: string) =>
+    `https://api.apbugall.org/?token=${api}&kp=${id}`,
   Collaps: (id: number) => `https://api.atomics.ws/embed/kp/${id}`,
-  VideoCDN: (id: number) =>
-    `https://p.lumex.space/j3mqebEPqCLB?domain=nayteruz.github.io&kp_id=${id}`,
-  Coll: async (id: number) => {
-    const url = `https://api.bhcesh.me/list?token=4c250f7ac0a8c8a658c789186b9a58a5&kinopoisk_id=${id}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      if (
-        Array.isArray(data.results) &&
-        data.results.length > 0 &&
-        data.results?.[0].iframe_url
-      ) {
-        return data.results?.[0].iframe_url;
-      }
-    } catch (e) {
-      console.error('HDVB error:', e);
-    }
-    return null;
-  },
-  kodi: async (id: number) => {
-    const url = `https://kodikapi.com/search?token=41dd95f84c21719b09d6c71182237a25&kinopoisk_id=${id}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      if (
-        Array.isArray(data.results) &&
-        data.results.length > 0 &&
-        data.results?.[0].link
-      ) {
-        return data.results?.[0].link;
-      }
-    } catch (e) {
-      console.error('HDVB error:', e);
-    }
-    return null;
-  },
-
-  HDVB: async (id: number, api: string) => {
-    const url = `https://apivb.com/api/videos.json?id_kp=${id}&token=${api}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0 && data[0].iframe_url) {
-        return data[0].iframe_url;
-      }
-    } catch (e) {
-      console.error('HDVB error:', e);
-    }
-    return null;
-  },
-  Kodik: (id: number) => `https:////kodik.cc/find-player?kinopoiskID=${id}`,
+  // VideoCDN: (id: number) => // Пока что не работает
+  //`https://p.lumex.space/LDSZJq4uCNvY?kp_id=${id}&domain=nayteruz.github.io`,
+  Tobaco: (id: string) => `https://api.tobaco.ws/embed/kp/${id}`,
+  Coll: (id: number) =>
+    `https://api.bhcesh.me/list?token=4c250f7ac0a8c8a658c789186b9a58a5&kinopoisk_id=${id}`,
+  kodi: (id: number) =>
+    `https://kodikapi.com/search?token=41dd95f84c21719b09d6c71182237a25&kinopoisk_id=${id}`,
+  HDVB: (id: number, api: string) =>
+    `https://apivb.com/api/videos.json?id_kp=${id}&token=${api}`,
+  Kodik: (id: number) => `https://kodik.cc/find-player?kinopoiskID=${id}`,
   Трейлер: (id: number) => `https://api.atomics.ws/embed/trailer-kp/${id}`,
 } as const;
+
+// Игроки, для которых URL — это API (нужно сходить и достать iframe из ответа)
+export const API_PLAYERS = ['Bugall', 'Coll', 'kodi', 'HDVB'] as const;
+
+export const extractIframeSrc = (name: string, data: any): string | null => {
+  switch (name) {
+    case 'Bugall':
+      return data.status === 'success' && data.data?.iframe
+        ? data.data.iframe
+        : null;
+    case 'Coll':
+      return data.results?.[0]?.iframe_url || null;
+    case 'kodi':
+      return data.results?.[0]?.link || null;
+    case 'HDVB':
+      return data[0]?.iframe_url || null;
+    default:
+      return null;
+  }
+};
 
 export const pagesTitle = {
   MAIN: 'Список последних новинок',

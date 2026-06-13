@@ -8,6 +8,7 @@ export const useFilmStore = defineStore('filmStore', {
     apiKey: import.meta.env.VITE_API_FILM_LIST_KEY,
     apiAloha: import.meta.env.VITE_API_ALOHA_KEY,
     apiHDBV: import.meta.env.VITE_API_HDTV_KEY,
+    apiBugall: import.meta.env.VITE_API_BUGALL,
     pageNum: 1,
     limit: 20,
     genreId: null,

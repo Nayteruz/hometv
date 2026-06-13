@@ -50,6 +50,7 @@ export interface IFilmStoreState {
   apiKey: string;
   apiAloha: string;
   apiHDBV: string;
+  apiBugall: string;
   pageNum: number;
   limit: number;
   genreId: number | null;

@@ -44,7 +44,7 @@
   import { onMounted, ref } from 'vue';
   import { useRoute } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
-  import { players } from './const';
+  import { players, API_PLAYERS, extractIframeSrc } from './const';
 
   const filmStore = useFilmStore();
   const route = useRoute();
@@ -70,6 +70,7 @@
   const getApiKey = (name: string) => {
     if (name === 'Alloha') return filmStore.apiAloha;
     if (name === 'HDVB') return filmStore.apiHDBV;
+    if (name === 'Bugall') return filmStore.apiBugall;
     return undefined;
   };
 
@@ -82,11 +83,22 @@
     }
 
     try {
-      const getSrc = players[name as keyof typeof players];
+      const getSrc = players[name as keyof typeof players] as (
+        id: number,
+        api?: string,
+      ) => string;
       const api = getApiKey(name);
+      const url = getSrc(filmId, api || '');
 
-      let iframeSrc =
-        typeof getSrc === 'function' ? await getSrc(filmId, api || '') : null;
+      // API-плееры: fetch → извлечь iframe из ответа; остальные: URL и есть iframe
+      let iframeSrc: string | null = null;
+      if ((API_PLAYERS as readonly string[]).includes(name)) {
+        const res = await fetch(url);
+        const data = await res.json();
+        iframeSrc = extractIframeSrc(name, data);
+      } else {
+        iframeSrc = url || null;
+      }
 
       if (playerByName) {
         playersData.value[name] = {
