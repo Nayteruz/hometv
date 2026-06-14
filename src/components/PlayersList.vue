@@ -104,7 +104,6 @@
       if (API_PLAYERS.has(name)) {
         const res = await fetch(url);
         const data = await res.json();
-        console.log('data', data);
         iframeSrc = extractIframeSrc(name, data);
       } else {
         iframeSrc = url || null;
