@@ -1,3 +1,5 @@
+import type { PLAYER_LABELS } from '@/components/const';
+
 export interface IFilmEntity {
   id: number;
   name: string;
@@ -20,3 +22,14 @@ export type IFilmRaw = Record<string, any>;
 export type IFilmRawList = IFilmRaw[];
 
 export type EventsEmitter = 'isLoading' | 'clickPage';
+
+export type IPlayerKey = keyof typeof PLAYER_LABELS;
+export type IPlayerLabel = (typeof PLAYER_LABELS)[IPlayerKey];
+
+export interface IPlayerData {
+  name: IPlayerLabel;
+  iframeSrc: string | null;
+  loading: boolean;
+  loaded: boolean;
+  error: boolean;
+}

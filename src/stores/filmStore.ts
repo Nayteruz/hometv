@@ -12,6 +12,7 @@ export const useFilmStore = defineStore('filmStore', {
     apiVeoVeo: import.meta.env.VITE_API_VEOVEO,
     apiColl: import.meta.env.VITE_API_COLL,
     apiVideoSeed: import.meta.env.VITE_API_VIDEOSEED,
+    apiKodi: import.meta.env.VITE_API_KODI,
     pageNum: 1,
     limit: 20,
     genreId: null,

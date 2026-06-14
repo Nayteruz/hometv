@@ -54,6 +54,7 @@ export interface IFilmStoreState {
   apiVeoVeo: string;
   apiColl: string;
   apiVideoSeed: string;
+  apiKodi: string;
   pageNum: number;
   limit: number;
   genreId: number | null;
