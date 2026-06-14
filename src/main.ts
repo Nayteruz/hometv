@@ -5,7 +5,6 @@ import VTitle from '@/directives/VTitle';
 import App from '@/App.vue';
 import router from '@/router';
 import mitt from 'mitt';
-import '@/registerServiceWorker';
 import '@/plugins/index';
 import type { EventsEmitter } from './types';
 
