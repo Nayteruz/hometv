@@ -1,3 +1,6 @@
+import type { IFilmStoreState } from '@/stores/types';
+import type { IPlayerLabel } from '@/types';
+
 export const keyboardKeyList = {
   ArrowDown: 'ArrowDown',
   ArrowUp: 'ArrowUp',
@@ -13,63 +16,72 @@ export const breakpoints = {
   mobile: 480,
 };
 
-export const players = {
-  Alloha: (id: number, api: string) =>
-    `https://harald-as.newplayjj.com/?kp=${id}&token=${api}`,
-  Collaps: (id: number) => `https://api.atomics.ws/embed/kp/${id}`,
-  VideoCDN: (id: number) =>
-    `https://p.lumex.space/j3mqebEPqCLB?domain=nayteruz.github.io&kp_id=${id}`,
-  Coll: async (id: number) => {
-    const url = `https://api.bhcesh.me/list?token=4c250f7ac0a8c8a658c789186b9a58a5&kinopoisk_id=${id}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      if (
-        Array.isArray(data.results) &&
-        data.results.length > 0 &&
-        data.results?.[0].iframe_url
-      ) {
-        return data.results?.[0].iframe_url;
-      }
-    } catch (e) {
-      console.error('HDVB error:', e);
-    }
-    return null;
-  },
-  kodi: async (id: number) => {
-    const url = `https://kodikapi.com/search?token=41dd95f84c21719b09d6c71182237a25&kinopoisk_id=${id}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      if (
-        Array.isArray(data.results) &&
-        data.results.length > 0 &&
-        data.results?.[0].link
-      ) {
-        return data.results?.[0].link;
-      }
-    } catch (e) {
-      console.error('HDVB error:', e);
-    }
-    return null;
-  },
-
-  HDVB: async (id: number, api: string) => {
-    const url = `https://apivb.com/api/videos.json?id_kp=${id}&token=${api}`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0 && data[0].iframe_url) {
-        return data[0].iframe_url;
-      }
-    } catch (e) {
-      console.error('HDVB error:', e);
-    }
-    return null;
-  },
-  Kodik: (id: number) => `https:////kodik.cc/find-player?kinopoiskID=${id}`,
-  Трейлер: (id: number) => `https://api.atomics.ws/embed/trailer-kp/${id}`,
+export const PLAYER_LABELS = {
+  Alloha: 'Alloha',
+  Bugall: 'Bugall',
+  Collaps: 'Collaps',
+  Collaps2: 'Collaps2',
+  VeoVeo: 'VeoVeo',
+  VideoSeeD: 'VideoSeeD',
+  Tobaco: 'Tobaco',
+  Coll: 'Coll',
+  Kodi: 'Kodi',
+  HDVB: 'HDVB',
+  Kodik: 'Kodik',
+  trailer: 'Трейлер',
 } as const;
+
+export const PLAYER_NAMES = Object.values(PLAYER_LABELS);
+
+export const players: Record<
+  IPlayerLabel,
+  (id: number, api: string) => string
+> = {
+  [PLAYER_LABELS.Alloha]: (id: number, api: string) =>
+    `https://harald-as.newplayjj.com/?kp=${id}&token=${api}`,
+  [PLAYER_LABELS.Bugall]: (id: number, api?: string) =>
+    `https://api.apbugall.org/?kp=${id}&token=${api}`,
+  [PLAYER_LABELS.Collaps]: (id: number) =>
+    `https://api.atomics.ws/embed/kp/${id}`,
+  [PLAYER_LABELS.Collaps2]: (id: number) =>
+    `https://api.namy.ws/embed/kp/${id}`,
+  [PLAYER_LABELS.VeoVeo]: (id: number, api?: string) =>
+    `https://api.rstprgapipt.com/balancer-api/iframe?kp=${id}&token=${api}`,
+  [PLAYER_LABELS.VideoSeeD]: (id: number, api: string) =>
+    `https://tv-2-kinoserial.net/embed_auto/${id}/?token=${api}`,
+  [PLAYER_LABELS.Tobaco]: (id: number) =>
+    `https://api.tobaco.ws/embed/kp/${id}`,
+  [PLAYER_LABELS.Coll]: (id: number, api: string) =>
+    `https://api.bhcesh.me/list?kinopoisk_id=${id}&token=${api}`,
+  [PLAYER_LABELS.Kodi]: (id: number, api: string) =>
+    `https://kodikapi.com/search?kinopoisk_id=${id}&token=${api}`,
+  [PLAYER_LABELS.HDVB]: (id: number, api: string) =>
+    `https://apivb.com/api/videos.json?id_kp=${id}&token=${api}`,
+  [PLAYER_LABELS.Kodik]: (id: number) =>
+    `https://kodik.cc/find-player?kinopoiskID=${id}`,
+  [PLAYER_LABELS.trailer]: (id: number) =>
+    `https://api.atomics.ws/embed/trailer-kp/${id}`,
+};
+
+// Игроки, для которых URL — это API (нужно сходить и достать iframe из ответа)
+
+export const API_PLAYERS = new Set<string>([
+  PLAYER_LABELS.Bugall,
+  PLAYER_LABELS.Coll,
+  PLAYER_LABELS.Kodi,
+  PLAYER_LABELS.HDVB,
+]);
+
+export const API_KEY_MAP: Partial<Record<IPlayerLabel, keyof IFilmStoreState>> =
+  {
+    [PLAYER_LABELS.Alloha]: 'apiAloha',
+    [PLAYER_LABELS.HDVB]: 'apiHDBV',
+    [PLAYER_LABELS.Bugall]: 'apiBugall',
+    [PLAYER_LABELS.VeoVeo]: 'apiVeoVeo',
+    [PLAYER_LABELS.Coll]: 'apiColl',
+    [PLAYER_LABELS.VideoSeeD]: 'apiVideoSeed',
+    [PLAYER_LABELS.Kodi]: 'apiKodi',
+  };
 
 export const pagesTitle = {
   MAIN: 'Список последних новинок',
@@ -114,3 +126,6 @@ export const ROUTER_PAGES = {
     name: 'waitingList',
   },
 };
+
+export const IMAGE_PLACEHOLDER =
+  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300"><rect width="200" height="300" fill="%23374151"/><text x="50%" y="50%" fill="%236b7280" text-anchor="middle" dy=".3em" font-size="14">No image</text></svg>';

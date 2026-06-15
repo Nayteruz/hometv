@@ -4,7 +4,7 @@
       <div class="player-select">
         <div class="player-name-list">
           <button
-            v-for="name of playerNames"
+            v-for="name of PLAYER_NAMES"
             :key="name"
             :class="{
               'select-button': true,
@@ -44,69 +44,84 @@
   import { onMounted, ref } from 'vue';
   import { useRoute } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
-  import { players } from './const';
+  import { players, API_PLAYERS, API_KEY_MAP, PLAYER_NAMES } from './const';
+  import { extractIframeSrc } from './utils';
+  import type { IPlayerData, IPlayerLabel } from '@/types';
 
   const filmStore = useFilmStore();
   const route = useRoute();
   const filmId = Number(route.params.id) || 0;
 
-  const playerNames: string[] = Object.keys(players);
-  const playersData = ref<Record<string, any>>({});
-  const loadingPlayers = ref<Record<string, boolean>>({});
-  const selectedPlayer = ref<string | null>(null);
-  const playerList = ref(null);
+  const playersData = ref<IPlayerData[]>([]);
+  const loadingPlayers = ref<Record<IPlayerLabel, boolean>>(
+    {} as Record<IPlayerLabel, boolean>,
+  );
+  const selectedPlayer = ref<IPlayerLabel | null>(null);
 
-  const selectPlayer = async (name: string) => {
+  const getPlayerByName = (name: IPlayerLabel) =>
+    playersData.value.find((p) => p.name === name);
+
+  const selectPlayer = async (name: IPlayerLabel) => {
     selectedPlayer.value = name;
-    const playerData = playersData.value[name];
+    const playerData = getPlayerByName(name);
 
-    if (playerData.loaded || playerData.loading) {
+    if (!playerData || playerData.loaded || playerData.loading) {
       return;
     }
 
     await loadPlayer(name);
   };
 
-  const getApiKey = (name: string) => {
-    if (name === 'Alloha') return filmStore.apiAloha;
-    if (name === 'HDVB') return filmStore.apiHDBV;
-    return undefined;
+  const getApiKey = (name: IPlayerLabel): string | undefined => {
+    const key = API_KEY_MAP[name];
+
+    if (!key) {
+      return undefined;
+    }
+
+    const value = filmStore[key];
+    return typeof value === 'string' ? value : undefined;
   };
 
-  const loadPlayer = async (name: string) => {
+  const loadPlayer = async (name: IPlayerLabel | undefined) => {
+    if (!name) {
+      return;
+    }
+
     loadingPlayers.value[name] = true;
 
-    const playerByName = playersData.value[name];
+    const playerByName = getPlayerByName(name);
     if (playerByName) {
       playerByName.loading = true;
     }
 
     try {
-      const getSrc = players[name as keyof typeof players];
+      const getSrc = players[name] as (id: number, api?: string) => string;
       const api = getApiKey(name);
+      const url = getSrc(filmId, api);
 
-      let iframeSrc =
-        typeof getSrc === 'function' ? await getSrc(filmId, api || '') : null;
+      let iframeSrc: string | null = null;
+      if (API_PLAYERS.has(name)) {
+        const res = await fetch(url);
+        const data = await res.json();
+        iframeSrc = extractIframeSrc(name, data);
+      } else {
+        iframeSrc = url || null;
+      }
 
       if (playerByName) {
-        playersData.value[name] = {
-          ...playerByName,
-          iframeSrc,
-          loading: false,
-          loaded: true,
-          error: !iframeSrc,
-        };
+        playerByName.iframeSrc = iframeSrc;
+        playerByName.loading = false;
+        playerByName.loaded = true;
+        playerByName.error = !iframeSrc;
       }
     } catch (error) {
       console.error(`Ошибка загрузки плеера ${name}:`, error);
 
       if (playerByName) {
-        playersData.value[name] = {
-          ...playerByName,
-          loading: false,
-          loaded: true,
-          error: true,
-        };
+        playerByName.loading = false;
+        playerByName.loaded = true;
+        playerByName.error = true;
       }
     } finally {
       loadingPlayers.value[name] = false;
@@ -114,30 +129,24 @@
   };
 
   const initializePlayersData = () => {
-    for (const name of playerNames) {
-      playersData.value[name] = {
-        name,
-        iframeSrc: null,
-        loading: false,
-        loaded: false,
-        error: false,
-      };
-    }
+    playersData.value = PLAYER_NAMES.map((name) => ({
+      name,
+      iframeSrc: null,
+      loading: false,
+      loaded: false,
+      error: false,
+    }));
   };
 
   const preloadFirstPlayer = async () => {
-    if (playerNames.length > 0) {
-      selectedPlayer.value = playerNames[0] || '';
-      await loadPlayer(playerNames[0] || '');
-    }
+    selectedPlayer.value = PLAYER_NAMES[0] || null;
+    await loadPlayer(PLAYER_NAMES[0]);
   };
 
   onMounted(() => {
-    if (playerList.value) {
-      filmStore.setFilmPageId(filmId);
-      initializePlayersData();
-      preloadFirstPlayer();
-    }
+    filmStore.setFilmPageId(filmId);
+    initializePlayersData();
+    preloadFirstPlayer();
   });
 </script>
 

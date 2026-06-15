@@ -1,11 +1,16 @@
 <template>
   <div class="image">
     <div class="icon-actions">
-      <FavoriteActionButton class="favorite" :id="filmInfo?.id" />
+      <FavoriteActionButton class="favorite" :id="filmInfo?.id || 0" />
       <WatchActionButton class="watch" :id="filmInfo?.id || 0" />
       <FilmRating :rating="filmInfo?.rating || 0" class="rating" />
     </div>
-    <img v-if="filmInfo?.image" :src="filmInfo?.image" alt="filmTitle" />
+    <img
+      v-if="filmInfo?.image"
+      :src="filmInfo?.image"
+      alt="filmTitle"
+      @error="(e) => ((e.target as HTMLImageElement).src = NoPoster)"
+    />
   </div>
 </template>
 
@@ -15,6 +20,7 @@
   import FilmRating from '../FilmRating.vue';
   import WatchActionButton from '../WatchActionButton.vue';
   import type { IFilmEntity } from '@/types';
+  import NoPoster from '../icons/NoPoster.jpg';
 
   interface IFIlmImageProps {
     filmInfo: IFilmEntity | undefined;
@@ -39,6 +45,7 @@
       height: 100%;
       min-height: 170px;
       max-height: 500px;
+      aspect-ratio: 2 / 3;
       border-radius: 10px;
       border: 2px solid #5077bf;
       @media all and (max-width: 768px) {

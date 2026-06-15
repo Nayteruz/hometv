@@ -1,6 +1,9 @@
 <template>
   <div :class="['films__wrap', { loading: loading }]">
-    <ul class="films__list" v-if="props.items.length">
+    <ul
+      :class="['films__list', { 'height-auto': heightItemAuto }]"
+      v-if="props.items.length"
+    >
       <FilmItem
         v-for="(film, index) in props.items"
         :itemFilm="film"
@@ -17,26 +20,33 @@
 <script setup lang="ts">
   import FilmItem from '@/components/FilmPage/FilmItem.vue';
   import PreloadCards from '@/components/PreloadCards.vue';
-  import { inject, ref } from 'vue';
+  import { inject, ref, onBeforeUnmount } from 'vue';
   import type { IFilmEntity } from '@/types';
 
   interface IFilmListProps {
     showPreload: boolean;
     items: IFilmEntity[];
     isRating?: boolean;
+    heightItemAuto?: boolean;
   }
 
   const props = withDefaults(defineProps<IFilmListProps>(), {
     showPreload: false,
     items: () => [],
     isRating: true,
+    heightItemAuto: false,
   });
 
   const emitter = inject('emitter') as any;
   const loading = ref(false);
 
-  emitter.on('isLoading', (emit: boolean) => {
+  const setIsLoading = (emit: boolean) => {
     loading.value = emit;
+  };
+  emitter.on('isLoading', setIsLoading);
+
+  onBeforeUnmount(() => {
+    emitter.off('isLoading', setIsLoading);
   });
 </script>
 
@@ -78,6 +88,7 @@
   .films__list {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
+    grid-auto-rows: minmax(250px, 45vh);
     gap: 10px;
 
     @media all and (max-width: 1024px) {
@@ -90,6 +101,10 @@
     @media all and (max-width: 480px) {
       grid-template-columns: repeat(2, 1fr);
     }
+  }
+
+  .height-auto {
+    grid-auto-rows: auto;
   }
 
   .not-found {

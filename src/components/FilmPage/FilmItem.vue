@@ -8,6 +8,7 @@
   import FilmRating from '@/components/FilmRating.vue';
   import type { IFilmEntity } from '@/types';
   import { getFilmPageTitle } from '@/components/utils';
+  import NoPoster from '../icons/NoPoster.jpg';
 
   interface IFilmItemProps {
     itemFilm: IFilmEntity;
@@ -24,7 +25,7 @@
   const filmLists = useUserListsStore();
   const itemRef = ref<HTMLElement | null>(null);
   const isFocused = computed(
-    () => props.currentIndex === filmStore.currentFocusIndex
+    () => props.currentIndex === filmStore.currentFocusIndex,
   );
   const filmName = computed(() => getFilmPageTitle(props.itemFilm));
   const filmHref = computed(() => `/hometv/film/${props.itemFilm.id}`);
@@ -94,8 +95,6 @@
     overflow: hidden;
     border-radius: 10px;
     flex: 1 1 auto;
-    min-height: 300px;
-    max-height: min(400px, 45vh);
     position: relative;
 
     img,
@@ -227,7 +226,11 @@
     </div>
     <div class="image-wrapper">
       <svg xmlns="http://www.w3.org/2000/svg" width="360" height="540"></svg>
-      <img :src="itemFilm.image" :alt="props.itemFilm.name" />
+      <img
+        :src="itemFilm.image"
+        :alt="props.itemFilm.name"
+        @error="(e) => ((e.target as HTMLImageElement).src = NoPoster)"
+      />
     </div>
     <div class="name-wrapper">
       <h3>{{ filmName }}</h3>

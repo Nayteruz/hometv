@@ -97,6 +97,7 @@
     padding: 0;
     font-family: 'Roboto', sans-serif;
     margin: 0 auto 0;
+    width: var(--wrapper-full-width);
     max-width: var(--wrapper-width);
     position: relative;
     flex: 1;

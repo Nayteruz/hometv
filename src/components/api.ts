@@ -1,78 +1,105 @@
+// src/components/api.ts
+// Centralised API client and helper utilities
+
 import type { IFiltersData } from '@/stores/types';
 import { getFilmEntity, getFilmEntityList } from '@/stores/utils';
+import type { IFilmEntity } from '@/types';
 
-const films = '404dc583-7efc-4c93-8f21-a782f977b9e7';
-const BASE_API_URL = 'https://kinopoiskapiunofficial.tech/api/';
-const BASE_TYPE = 'TOP_POPULAR_ALL';
-export const BASE_API_URL_FILMS2v2 = `${BASE_API_URL}v2.2/films`;
-export const BASE_API_URL_FILMS2v1 = `${BASE_API_URL}v2.1/films`;
+// ---------- Configuration ----------
+const API_KEY = import.meta.env.VITE_API_FILM_LIST_KEY;
+const BASE = 'https://kinopoiskapiunofficial.tech/api/';
 
-const getDataByUrl = async (
-  url: string,
-  errorMessage: string = 'Something went wrong'
-) => {
-  const response = await fetch(url, {
-    headers: {
-      'X-API-KEY': films,
-      'Content-Type': 'application/json',
-    },
-  });
+const defaultHeaders = {
+  'X-API-KEY': API_KEY,
+  'Content-Type': 'application/json',
+};
 
-  if (!response.ok) {
-    throw new Error(errorMessage);
+// ---------- Custom error type ----------
+export class ApiError extends Error {
+  status: number;
+  url: string;
+  constructor(message: string, status: number, url: string) {
+    super(message);
+    this.status = status;
+    this.url = url;
+    this.name = 'ApiError';
   }
+}
 
-  return await response.json();
+// ---------- Generic fetch helper ----------
+const fetchJson = async (url: string, signal?: AbortSignal): Promise<any> => {
+  const response = await fetch(url, { headers: defaultHeaders, signal });
+  if (!response.ok) {
+    throw new ApiError(
+      `Request failed: ${response.statusText}`,
+      response.status,
+      url,
+    );
+  }
+  return response.json();
 };
 
-export const getFilters = async (): Promise<IFiltersData> => {
-  return await getDataByUrl(`${BASE_API_URL_FILMS2v2}/filters`);
+// ---------- Endpoints ----------
+const ENDPOINTS = {
+  filters: `${BASE}v2.2/films/filters`,
+  filmInfo: (id: number) => `${BASE}v2.2/films/${id}`,
+  similars: (id: number) => `${BASE}v2.2/films/${id}/similars`,
+  relations: (id: number) => `${BASE}v2.2/films/${id}/relations`,
+  sequelsPrequels: (id: number) =>
+    `${BASE}v2.1/films/${id}/sequels_and_prequels`,
+  collections: `${BASE}v2.2/films/collections`,
+  search: `${BASE}v2.2/films`,
+} as const;
+
+// ---------- Helper for list responses ----------
+const wrapList = <T>(data: any, mapper: (item: any) => T): T[] => {
+  const items = data?.items ?? [];
+  return items.map(mapper);
 };
 
-export const getFilmInfo = async (id: number) => {
-  const data = await getDataByUrl(
-    `${BASE_API_URL_FILMS2v2}/${id}`,
-    'Error load film info'
-  );
-  return getFilmEntity(data);
-};
+// ---------- Public API object ----------
+export const api = {
+  async getFilters(): Promise<IFiltersData> {
+    return fetchJson(ENDPOINTS.filters);
+  },
 
-export const getSimilars = async (id: number) => {
-  const data = await getDataByUrl(`${BASE_API_URL_FILMS2v2}/${id}/similars`);
-  return getFilmEntityList(data.items || []) || [];
-};
+  async getFilmInfo(id: number): Promise<IFilmEntity> {
+    const data = await fetchJson(ENDPOINTS.filmInfo(id));
+    return getFilmEntity(data);
+  },
 
-export const getRelations = async (id: number) => {
-  const data = await getDataByUrl(`${BASE_API_URL_FILMS2v2}/${id}/relations`);
-  return getFilmEntityList(data.items || []) || [];
-};
+  async getSimilars(id: number): Promise<IFilmEntity[]> {
+    const data = await fetchJson(ENDPOINTS.similars(id));
+    return wrapList(data, getFilmEntity);
+  },
 
-export const getSequelsAndPrequels = async (id: number) => {
-  const data = await getDataByUrl(
-    `${BASE_API_URL_FILMS2v1}/${id}/sequels_and_prequels`,
-    'Not found'
-  );
-  return getFilmEntityList(data || []);
-};
+  async getRelations(id: number): Promise<IFilmEntity[]> {
+    const data = await fetchJson(ENDPOINTS.relations(id));
+    return wrapList(data, getFilmEntity);
+  },
 
-export const getCollections = async (page: number = 1) => {
-  const url = new URL(`${BASE_API_URL_FILMS2v2}/collections`);
-  url.searchParams.set('type', BASE_TYPE);
-  url.searchParams.set('page', String(page));
+  async getSequelsAndPrequels(id: number): Promise<IFilmEntity[]> {
+    const data = await fetchJson(ENDPOINTS.sequelsPrequels(id));
+    return getFilmEntityList(data || []);
+  },
 
-  const data = await getDataByUrl(url.toString(), 'Error load collections');
-  return { ...data, items: getFilmEntityList(data.items) || [] };
-};
+  async getCollections(
+    page = 1,
+  ): Promise<{ items: IFilmEntity[]; total: number; totalPages: number }> {
+    const url = new URL(ENDPOINTS.collections);
+    url.searchParams.set('type', 'TOP_POPULAR_ALL');
+    url.searchParams.set('page', String(page));
+    const data = await fetchJson(url.toString());
+    return {
+      ...data,
+      items: wrapList(data, getFilmEntity),
+    };
+  },
 
-export const getSearchFilms = async <T>(
-  params: Record<string, string>
-): Promise<T> => {
-  const url = new URL(BASE_API_URL_FILMS2v2);
-
-  Object.entries(params).forEach(([key, value]) => {
-    url.searchParams.set(key, value);
-  });
-
-  const data = await getDataByUrl(url.toString(), 'Error load search');
-  return { ...data, items: getFilmEntityList(data.items) || [] };
+  async getSearchFilms<T = any>(params: Record<string, string>): Promise<T> {
+    const url = new URL(ENDPOINTS.search);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    const data = await fetchJson(url.toString());
+    return { ...data, items: wrapList(data, getFilmEntity) } as T;
+  },
 };
