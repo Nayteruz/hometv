@@ -24,8 +24,7 @@
   );
 
   const click = () => {
-    filmStore.pageNum = 1;
-    filmStore.genreId = null;
+    filmStore.resetFilters();
     router.push({ name: 'favorite' });
   };
 </script>

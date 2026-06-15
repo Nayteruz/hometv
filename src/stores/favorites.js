@@ -1,3 +1,8 @@
+// РЕЗЕРВНАЯ КОПИЯ ИЗБРАННЫХ ФИЛЬМОВ
+// Этот файл не импортируется в коде. Хранится как страховочная копия
+// на случай случайного удаления базы данных Firestore.
+// НЕ УДАЛЯТЬ.
+
 "Collaps": id=>`https://api.namy.ws/embed/kp/${id}`,
   "Alloha": id=>`https://harald-as.newplayjj.com/?kp=${id}&token=e7b61f129f4a392ac4bf6726a9dd6a`,
   "VeoVeo": id=>`https://api.rstprgapipt.com/balancer-api/iframe?kp=${id}&token=eyJhbGciOiJIUzI1NiJ9.eyJ3ZWJTaXRlIjoiODE1IiwiaXNzIjoiYXBpLXdlYm1hc3RlciIsInN1YiI6IjgwMyIsImlhdCI6MTc3ODI2MTE1NywianRpIjoiM2Q5MDk5NjktOTNhOC00MDA0LWEzNDItMmE0NmMxMjUyMjc1Iiwic2NvcGUiOiJETEUifQ.w9ElOwW-i07LD5tX05TGYzgiViDqh8saEWmOwLAzyGU`,

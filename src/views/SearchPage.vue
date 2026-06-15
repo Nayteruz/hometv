@@ -61,7 +61,6 @@
       if (more) {
         films.value = [...films.value, ...(response?.items || [])];
       } else {
-        films.value = [];
         films.value = response?.items || [];
       }
       showPreload.value = false;
@@ -88,8 +87,8 @@
   });
 
   onMounted(async () => {
-    filmStore.searchInputText = String(route.query.q) || '';
-    filmStore.genreId = Number(route.query.genres);
+    filmStore.setSearchInputText(String(route.query.q || ''));
+    filmStore.setGenreId(Number(route.query.genres));
     await getListFilms(false, 1);
     emitter.on('searchSubmit', onSearchSubmit);
     pageTitle.value = filmStore.searchHeading;

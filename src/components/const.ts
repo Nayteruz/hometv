@@ -126,6 +126,3 @@ export const ROUTER_PAGES = {
     name: 'waitingList',
   },
 };
-
-export const IMAGE_PLACEHOLDER =
-  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300"><rect width="200" height="300" fill="%23374151"/><text x="50%" y="50%" fill="%236b7280" text-anchor="middle" dy=".3em" font-size="14">No image</text></svg>';

@@ -26,15 +26,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **PWA / Offline**: Service worker via `register-service-worker` + custom `sw.js` in `public/`. `manifest.json` for installable PWA. Enabled only in production mode.
 - **External APIs**:
   - **Kinopoisk Unofficial API** (v2.2) — primary movie data source. Wrapper in `src/components/api.ts`. Requires `VITE_API_FILM_LIST_KEY`.
-  - **Video player aggregators** — multiple streaming sources configured in `src/components/const.ts`:
-    - Alloha (`VITE_API_ALOHA_KEY`)
-    - Collaps (atomics.ws)
-    - VideoCDN (lumex.space)
-    - HDVB (`VITE_API_HDTV_KEY`)
-    - Kodik (kodikapi.com)
-    - Coll (bhcesh.me)
-    - Trailers (atomics.ws)
-  - Player selection UI in `FilmPlayerSelect.vue` and player-specific components.
+  - **Video player aggregators** — 12 streaming sources configured in `src/components/const.ts` (`PLAYER_LABELS`):
+    - Alloha, Bugall, Collaps, Collaps2, VeoVeo, VideoSeeD, Tobaco, Coll, Kodi, HDVB, Kodik, Трейлер
+    - API-based players (require fetch to get iframe src): Bugall, Coll, Kodi, HDVB (defined in `API_PLAYERS`)
+    - Direct-embed players (URL = iframe src): Alloha, Collaps, Collaps2, VeoVeo, VideoSeeD, Tobaco, Kodik, Трейлер
+  - Player selection UI in `FilmPlayerSelect.vue` and `PlayersList.vue`.
 
 ## Project Structure
 
@@ -50,7 +46,6 @@ src/
 │   ├── const.ts             — App constants: keyboard keys, breakpoints, player URLs, page titles, router paths
 │   ├── utils.ts             — Component-level utilities (film page title, rating, ID lookup)
 │   ├── FilmList.vue         — Responsive grid of film cards (5→4→3→2 columns)
-│   ├── FilmItem.vue         — Individual film card (inside FilmPage/)
 │   ├── FilmRating.vue       — Rating display component
 │   ├── GenreList.vue        — Genre filter tabs
 │   ├── PaginationList.vue   — Page number navigation
@@ -77,7 +72,7 @@ src/
 │   │   ├── FilmImage.vue        — Poster image with lazy load
 │   │   ├── FilmGenres.vue       — Genre tags
 │   │   ├── FilmPlayerSelect.vue — Player source selector
-│   │   ├── FilmKinoboxTab.vue, FilmKinoBD.vue, FilmPlayerClub.vue, FilmKinoTop.vue — Player-specific tabs
+│   │   ├── FilmKinoboxTab.vue, FilmKinoBD.vue, FilmPlayerClub.vue, FilmKinoTop.vue — Player-specific tabs (⚠ FilmPlayerClub.vue is the only active one; the other 3 are orphaned/unused)
 │   │   ├── FilmActionList.vue   — Action buttons container
 │   │   └── FilmActionButtons/   — Individual action buttons (Favorite, Watching, WatchList, WaitingList)
 │   ├── registration/
@@ -100,7 +95,7 @@ src/
 │   ├── authStore.ts        — Auth state: user, errorMessage, apiKey. Actions: login, register, logout, edit profile, auth state listener
 │   ├── filmStore.ts        — Film/search state: genres, filters, pagination, search query, focus index, films cache
 │   ├── userListsStore.ts   — User's 6 lists + skipped IDs, hydrated from Firestore, synced on change
-│   ├── favorites.js        — Static hardcoded favorite film list (offline fallback / demo data)
+│   ├── favorites.js        — Backup copy of favorite films (not imported, kept as insurance against Firestore data loss)
 │   ├── types.ts            — Store type definitions (AppUser, IFilmStoreState, IUserListsStoreState, etc.)
 │   ├── utils.ts            — Store utilities: film entity mappers, list operations, safeUpdateUserData
 │   └── const.ts            — FILM_TYPE and FILM_TYPE_LABELS enums
@@ -137,6 +132,8 @@ Global event emitter using `mitt` library, provided via `app.provide('emitter', 
 - `'clickPage'` — emitted when pagination is clicked, triggers page fetch
 - `'searchSubmit'` — emitted on search form submit (consumed by SearchPage)
 
+**Note:** `EventsEmitter` type in `src/types/index.ts` currently only declares `'isLoading' | 'clickPage'` — `searchSubmit` is used at runtime but missing from the type union. Add it when touching the type.
+
 ### Keyboard Navigation
 `NavigationByKeys.vue` provides arrow-key film grid navigation:
 - Arrow keys move focus between film cards
@@ -156,10 +153,17 @@ Global event emitter using `mitt` library, provided via `app.provide('emitter', 
 - All film data normalized through `getFilmEntity()` mapper
 
 ### Environment Variables
-Three API keys required (see `.env`):
+8 media-related API keys in `.env` (see `src/stores/types.ts` → `IFilmStoreState` for the corresponding store fields):
 - `VITE_API_FILM_LIST_KEY` — Kinopoisk Unofficial API key
-- `VITE_API_ALOHA_KEY` — Alloha video player token
-- `VITE_API_HDTV_KEY` — HDVB video player token
+- `VITE_API_ALOHA_KEY` — Alloha player token
+- `VITE_API_HDTV_KEY` — HDVB player token
+- `VITE_API_BUGALL` — Bugall player token
+- `VITE_API_VEOVEO` — VeoVeo player token
+- `VITE_API_COLL` — Coll player token
+- `VITE_API_VIDEOSEED` — VideoSeeD player token
+- `VITE_API_KODI` — Kodi player token
+
+Plus 6 Firebase config variables (`VITE_API_FIREBASE_*`) — see `firebaseConfig.ts`.
 
 Users can override the film API key per-account (stored in Firestore under `api_key` field).
 
@@ -170,12 +174,12 @@ Configured in both `vite.config.ts` and `tsconfig.app.json`:
 
 ## Notable Implementation Details
 
-- `index.html` entry script is `/src/main.js` (not `.ts` — the file is `.ts` but imported as `.js` per Vite convention).
+- `index.html` entry script is `/src/main.ts` (TypeScript imported directly).
 - `KeepAlive` caches `MainList` component only, other routes re-render on navigation.
 - `App.vue` handles click-outside for search popup via `clickOutside` listener, excluding clicks inside `.search-form`.
-- Firebase config is hardcoded in `firebaseConfig.ts` (not in `.env` for this project).
+- Firebase config reads from environment variables (`VITE_API_FIREBASE_*`) in `firebaseConfig.ts`.
 - `Firebase Error` handling uses `FirebaseError` type from `firebase/app`.
-- `GENRES_IGNORED` filters out 17 genre categories from the Kinopoisk API (adult content, documentaries, talk shows, etc.).
+- `GENRES_IGNORED` filters out 15 genre categories from the Kinopoisk API (adult content, documentaries, talk shows, etc.).
 - `copy-404.js` is a post-build script: copies `dist/index.html` to `dist/404.html` for GitHub Pages SPA fallback.
 - The project uses **rolldown-vite** (npm alias `npm:rolldown-vite@7.2.5`) instead of standard Vite.
 - `.prettierrc`: 2-space tabs, single quotes, semicolons enabled, Vue indent script and style.
@@ -216,20 +220,16 @@ Configured in both `vite.config.ts` and `tsconfig.app.json`:
 ## FilmPlayerSelect — выбор плеера
 
 `FilmPlayerSelect.vue` — переключение между вкладками плееров:
-- **«Плееры»** (`playerNum === 1`): рендерит `PlayersList` — 8 источников (Alloha, Collaps, VideoCDN, Coll, kodi, HDVB, Kodik, Трейлер) + iframe с видеоплеером.
+- **«Плееры»** (`playerNum === 1`): рендерит `PlayersList` — 12 источников (Alloha, Bugall, Collaps, Collaps2, VeoVeo, VideoSeeD, Tobaco, Coll, Kodi, HDVB, Kodik, Трейлер) + iframe с видеоплеером.
 - **«Lumex»** (`playerNum === 2`): рендерит `FilmPlayerClub` — отдельный плеер через svetacdn.in.
 
-**Важно:** `playerNum` инициализируется как `ref(0)`, поэтому при загрузке страницы фильма ни одна вкладка не выбрана — плеер не отображается до клика по вкладке. Вкладка «Плееры» показывается по умолчанию только после ручного клика.
+**Важно:** `playerNum` инициализируется как `ref(0)` намеренно — ни одна вкладка не выбрана при загрузке, плеер не загружается, пока пользователь явно не кликнет по вкладке. Это осознанное поведение, а не баг.
 
 ## Known Issues
 
-1. **Заголовок страницы (document.title) не обновляется** на некоторых маршрутах. Например, на `/last-views` и `/watching` заголовок остаётся «Список последних новинок». Связано с директивой `VTitle.ts` или отсутствием `meta.title` в определении маршрутов.
+1. **API-ошибка при загрузке жанров**: `GET https://kinopoiskapiunofficial.tech/api/v2.2/filters` возвращает HTTP 400. Ошибка возникает в `filmStore.getGenreList()` → `GenreList.vue`. Возможно, эндпоинт `/filters` изменился или требует дополнительных параметров.
 
-2. **FilmPlayerSelect: плеер не выбран по умолчанию** — `playerNum = ref(0)`, пользователь видит пустую область плеера. Вероятно, должно быть `ref(1)`.
-
-3. **API-ошибка при загрузке жанров**: `GET https://kinopoiskapiunofficial.tech/api/v2.2/filters` возвращает HTTP 400. Ошибка возникает в `filmStore.getGenreList()` → `GenreList.vue`. Возможно, эндпоинт `/filters` изменился или требует дополнительных параметров.
-
-4. **Lumex-плеер (svetacdn.in) — таймаут**: iframe показывает «Превышено время ожидания ответа от сайта». Внешний сервис может быть недоступен или заблокирован.
+2. **Lumex-плеер (svetacdn.in) — таймаут**: iframe показывает «Превышено время ожидания ответа от сайта». Внешний сервис может быть недоступен или заблокирован.
 
 ## Project‑Specific Tips
 

@@ -22,7 +22,7 @@
 ## Component Communication
 - Use `inject('emitter')` from `mitt` for cross-component events, NOT props drilling
 - Known events: `isLoading`, `clickPage`, `searchSubmit`
-- Add new events to `EventsEmitter` type in `src/types/index.ts`
+- **Важно:** `EventsEmitter` type в `src/types/index.ts` сейчас содержит только `'isLoading' | 'clickPage'`. При добавлении новых событий обновляй тип, а `searchSubmit` добавь при первой возможности.
 
 ## Naming
 - **Files**: PascalCase for components (`FilmList.vue`), camelCase for utils (`api.ts`)
@@ -47,7 +47,7 @@
 - Always check `if (!this.user || !item)` guard at start of list actions
 
 ## Special Files
-- `src/stores/favorites.js` — статический демо-файл со списком избранных фильмов. НЕ импортируется в коде, НЕ удалять. Используется как резервный источник данных / пример структуры.
+- `src/stores/favorites.js` — резервная копия избранных фильмов. НЕ импортируется в коде, НЕ удалять. Хранится как страховка на случай случайного удаления базы Firestore.
 
 ## Error Handling
 - API errors: catch `ApiError` (has `status`, `url`, `message`)

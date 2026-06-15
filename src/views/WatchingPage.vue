@@ -1,10 +1,10 @@
 <template>
-  <h1>{{ pagesTitle.WATCHING }}</h1>
+  <h1 v-title>{{ pagesTitle.WATCHING }}</h1>
   <FilmList :items="list" :showPreload="showPreload" />
   <h3 v-if="list.length === 0">Список пуст</h3>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import { useUserListsStore } from '@/stores/userListsStore';
   import { computed, ref } from 'vue';
   import FilmList from '@/components/FilmList.vue';

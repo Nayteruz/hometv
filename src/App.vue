@@ -115,6 +115,8 @@
     }
   }
 
+  /* !important оправданы — переопределение инлайновых стилей внешнего компонента,
+     на который нет прямого влияния */
   .film__init > div {
     min-height: 450px !important;
     max-width: 100% !important;

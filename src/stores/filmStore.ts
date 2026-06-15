@@ -43,7 +43,9 @@ export const useFilmStore = defineStore('filmStore', {
     },
     searchQuery() {
       let qr: { q?: string; genres?: number } = {};
-      qr.q = this.searchInputText || '';
+      if (this.searchInputText) {
+        qr.q = this.searchInputText;
+      }
       if (this.genreId) {
         qr.genres = this.genreId;
       }
@@ -91,6 +93,13 @@ export const useFilmStore = defineStore('filmStore', {
     },
     setMountedCurrentFocus(href: string) {
       this.setCurrentFocus(this.focusIds?.[href] || 0);
+    },
+    setSearchInputText(value: string) {
+      this.searchInputText = value;
+    },
+    resetFilters() {
+      this.pageNum = 1;
+      this.genreId = null;
     },
   },
 });

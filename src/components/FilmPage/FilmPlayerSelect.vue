@@ -15,6 +15,8 @@
   import FilmPlayerClub from '@/components/FilmPage/FilmPlayerClub.vue';
   import PlayersList from '@/components/PlayersList.vue';
   import FilmActionList from './FilmActionList.vue';
+  // Намеренно 0, чтобы ни одна вкладка не была выбрана при загрузке —
+  // плеер не загружается, пока пользователь явно не кликнет по вкладке.
   const playerNum = ref(0);
 </script>
 

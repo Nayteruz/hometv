@@ -119,7 +119,7 @@ export const useUserListsStore = defineStore('userListsStore', {
           'watchingList',
           (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm),
         );
-        if (updated) this.watchingList = updated;
+        if (updated) this.watchingList = getFilmEntityList(updated);
       } catch (e) {
         console.error('Ошибка добавления в смотрю сейчас: ' + e);
       }
@@ -146,7 +146,7 @@ export const useUserListsStore = defineStore('userListsStore', {
           'watchList',
           (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm),
         );
-        if (updated) this.watchList = updated;
+        if (updated) this.watchList = getFilmEntityList(updated);
       } catch (e) {
         console.error('Ошибка добавления в буду смотреть: ' + e);
       }
@@ -173,7 +173,7 @@ export const useUserListsStore = defineStore('userListsStore', {
           'waitingList',
           (cur: IFilmEntity[]) => addFirstAndExcludeCopy(cur, itemFilm),
         );
-        if (updated) this.waitingList = updated;
+        if (updated) this.waitingList = getFilmEntityList(updated);
       } catch (e) {
         console.error('Ошибка добавления в жду продолжения: ' + e);
       }

@@ -28,14 +28,16 @@
     () => props.currentIndex === filmStore.currentFocusIndex,
   );
   const filmName = computed(() => getFilmPageTitle(props.itemFilm));
-  const filmHref = computed(() => `/hometv/film/${props.itemFilm.id}`);
-  const isFocusedOnHover = ref(false);
   const id = computed(() => props.itemFilm.id);
+  const filmHref = computed(
+    () => router.resolve({ name: 'filmPage', params: { id: id.value } }).href,
+  );
+  const isFocusedOnHover = ref(false);
 
   const isUnwatch = computed(() => filmLists.isSkipped(id.value));
 
   const goToPageFilm = () => {
-    router.push(`/film/${id.value}`);
+    router.push({ name: 'filmPage', params: { id: id.value } });
   };
 
   const onOver = () => {

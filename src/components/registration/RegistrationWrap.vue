@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref, inject } from 'vue';
+  import { onMounted, ref } from 'vue';
   import IconUser from '@/components/icons/IconUser.vue';
   import RegistrationComponent from './RegistrationComponent.vue';
   import SignInComponent from './SignInComponent.vue';
@@ -27,20 +27,14 @@
 
   const authStore = useAuthStore();
   const formView = ref('sign');
-  const emitter = inject('emitter') as any;
 
   const setForm = (e: string) => {
     authStore.errorMessage = '';
     formView.value = e;
   };
 
-  const updateFavorite = () => {
-    emitter.emit('setUserData');
-  };
-
   onMounted(async () => {
-    await authStore.authChange(updateFavorite);
-    await emitter.emit('setUserData');
+    await authStore.authChange();
   });
 </script>
 
