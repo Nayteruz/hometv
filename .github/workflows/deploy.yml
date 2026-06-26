@@ -35,7 +35,7 @@ jobs:
           VITE_API_FIREBASE_PROJECT_ID: ${{ secrets.VITE_API_FIREBASE_PROJECT_ID }}
           VITE_API_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_API_FIREBASE_STORAGE_BUCKET }}
           VITE_API_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_API_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_API_FIREBASE_APP_ID='1:452296723769: ${{ secrets.VITE_API_FIREBASE_APP_ID }}
+          VITE_API_FIREBASE_APP_ID: ${{ secrets.VITE_API_FIREBASE_APP_ID }}
         run: npm run build
       - name: Copy index.html to dist as 404.html
         run: cp ./dist/index.html ./dist/404.html
