@@ -24,7 +24,7 @@
   const isFavorite = computed(() => hasId(filmLists.favorites, props.id));
 
   async function toggleFavorite() {
-    if (!authStore.user) {
+    if (!authStore.firebaseUser) {
       alert('Необходима авторизация');
       return;
     }

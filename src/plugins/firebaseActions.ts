@@ -33,6 +33,10 @@ export const translateErrorCode = function (code: string) {
       return 'Пользователь не найден';
     case 'auth/weak-password':
       return 'Пароль не менее 6 символов';
+    case 'auth/email-already-in-use':
+      return 'Пользователь с таким email уже существует';
+    case 'auth/too-many-requests':
+      return 'Слишком много попыток. Повторите позже';
     default:
       return 'Ошибка авторизации';
   }

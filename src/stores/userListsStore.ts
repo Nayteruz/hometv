@@ -23,7 +23,7 @@ export const useUserListsStore = defineStore('userListsStore', {
 
   getters: {
     user(): AppUser | null {
-      return useAuthStore().user as AppUser | null;
+      return useAuthStore().firebaseUser as AppUser | null;
     },
   },
 

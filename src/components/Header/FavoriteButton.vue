@@ -20,7 +20,7 @@
 
   const favoriteCount = computed(() => filmLists.favorites.length);
   const isDisabled = computed(() =>
-    authStore.user === null ? 'disabled' : ''
+    authStore.firebaseUser === null ? 'disabled' : ''
   );
 
   const click = () => {

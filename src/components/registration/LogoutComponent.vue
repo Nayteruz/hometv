@@ -2,7 +2,7 @@
   <div class="registration--form">
     <h3 class="heading">
       Вы вошли как:
-      <strong class="name">{{ authStore.user?.name || 'Загрузка...' }}</strong>
+      <strong class="name">{{ authStore.profile.name || 'Загрузка...' }}</strong>
       <button class="edit" @click="toggleView"><IconEdit /></button>
     </h3>
     <div v-if="viewApiContainer" class="container">
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   import { useAuthStore } from '@/stores/authStore';
   import IconEdit from '@/components/icons/IconEdit.vue';
 
@@ -25,8 +25,17 @@
 
   const viewApiContainer = ref(false);
 
-  const userName = ref(authStore.user?.name || '');
-  const apiKey = ref(authStore.apiKey);
+  const userName = ref(authStore.profile.name || '');
+  const apiKey = ref(authStore.profile.apiKey);
+
+  watch(
+    () => [authStore.profile.name, authStore.profile.apiKey],
+    ([name, key]) => {
+      userName.value = name || '';
+      apiKey.value = key;
+    },
+    { immediate: true }
+  );
 
   const updateUser = async () => {
     if (userName.value.length < 3) {

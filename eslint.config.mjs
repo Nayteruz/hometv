@@ -29,6 +29,7 @@ export default defineConfig([
       '**/*.map',
       '**/*.log',
       '**/*.d.ts',
+      '**/src/stores/favorites.js',
 
       // Конфигурации IDE
       '**/.vscode/**',

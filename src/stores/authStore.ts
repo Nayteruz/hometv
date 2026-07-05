@@ -21,46 +21,89 @@ import type {
   IInitializedUserData,
   AppUser,
   IAuthStoreState,
+  IUserProfile,
 } from './types';
 import { useUserListsStore } from './userListsStore';
 import type { FirebaseError } from 'firebase/app';
 
+const createDefaultProfile = (): IUserProfile => ({
+  name: '',
+  email: '',
+  apiKey: import.meta.env.VITE_API_FILM_LIST_KEY,
+});
+
 export const useAuthStore = defineStore('authStore', {
   state: (): IAuthStoreState => ({
-    user: null,
+    firebaseUser: null,
+    profile: createDefaultProfile(),
     auth: getAuth(),
     errorMessage: '',
-    apiKey: import.meta.env.VITE_API_FILM_LIST_KEY,
   }),
 
+  getters: {
+    user(): AppUser | null {
+      if (!this.firebaseUser) return null;
+
+      return {
+        ...this.firebaseUser,
+        name: this.profile.name,
+        email: this.profile.email || this.firebaseUser.email,
+      } as AppUser;
+    },
+  },
+
   actions: {
+    clearError() {
+      this.errorMessage = '';
+    },
+
+    resetAuthState() {
+      this.firebaseUser = null;
+      this.profile = createDefaultProfile();
+      this.errorMessage = '';
+      useUserListsStore().reset();
+    },
+
     async authWithEmailAndPassword(data: IAuthData) {
-      await signInWithEmailAndPassword(this.auth, data.email, data.password)
-        .then(() => this.getUserData())
-        .catch((error: FirebaseError) => {
-          this.errorMessage = translateErrorCode(error.code);
-        });
+      this.clearError();
+
+      try {
+        await signInWithEmailAndPassword(
+          this.auth,
+          data.email,
+          data.password
+        );
+        await this.getUserData();
+      } catch (error) {
+        this.errorMessage = translateErrorCode((error as FirebaseError).code);
+      }
     },
 
     async createAuthWithEmailAndPassword(data: ICreateAuthData) {
-      await createUserWithEmailAndPassword(this.auth, data.email, data.password)
-        .then(async (userCredential) => {
-          this.user = userCredential.user as AppUser;
-          await userDataSet(data, this.user.uid);
-          await this.getUserData();
-        })
-        .catch((error: FirebaseError) => {
-          this.errorMessage = translateErrorCode(error.code);
-        });
+      this.clearError();
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          this.auth,
+          data.email,
+          data.password
+        );
+
+        this.firebaseUser = userCredential.user as AppUser;
+        await userDataSet(data, this.firebaseUser.uid);
+        await this.getUserData();
+      } catch (error) {
+        this.errorMessage = translateErrorCode((error as FirebaseError).code);
+      }
     },
 
     async editAuthNameOrApiKey(data: IEditAuthData) {
       try {
-        if (this.user) {
-          const docRef = doc(firebaseDb, 'users', this.user.uid);
+        if (this.firebaseUser) {
+          const docRef = doc(firebaseDb, 'users', this.firebaseUser.uid);
           await updateDoc(docRef, {
-            name: data.userName || '',
-            apiKey: data.apiKey || this.apiKey,
+            name: data.userName || this.profile.name,
+            apiKey: data.apiKey || this.profile.apiKey,
           });
         }
         await this.getUserData();
@@ -70,17 +113,18 @@ export const useAuthStore = defineStore('authStore', {
     },
 
     async authLogout() {
-      await signOut(this.auth)
-        .then(() => this.removeUserData())
-        .catch((error: FirebaseError) => {
-          alert('Ошибка logout: ' + error);
-        });
+      try {
+        await signOut(this.auth);
+        this.resetAuthState();
+      } catch (error) {
+        this.errorMessage = translateErrorCode((error as FirebaseError).code);
+      }
     },
 
     authChange(callback?: () => void) {
       return onAuthStateChanged(this.auth, async (user) => {
         if (user) {
-          this.user = user as AppUser;
+          this.firebaseUser = user as AppUser;
           this.getUserData(callback);
         } else {
           this.removeUserData(callback);
@@ -91,29 +135,28 @@ export const useAuthStore = defineStore('authStore', {
     async getUserData(
       callback?: () => void
     ): Promise<IInitializedUserData | void> {
-      if (!this.user) return;
+      if (!this.firebaseUser) return;
 
       const data: IInitializedUserData = initUserData(
-        await userDataGet(this.user.uid)
+        await userDataGet(this.firebaseUser.uid)
       );
 
-      this.user.name = data.name;
-      this.user.email = data.email;
-      this.apiKey = data.apiKey;
+      this.profile = {
+        name: data.name,
+        email: data.email,
+        apiKey: data.apiKey,
+      };
 
       useUserListsStore().hydrate(data);
 
-      typeof callback === 'function' && callback();
+      callback?.();
 
       return data;
     },
 
     removeUserData(callback?: () => void) {
-      this.user = null;
-
-      useUserListsStore().reset();
-
-      typeof callback === 'function' && callback();
+      this.resetAuthState();
+      callback?.();
     },
   },
 });

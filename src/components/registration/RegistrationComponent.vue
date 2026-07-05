@@ -2,9 +2,9 @@
   <div class="registration--form">
     <h3 class="name">Регистрация</h3>
     <p><input type="text" placeholder="Почта" v-model="email" /></p>
-    <p><input type="text" placeholder="Имя" v-model="user_name" /></p>
+    <p><input type="text" placeholder="Имя" v-model="userName" /></p>
     <p>
-      <input type="text" placeholder="Api ключ" v-model="api_key" />
+      <input type="text" placeholder="Api ключ" v-model="apiKey" />
       <small>
         <a target="_blank" href="https://kinopoiskapiunofficial.tech/signup"
           >получить ключ API</a
@@ -32,15 +32,15 @@
   const authStore = useAuthStore();
   const email = ref('');
   const password = ref('');
-  const user_name = ref('');
-  const api_key = ref('');
+  const userName = ref('');
+  const apiKey = ref('');
 
   const register = async () => {
     await authStore.createAuthWithEmailAndPassword({
       email: email.value,
       password: password.value,
-      user_name: user_name.value,
-      api_key: api_key.value,
+      userName: userName.value,
+      apiKey: apiKey.value,
     });
   };
 

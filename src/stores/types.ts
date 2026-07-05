@@ -6,11 +6,17 @@ export interface AppUser extends FirebaseUser {
   email: string | null;
 }
 
+export interface IUserProfile {
+  name: string;
+  email: string;
+  apiKey: string;
+}
+
 export interface IAuthStoreState {
-  user: AppUser | null;
+  firebaseUser: AppUser | null;
+  profile: IUserProfile;
   auth: ReturnType<typeof getAuth>;
   errorMessage: string;
-  apiKey: string;
 }
 
 export interface Genre {

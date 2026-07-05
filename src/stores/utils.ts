@@ -184,17 +184,17 @@ export async function safeUpdateUserData(
 ) {
   const authStore = useAuthStore();
 
-  if (!authStore.user) {
+  if (!authStore.firebaseUser) {
     console.warn('Необходимо авторизоваться');
     return null;
   }
 
   try {
-    const userData = await userDataGet(authStore.user.uid);
+    const userData = await userDataGet(authStore.firebaseUser.uid);
     const currentData = userData?.[fieldName] || [];
     const updatedData = updateCallback(currentData);
 
-    const docRef = doc(firebaseDb, 'users', authStore.user.uid);
+    const docRef = doc(firebaseDb, 'users', authStore.firebaseUser.uid);
     await updateDoc(docRef, { [fieldName]: updatedData });
 
     return updatedData;

@@ -27,7 +27,7 @@
   const isLoading = ref(false);
 
   async function toggleAction() {
-    if (!authStore.user) {
+    if (!authStore.firebaseUser) {
       alert('Необходима авторизация');
       return;
     }

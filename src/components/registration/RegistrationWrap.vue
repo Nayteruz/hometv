@@ -3,9 +3,9 @@
     <template #icon>
       <IconUser class="icon" />
     </template>
-    <template #content>
+      <template #content>
       <div class="registration-wrap--pop">
-        <LogoutComponent v-if="authStore.user" />
+        <LogoutComponent v-if="authStore.firebaseUser" />
         <SignInComponent v-else-if="formView === 'sign'" @setForm="setForm" />
         <RegistrationComponent
           v-else-if="formView === 'reg'"
@@ -29,7 +29,7 @@
   const formView = ref('sign');
 
   const setForm = (e: string) => {
-    authStore.errorMessage = '';
+    authStore.clearError();
     formView.value = e;
   };
 
