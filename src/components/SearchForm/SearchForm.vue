@@ -94,18 +94,18 @@
 
   .clear-input {
     position: absolute;
-    right: 5px;
-    top: 50%;
-    margin-top: -8px;
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
+    width: 30px;
+    height: auto;
+    border-radius: 0 2px 2px 0;
     display: none;
     align-items: center;
     justify-content: center;
     background: rgba(82, 135, 183, 0.5);
     cursor: pointer;
-    padding: 2px 0 0;
+    padding: 0;
     z-index: 99;
 
     &.show {
