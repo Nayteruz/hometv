@@ -36,6 +36,13 @@
     searchInput.value?.focus();
   };
 
+  const changeSearchValue = (e: KeyboardEvent) => {
+    const input = e.target as HTMLInputElement;
+    const value = input.value.trim();
+    filmStore.setSearchInputText(value);
+    searchSubmit();
+  };
+
   const clearInput = () => {
     filmStore.setSearchInputText('');
     searchInput.value?.focus();
@@ -118,6 +125,7 @@
         type="text"
         :value="filmStore.searchInputText"
         @input="filmStore.setSearchInputText(($event.target as HTMLInputElement).value)"
+        @keydown.enter.prevent="changeSearchValue"
         @focus="showLastList"
         placeholder="Название фильма / ID КиноПоиск"
         name="keyword"
