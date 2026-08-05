@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { useFilmStore } from '@/stores/filmStore';
   import { useUserListsStore } from '@/stores/userListsStore';
-  import { onMounted, ref } from 'vue';
+  import { computed, onMounted, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import ButtonBlue from '../ButtonBlue.vue';
   import SearchPopup from './SearchPopup.vue';
@@ -16,7 +16,16 @@
   const filmLists = useUserListsStore();
 
   const localSearchText = ref('');
+  const inputRawValue = ref('');
   const searchInput = ref<HTMLInputElement | null>(null);
+
+  const showClearButton = computed(
+    () => inputRawValue.value.trim().length > 0 || localSearchText.value.trim().length > 0,
+  );
+
+  const onInput = (e: Event) => {
+    inputRawValue.value = (e.target as HTMLInputElement).value;
+  };
 
   onMounted(() => {
     localSearchText.value = String(route.query.q || '');
@@ -45,6 +54,7 @@
 
   const clearInput = () => {
     localSearchText.value = '';
+    inputRawValue.value = '';
     searchInput.value?.focus();
   };
 
@@ -130,13 +140,14 @@
         v-model="localSearchText"
         autocomplete="off"
         type="text"
+        @input="onInput"
         @keydown.enter.prevent="searchSubmit"
         @focus="showLastList"
         placeholder="Название фильма / ID КиноПоиск"
         name="keyword"
       />
       <ButtonBlue
-        :class="['clear-input', { show: localSearchText }]"
+        :class="['clear-input', { show: showClearButton }]"
         @click="clearInput"
         >×</ButtonBlue
       >
