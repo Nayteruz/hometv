@@ -75,22 +75,16 @@
     getListFilms(false, filmStore.pageNum);
   };
 
-  const onSearchSubmit = () => {
-    getListFilms(false, 1);
-  };
-
   emitter.on('clickPage', setNextPage);
 
   onBeforeUnmount(() => {
     emitter.off('clickPage', setNextPage);
-    emitter.off('searchSubmit', onSearchSubmit);
   });
 
   onMounted(async () => {
     filmStore.setSearchInputText(String(route.query.q || ''));
     filmStore.setGenreId(Number(route.query.genres));
     await getListFilms(false, 1);
-    emitter.on('searchSubmit', onSearchSubmit);
     pageTitle.value = filmStore.searchHeading;
   });
 </script>

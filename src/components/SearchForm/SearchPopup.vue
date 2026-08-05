@@ -15,23 +15,20 @@
 </template>
 
 <script setup lang="ts">
-  import { useRouter } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
   import { useUserListsStore } from '@/stores/userListsStore';
   import ButtonBlue from '../ButtonBlue.vue';
 
+  const emit = defineEmits<{
+    'click-last-search': [value: string];
+  }>();
+
   const filmStore = useFilmStore();
   const filmLists = useUserListsStore();
-  const router = useRouter();
 
   const clickLastSearch = (value: string) => {
-    filmStore.pageNum = 1;
-    filmStore.searchInputText = value;
-    router.push({
-      name: 'searchPage',
-      query: { q: filmStore.searchInputText },
-    });
     filmStore.setShowLastSearchList(false);
+    emit('click-last-search', value);
   };
 
   const hideLastList = () => {

@@ -15,20 +15,27 @@
   const filmStore = useFilmStore();
   const filmLists = useUserListsStore();
 
-  onMounted(() => {
-    filmStore.searchInputText = String(route.query.q || '');
-  });
-
+  const localSearchText = ref('');
   const searchInput = ref<HTMLInputElement | null>(null);
 
-  const searchSubmit = async () => {
-    filmLists.addLastSearchList(filmStore.searchInputText || '');
+  onMounted(() => {
+    localSearchText.value = String(route.query.q || '');
+    filmStore.setSearchInputText(localSearchText.value);
+  });
+
+  const searchSubmit = () => {
+    const value = searchInput.value?.value ?? localSearchText.value;
+    const trimmed = value.trim();
+
+    filmStore.setSearchInputText(trimmed);
+    filmLists.addLastSearchList(trimmed);
     filmStore.pageNum = 1;
+    filmStore.setShowLastSearchList(false);
+
     router.push({
       name: 'searchPage',
       query: filmStore.searchQuery,
     });
-    filmStore.setShowLastSearchList(false);
   };
 
   const showLastList = () => {
@@ -36,16 +43,14 @@
     searchInput.value?.focus();
   };
 
-  const changeSearchValue = (e: KeyboardEvent) => {
-    const input = e.target as HTMLInputElement;
-    const value = input.value.trim();
-    filmStore.setSearchInputText(value);
-    searchSubmit();
+  const clearInput = () => {
+    localSearchText.value = '';
+    searchInput.value?.focus();
   };
 
-  const clearInput = () => {
-    filmStore.setSearchInputText('');
-    searchInput.value?.focus();
+  const onHistoryClick = (value: string) => {
+    localSearchText.value = value;
+    searchSubmit();
   };
 </script>
 
@@ -100,6 +105,7 @@
     justify-content: center;
     background: rgba(82, 135, 183, 0.5);
     cursor: pointer;
+    padding: 2px 0 0;
     z-index: 99;
 
     &.show {
@@ -121,22 +127,21 @@
     <div class="input-wrap">
       <input
         ref="searchInput"
+        v-model="localSearchText"
         autocomplete="off"
         type="text"
-        :value="filmStore.searchInputText"
-        @input="filmStore.setSearchInputText(($event.target as HTMLInputElement).value)"
-        @keydown.enter.prevent="changeSearchValue"
+        @keydown.enter.prevent="searchSubmit"
         @focus="showLastList"
         placeholder="Название фильма / ID КиноПоиск"
         name="keyword"
       />
       <ButtonBlue
-        :class="['clear-input', { show: filmStore.searchInputText }]"
+        :class="['clear-input', { show: localSearchText }]"
         @click="clearInput"
         >×</ButtonBlue
       >
     </div>
     <ButtonBlue type="submit" :border="true">Найти</ButtonBlue>
-    <SearchPopup />
+    <SearchPopup @click-last-search="onHistoryClick" />
   </form>
 </template>
