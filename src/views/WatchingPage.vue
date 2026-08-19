@@ -1,19 +1,18 @@
 <template>
   <h1 v-title>{{ pagesTitle.WATCHING }}</h1>
-  <FilmList :items="list" :showPreload="showPreload" />
+  <FilmList :items="list" />
   <h3 v-if="list.length === 0">Список пуст</h3>
 </template>
 
 <script setup lang="ts">
   import { useUserListsStore } from '@/stores/userListsStore';
-  import { computed, ref } from 'vue';
+  import { computed } from 'vue';
   import FilmList from '@/components/FilmList.vue';
   import { pagesTitle } from '@/components/const';
   import { getFilmEntityList } from '@/stores/utils';
 
   const filmLists = useUserListsStore();
   const list = computed(() => getFilmEntityList(filmLists.watchingList));
-  const showPreload = ref(false);
 </script>
 
 <style scoped lang="scss">

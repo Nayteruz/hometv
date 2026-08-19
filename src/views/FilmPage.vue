@@ -111,7 +111,6 @@
         <FilmList
           :items="similars"
           :isRating="false"
-          :showPreload="false"
           heightItemAuto
         />
       </div>

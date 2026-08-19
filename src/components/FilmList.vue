@@ -24,7 +24,7 @@
   import type { IFilmEntity } from '@/types';
 
   interface IFilmListProps {
-    showPreload: boolean;
+    showPreload?: boolean;
     items: IFilmEntity[];
     isRating?: boolean;
     heightItemAuto?: boolean;
