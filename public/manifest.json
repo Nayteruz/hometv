@@ -17,6 +17,7 @@
   "theme_color": "#163060",
   "background_color": "#101421",
   "display": "standalone",
-  "scope": "/",
-  "start_url": "/"
+  "scope": "/hometv/",
+  "start_url": "/hometv/",
+  "id": "/hometv/"
 }
