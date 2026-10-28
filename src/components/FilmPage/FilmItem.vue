@@ -235,7 +235,7 @@
   >
     <a :href="filmHref" class="card-link" @click.prevent="goToPageFilm"></a>
     <div class="icon-actions">
-      <FavoriteActionButton class="favorite" :id="id" />
+      <FavoriteActionButton class="favorite" :id="id" :film="itemFilm" />
       <WatchActionButton class="watch" :id="id" />
       <FilmRating :rating="props.itemFilm.rating" :isRating="props.isRating" />
     </div>

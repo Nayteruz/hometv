@@ -16,14 +16,31 @@
   import ButtonBlue from '@/components/ButtonBlue.vue';
   import IconFavorite from '@/components/icons/IconFavorite.vue';
   import { hasId } from '@/components/utils.ts';
+  import {
+    allohaFilmKey,
+    filmForStorage,
+    isAllohaFilm,
+  } from '@/components/allohaSearch';
   import { useAuthStore } from '@/stores/authStore';
   import { useUserListsStore } from '@/stores/userListsStore';
+  import type { IFilmEntity } from '@/types';
 
-  const props = defineProps<{ id: number }>();
+  const props = defineProps<{ id: number; film?: IFilmEntity }>();
 
   const authStore = useAuthStore();
   const filmLists = useUserListsStore();
-  const isSelected = computed(() => hasId(filmLists.favorites, props.id));
+  const allohaFilm = computed(() =>
+    isAllohaFilm(props.film) ? props.film : undefined,
+  );
+  const isSelected = computed(() => {
+    const film = allohaFilm.value;
+    if (!film) return hasId(filmLists.favorites, props.id);
+
+    const key = allohaFilmKey(film);
+    return filmLists.favorites.some(
+      (item) => isAllohaFilm(item) && allohaFilmKey(item) === key,
+    );
+  });
   const isLoading = ref(false);
 
   async function toggleFavorite() {
@@ -32,13 +49,23 @@
       return;
     }
     isLoading.value = true;
-    if (!isSelected.value) {
-      const data = await api.getFilmInfo(props.id);
-      await filmLists.addFavorite(await data);
-    } else {
-      await filmLists.removeFavorite(props.id);
+    try {
+      const film = allohaFilm.value;
+      if (!isSelected.value) {
+        if (film) {
+          await filmLists.addFavorite(filmForStorage(film));
+        } else {
+          const data = await api.getFilmInfo(props.id);
+          await filmLists.addFavorite(await data);
+        }
+      } else if (film) {
+        await filmLists.removeFavorite(allohaFilmKey(film));
+      } else {
+        await filmLists.removeFavorite(props.id);
+      }
+    } finally {
+      isLoading.value = false;
     }
-    isLoading.value = false;
   }
 </script>
 

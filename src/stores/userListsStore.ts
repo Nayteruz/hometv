@@ -62,7 +62,7 @@ export const useUserListsStore = defineStore('userListsStore', {
       }
     },
 
-    async removeFavorite(filmId: number) {
+    async removeFavorite(filmId: number | string) {
       if (!this.user || !filmId) return;
       try {
         const updated = await safeUpdateUserData(

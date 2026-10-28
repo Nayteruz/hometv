@@ -3,6 +3,18 @@ import type { IFilmEntity } from '@/types';
 
 export const ALLOHA_SOURCE = 'alloha';
 
+export const isAllohaFilm = (
+  film?: IFilmEntity | null,
+): film is IFilmEntity => film?.source === ALLOHA_SOURCE;
+
+export const allohaFilmKey = (film: IFilmEntity) =>
+  film.allohaToken || String(film.id);
+
+export const filmForStorage = (film: IFilmEntity): IFilmEntity =>
+  Object.fromEntries(
+    Object.entries(film).filter(([, value]) => value !== undefined),
+  ) as IFilmEntity;
+
 const allohaFilms = new Map<string, IFilmEntity>();
 
 export const findAllohaFilm = (token: string): IFilmEntity | undefined =>

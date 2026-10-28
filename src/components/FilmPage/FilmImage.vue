@@ -1,7 +1,7 @@
 <template>
   <div class="image">
     <div class="icon-actions">
-      <FavoriteActionButton class="favorite" :id="actionId" />
+      <FavoriteActionButton class="favorite" :id="actionId" :film="filmInfo" />
       <WatchActionButton class="watch" :id="actionId" />
       <FilmRating :rating="filmInfo?.rating || 0" class="rating" />
     </div>

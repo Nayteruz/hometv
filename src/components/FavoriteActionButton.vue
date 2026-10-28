@@ -15,13 +15,33 @@
   import { useUserListsStore } from '@/stores/userListsStore';
   import { api } from '@/components/api';
   import { hasId } from '@/components/utils';
+  import {
+    allohaFilmKey,
+    filmForStorage,
+    isAllohaFilm,
+  } from '@/components/allohaSearch';
+  import type { IFilmEntity } from '@/types';
 
-  const props = withDefaults(defineProps<{ id: number }>(), { id: 0 });
+  const props = withDefaults(
+    defineProps<{ id: number; film?: IFilmEntity }>(),
+    { id: 0 },
+  );
 
   const isLoading = ref(false);
   const authStore = useAuthStore();
   const filmLists = useUserListsStore();
-  const isFavorite = computed(() => hasId(filmLists.favorites, props.id));
+  const allohaFilm = computed(() =>
+    isAllohaFilm(props.film) ? props.film : undefined,
+  );
+  const isFavorite = computed(() => {
+    const film = allohaFilm.value;
+    if (!film) return hasId(filmLists.favorites, props.id);
+
+    const key = allohaFilmKey(film);
+    return filmLists.favorites.some(
+      (item) => isAllohaFilm(item) && allohaFilmKey(item) === key,
+    );
+  });
 
   async function toggleFavorite() {
     if (!authStore.firebaseUser) {
@@ -29,13 +49,23 @@
       return;
     }
     isLoading.value = true;
-    if (!isFavorite.value) {
-      const data = await api.getFilmInfo(props.id);
-      await filmLists.addFavorite(await data);
-    } else {
-      await filmLists.removeFavorite(props.id);
+    try {
+      const film = allohaFilm.value;
+      if (!isFavorite.value) {
+        if (film) {
+          await filmLists.addFavorite(filmForStorage(film));
+        } else {
+          const data = await api.getFilmInfo(props.id);
+          await filmLists.addFavorite(await data);
+        }
+      } else if (film) {
+        await filmLists.removeFavorite(allohaFilmKey(film));
+      } else {
+        await filmLists.removeFavorite(props.id);
+      }
+    } finally {
+      isLoading.value = false;
     }
-    isLoading.value = false;
   }
 </script>
 

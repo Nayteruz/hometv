@@ -12,7 +12,12 @@
   import FilmGenres from '@/components/FilmPage/FilmGenres.vue';
   import { getFilmPageTitle } from '@/components/utils';
   import PreloadCard from '@/components/PreloadCard.vue';
-  import { ALLOHA_SOURCE, findAllohaFilm } from '@/components/allohaSearch';
+  import {
+    ALLOHA_SOURCE,
+    allohaFilmKey,
+    findAllohaFilm,
+    isAllohaFilm,
+  } from '@/components/allohaSearch';
 
   const authStore = useAuthStore();
   const filmLists = useUserListsStore();
@@ -27,9 +32,16 @@
   const isAlloha = computed(
     () => routeParam(route.query.source) === ALLOHA_SOURCE,
   );
-  const cachedAlloha = computed(() =>
-    isAlloha.value ? findAllohaFilm(rawId.value) : undefined,
-  );
+  const cachedAlloha = computed(() => {
+    if (!isAlloha.value) return undefined;
+    const token = rawId.value;
+    return (
+      findAllohaFilm(token) ??
+      filmLists.favorites.find(
+        (film) => isAllohaFilm(film) && allohaFilmKey(film) === token,
+      )
+    );
+  });
   const allohaName = computed(() => {
     if (!isAlloha.value) return '';
     return (

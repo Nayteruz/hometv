@@ -36,21 +36,42 @@ export const addDataFirst = (list: IFilmRawList, item: IFilmRaw) => {
   return [itemWithTime, ...list];
 };
 
-export const addFirstAndExcludeCopy = (list: IFilmRawList, item: IFilmRaw) => {
-  const filmId = Number(item?.kinopoiskId || item?.filmId || item?.id);
-  const itemWithTime = { ...item, sortTime: Date.now() };
+const isAllohaRaw = (film: IFilmRaw) =>
+  film?.source === 'alloha' || typeof film?.allohaToken === 'string';
 
-  const excludedList = list.filter(
-    (film) => Number(film?.kinopoiskId || film?.filmId || film?.id) !== filmId
+const allohaRawKey = (film: IFilmRaw) => String(film?.allohaToken || film?.id || '');
+
+const sameListFilm = (film: IFilmRaw, item: IFilmRaw) => {
+  if (isAllohaRaw(item)) {
+    return isAllohaRaw(film) && allohaRawKey(film) === allohaRawKey(item);
+  }
+
+  if (isAllohaRaw(film)) return false;
+
+  return (
+    Number(film?.kinopoiskId || film?.filmId || film?.id) ===
+    Number(item?.kinopoiskId || item?.filmId || item?.id)
   );
+};
+
+export const addFirstAndExcludeCopy = (list: IFilmRawList, item: IFilmRaw) => {
+  const itemWithTime = { ...item, sortTime: Date.now() };
+  const excludedList = list.filter((film) => !sameListFilm(film, item));
 
   return [itemWithTime, ...excludedList];
 };
 
-export const removeData = (list: IFilmRawList, itemId: number) => {
-  return list.filter(
-    (film) => Number(film?.kinopoiskId || film?.filmId || film?.id) !== itemId
-  );
+export const removeData = (list: IFilmRawList, itemId: number | string) => {
+  if (typeof itemId === 'string') {
+    return list.filter(
+      (film) => !isAllohaRaw(film) || allohaRawKey(film) !== itemId,
+    );
+  }
+
+  return list.filter((film) => {
+    if (isAllohaRaw(film)) return true;
+    return Number(film?.kinopoiskId || film?.filmId || film?.id) !== itemId;
+  });
 };
 
 const getCountryList = (countries: Record<string, any>[]): string[] => {
@@ -175,8 +196,13 @@ export const getFilmType = (type: string) => {
 };
 
 export const getFilmEntity = (filmRaw: IFilmRaw): IFilmEntity => {
-  return {
-    id: Number(filmRaw.kinopoiskId || filmRaw.filmId || filmRaw.id),
+  const allohaToken =
+    typeof filmRaw.allohaToken === 'string' ? filmRaw.allohaToken.trim() : '';
+  const isAlloha = filmRaw.source === 'alloha' && allohaToken.length > 0;
+  const entity: IFilmEntity = {
+    id: isAlloha
+      ? allohaToken
+      : Number(filmRaw.kinopoiskId || filmRaw.filmId || filmRaw.id),
     name: getName(filmRaw),
     description: filmRaw?.description || 'Без описания',
     year: filmRaw?.year || '',
@@ -187,6 +213,19 @@ export const getFilmEntity = (filmRaw: IFilmRaw): IFilmEntity => {
     type: getFilmType(filmRaw.type),
     startYear: filmRaw.startYear,
     endYear: filmRaw.endYear,
+  };
+
+  if (!isAlloha) return entity;
+
+  const kp = Number(filmRaw.kinopoiskId);
+  const iframe = typeof filmRaw.iframe === 'string' ? filmRaw.iframe : '';
+
+  return {
+    ...entity,
+    ...(Number.isInteger(kp) && kp > 0 ? { kinopoiskId: kp } : {}),
+    allohaToken,
+    source: 'alloha',
+    ...(iframe ? { iframe } : {}),
   };
 };
 
