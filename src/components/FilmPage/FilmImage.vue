@@ -1,13 +1,12 @@
 <template>
   <div class="image">
     <div class="icon-actions">
-      <FavoriteActionButton class="favorite" :id="filmInfo?.id || 0" />
-      <WatchActionButton class="watch" :id="filmInfo?.id || 0" />
+      <FavoriteActionButton class="favorite" :id="actionId" />
+      <WatchActionButton class="watch" :id="actionId" />
       <FilmRating :rating="filmInfo?.rating || 0" class="rating" />
     </div>
-    <img
-      v-if="filmInfo?.image"
-      :src="filmInfo?.image"
+    <img 
+      :src="filmInfo?.image ?? NoPoster"
       alt="filmTitle"
       @error="(e) => ((e.target as HTMLImageElement).src = NoPoster)"
     />
@@ -29,6 +28,9 @@
   const props = defineProps<IFIlmImageProps>();
 
   const filmInfo = computed(() => props.filmInfo);
+  const actionId = computed(() =>
+    Number(filmInfo.value?.id ?? 0),
+  );
 </script>
 
 <style lang="scss" scoped>

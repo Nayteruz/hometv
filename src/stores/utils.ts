@@ -59,6 +59,7 @@ const getCountryList = (countries: Record<string, any>[]): string[] => {
 
 const getName = (filmRaw: IFilmRaw): string => {
   return (
+    filmRaw.name ||
     filmRaw.nameRu ||
     filmRaw.nameEn ||
     filmRaw.nameOriginal ||
@@ -87,6 +88,75 @@ export const getFilmRating = (filmRaw: IFilmRaw): string => {
   }
 
   return rating;
+};
+
+const allohaText = (value: unknown): string =>
+  value == null || value === '' ? '' : String(value);
+
+const allohaIframe = (value: unknown): string => {
+  if (typeof value !== 'string') return '';
+  const url = value.trim();
+  if (/^https?:\/\//i.test(url) || url.startsWith('//')) return url;
+  return '';
+};
+
+const allohaList = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.map((item) => allohaText(item)).filter(Boolean);
+  }
+  if (typeof value !== 'string') return [];
+  return value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
+
+const ALLOHA_TYPES: Record<string, string> = {
+  movie: 'FILM',
+  film: 'FILM',
+  serial: 'TV_SERIES',
+  series: 'TV_SERIES',
+  'tv-series': 'TV_SERIES',
+  anime: 'FILM',
+  'anime-serial': 'TV_SERIES',
+  cartoon: 'FILM',
+  'cartoon-serial': 'TV_SERIES',
+  'tv-show': 'TV_SHOW',
+  show: 'TV_SHOW',
+};
+
+export const getAllohaFilmEntity = (filmRaw: IFilmRaw): IFilmEntity | null => {
+  const token = typeof filmRaw.token === 'string' ? filmRaw.token.trim() : '';
+  if (!token) return null;
+
+  const name =
+    allohaText(filmRaw.name) ||
+    allohaText(filmRaw.original_name) ||
+    allohaText(filmRaw.alternative_name);
+  const poster = typeof filmRaw.poster === 'string' ? filmRaw.poster : '';
+  const iframe = allohaIframe(filmRaw.iframe);
+  const kp = Number(filmRaw.ids?.kp);
+  const hasKp = Number.isInteger(kp) && kp > 0;
+  const ratingKp = filmRaw.rating?.kp;
+  const slug =
+    typeof filmRaw.category?.slug === 'string' ? filmRaw.category.slug : '';
+
+  return {
+    ...getFilmEntity({
+      name,
+      year: filmRaw.year ? String(filmRaw.year) : '',
+      posterUrl: poster,
+      rating: typeof ratingKp === 'number' ? ratingKp : undefined,
+      type: ALLOHA_TYPES[slug] || '',
+      countries: allohaList(filmRaw.country),
+      genres: allohaList(filmRaw.genre),
+    }),
+    id: token,
+    kinopoiskId: hasKp ? kp : undefined,
+    allohaToken: token,
+    source: 'alloha',
+    iframe: iframe || undefined,
+  };
 };
 
 export const getFilmType = (type: string) => {

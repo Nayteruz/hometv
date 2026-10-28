@@ -3,10 +3,10 @@
     <li :class="{ selected: playerNum === 1 }" @click="playerNum = 1">
       Плееры
     </li>
-    <li :class="{ selected: playerNum === 2 }" @click="playerNum = 2">Lumex</li>
+    <li v-if="!alternative" :class="{ selected: playerNum === 2 }" @click="playerNum = 2">Lumex</li>
     <li class="actions"><FilmActionList /></li>
   </ul>
-  <PlayersList v-if="playerNum === 1" />
+  <PlayersList v-if="playerNum === 1" :alternative="alternative" />
   <FilmPlayerClub v-if="playerNum === 2" />
 </template>
 
@@ -15,6 +15,11 @@
   import FilmPlayerClub from '@/components/FilmPage/FilmPlayerClub.vue';
   import PlayersList from '@/components/PlayersList.vue';
   import FilmActionList from './FilmActionList.vue';
+
+  defineProps<{
+    alternative?: boolean;
+  }>();
+
   // Намеренно 0, чтобы ни одна вкладка не была выбрана при загрузке —
   // плеер не загружается, пока пользователь явно не кликнет по вкладке.
   const playerNum = ref(0);

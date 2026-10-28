@@ -1,5 +1,6 @@
 <template>
   <h1 v-title>{{ pageTitle }}</h1>
+  <AlternativeSearch />
   <PaginationList :total="totalPages" @clickPage="getListFilms" />
   <FilmList :items="films" :showPreload="showPreload" />
   <PaginationList :total="totalPages" @clickPage="getListFilms" />
@@ -17,6 +18,7 @@
   import { useRoute } from 'vue-router';
   import FilmList from '@/components/FilmList.vue';
   import PaginationList from '@/components/PaginationList.vue';
+  import AlternativeSearch from '@/components/AlternativeSearch.vue';
   import { api } from '@/components/api';
   import type { IFilmEntity } from '@/types';
 

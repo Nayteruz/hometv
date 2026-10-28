@@ -12,14 +12,32 @@
   import FilmGenres from '@/components/FilmPage/FilmGenres.vue';
   import { getFilmPageTitle } from '@/components/utils';
   import PreloadCard from '@/components/PreloadCard.vue';
+  import { ALLOHA_SOURCE, findAllohaFilm } from '@/components/allohaSearch';
 
   const authStore = useAuthStore();
   const filmLists = useUserListsStore();
   const route = useRoute();
 
-  const filmId = Array.isArray(route.params.id)
-    ? Number(route.params.id[0]) || 0
-    : Number(route.params.id) || 0;
+  const routeParam = (value: unknown) => {
+    const raw = Array.isArray(value) ? value[0] : value;
+    return typeof raw === 'string' ? raw : '';
+  };
+
+  const rawId = computed(() => routeParam(route.params.id));
+  const isAlloha = computed(
+    () => routeParam(route.query.source) === ALLOHA_SOURCE,
+  );
+  const cachedAlloha = computed(() =>
+    isAlloha.value ? findAllohaFilm(rawId.value) : undefined,
+  );
+  const allohaName = computed(() => {
+    if (!isAlloha.value) return '';
+    return (
+      routeParam(route.query.name).trim() || cachedAlloha.value?.name || ''
+    );
+  });
+  const isKpId = computed(() => !isAlloha.value && /^\d+$/.test(rawId.value));
+  const filmId = computed(() => (isKpId.value ? Number(rawId.value) : 0));
 
   const {
     data: filmInfo,
@@ -27,18 +45,18 @@
     isError,
     error,
   } = useQuery({
-    queryKey: ['filmInfo', filmId],
-    queryFn: () => api.getFilmInfo(filmId),
-    enabled: !!filmId,
+    queryKey: computed(() => ['filmInfo', filmId.value]),
+    queryFn: () => api.getFilmInfo(filmId.value),
+    enabled: isKpId,
   });
 
   const { data: similars } = useQuery({
-    queryKey: ['filmExtras', filmId],
+    queryKey: computed(() => ['filmExtras', filmId.value]),
     queryFn: () =>
       Promise.allSettled([
-        api.getSimilars(filmId),
-        api.getSequelsAndPrequels(filmId),
-        api.getRelations(filmId),
+        api.getSimilars(filmId.value),
+        api.getSequelsAndPrequels(filmId.value),
+        api.getRelations(filmId.value),
       ]).then((results) => {
         const allFilms = results
           .filter((r) => r.status === 'fulfilled')
@@ -46,18 +64,28 @@
 
         return Array.from(new Map(allFilms.map((f) => [f.id, f])).values());
       }),
-    enabled: !!filmId,
+    enabled: isKpId,
   });
 
-  const filmName = computed(() => getFilmPageTitle(filmInfo.value));
+  const pageFilm = computed(() => cachedAlloha.value ?? filmInfo.value);
+  const showPreload = computed(() => !isAlloha.value && isLoading.value);
+  const showError = computed(() => !isAlloha.value && isError.value);
+  const showMissing = computed(
+    () => !isAlloha.value && !showPreload.value && !showError.value && !pageFilm.value,
+  );
+  const filmName = computed(() =>
+    pageFilm.value
+      ? getFilmPageTitle(pageFilm.value)
+      : allohaName.value || 'Фильм',
+  );
 
   const isUnwatch = computed(() => {
-    const skipValue =
-      filmInfo.value?.kinopoiskId ||
-      filmInfo.value?.filmId ||
-      filmInfo.value?.id ||
+    const rawId =
+      pageFilm.value?.kinopoiskId ||
+      pageFilm.value?.filmId ||
+      pageFilm.value?.id ||
       0;
-    return filmLists.isSkipped(skipValue);
+    return filmLists.isSkipped(typeof rawId === 'number' ? rawId : 0);
   });
 
   const errorMessage = computed(() => {
@@ -82,37 +110,37 @@
 <template>
   <ButtonBack />
   <PreloadCard
-    v-if="isLoading"
+    v-if="showPreload"
     class="title-preload"
     :width="'50%'"
     :height="37"
   />
-  <h1 v-else-if="isError" v-title>Ошибка загрузки фильма</h1>
+  <h1 v-else-if="showMissing" v-title>Фильм не найден</h1>
+  <h1 v-else-if="showError" v-title>Ошибка загрузки фильма</h1>
   <h1 v-else v-title>{{ filmName }}</h1>
   <div class="film__wrap">
-    <PreloadCard v-if="isLoading" />
-    <div v-else-if="isError" class="film__error">{{ errorMessage }}</div>
+    <PreloadCard v-if="showPreload" />
+    <div v-else-if="showMissing" class="film__error">
+      Откройте фильм из результатов Alloha
+    </div>
+    <div v-else-if="showError" class="film__error">{{ errorMessage }}</div>
     <FilmImage
       v-else
-      :filmInfo="filmInfo"
+      :filmInfo="pageFilm"
       :class="{ image: true, unwatch: isUnwatch }"
     />
-    <div class="film__note" v-if="!isError">
+    <div class="film__note" v-if="isAlloha || (pageFilm && !showError)">
       <div class="film__btns">
-        <FilmPlayerSelect />
+        <FilmPlayerSelect :alternative="isAlloha" />
       </div>
       <div class="film__description">
         <h3>Описание:</h3>
-        {{ filmInfo?.description || '' }}
+        {{ pageFilm?.description || '' }}
       </div>
-      <FilmGenres :genres="filmInfo?.genres || []" title="Жанры" />
+      <FilmGenres :genres="pageFilm?.genres || []" title="Жанры" />
       <div class="film__similar" v-if="similars?.length">
         <h3>Похожие фильмы</h3>
-        <FilmList
-          :items="similars"
-          :isRating="false"
-          heightItemAuto
-        />
+        <FilmList :items="similars" :isRating="false" heightItemAuto />
       </div>
     </div>
   </div>

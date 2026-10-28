@@ -1,7 +1,7 @@
 import type { PLAYER_LABELS } from '@/components/const';
 
 export interface IFilmEntity {
-  id: number;
+  id: number | string;
   name: string;
   description: string;
   year: string;
@@ -15,6 +15,9 @@ export interface IFilmEntity {
   sortTime?: number;
   startYear?: number;
   endYear?: number | null;
+  allohaToken?: string;
+  source?: 'alloha';
+  iframe?: string;
 }
 
 export type IFilmRaw = Record<string, any>;

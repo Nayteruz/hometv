@@ -8,6 +8,7 @@
   import FilmRating from '@/components/FilmRating.vue';
   import type { IFilmEntity } from '@/types';
   import { getFilmPageTitle } from '@/components/utils';
+  import { ALLOHA_SOURCE } from '@/components/allohaSearch';
   import NoPoster from '../icons/NoPoster.jpg';
 
   interface IFilmItemProps {
@@ -28,16 +29,28 @@
     () => props.currentIndex === filmStore.currentFocusIndex,
   );
   const filmName = computed(() => getFilmPageTitle(props.itemFilm));
-  const id = computed(() => props.itemFilm.id);
-  const filmHref = computed(
-    () => router.resolve({ name: 'filmPage', params: { id: id.value } }).href,
+  const id = computed(() =>
+    typeof props.itemFilm.id === 'number' ? props.itemFilm.id : 0,
   );
+  const pageId = computed(() => props.itemFilm.allohaToken || props.itemFilm.id);
+  const allohaQueryName = computed(
+    () => filmStore.searchInputText.trim() || props.itemFilm.name,
+  );
+  const filmLocation = computed(() => ({
+    name: 'filmPage' as const,
+    params: { id: pageId.value },
+    query:
+      props.itemFilm.source === ALLOHA_SOURCE
+        ? { source: ALLOHA_SOURCE, name: allohaQueryName.value }
+        : {},
+  }));
+  const filmHref = computed(() => router.resolve(filmLocation.value).href);
   const isFocusedOnHover = ref(false);
 
   const isUnwatch = computed(() => filmLists.isSkipped(id.value));
 
   const goToPageFilm = () => {
-    router.push({ name: 'filmPage', params: { id: id.value } });
+    router.push(filmLocation.value);
   };
 
   const onOver = () => {

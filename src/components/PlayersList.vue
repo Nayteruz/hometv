@@ -3,7 +3,14 @@
     <div class="player-container">
       <div class="player-select">
         <div class="player-name-list">
+          <AlternativePlayer
+            v-if="alternative"
+            :active="selectedPlayer === LEAD_PLAYER"
+            @select="selectLead"
+            @kinopoisk-id="kpFromAlternative = $event"
+          />
           <button
+            v-if="!alternative"
             v-for="name of PLAYER_NAMES"
             :key="name"
             :class="{
@@ -41,25 +48,43 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { computed, onMounted, provide, ref, watch } from 'vue';
   import { useRoute } from 'vue-router';
   import { useFilmStore } from '@/stores/filmStore';
+  import AlternativePlayer, {
+    playersFrameKey,
+  } from '@/components/FilmPage/AlternativePlayer.vue';
   import { players, API_PLAYERS, API_KEY_MAP, PLAYER_NAMES } from './const';
   import { extractIframeSrc } from './utils';
   import type { IPlayerData, IPlayerLabel } from '@/types';
 
+  const LEAD_PLAYER = 'alloha-direct';
+
+  const props = defineProps<{
+    alternative?: boolean;
+  }>();
+
   const filmStore = useFilmStore();
   const route = useRoute();
-  const filmId = Number(route.params.id) || 0;
+  const playerList = ref<HTMLElement | null>(null);
+  const kpFromAlternative = ref(0);
+  provide(playersFrameKey, playerList);
+  const filmId = computed(
+    () => kpFromAlternative.value || Number(route.params.id) || 0,
+  );
 
   const playersData = ref<IPlayerData[]>([]);
   const loadingPlayers = ref<Record<IPlayerLabel, boolean>>(
     {} as Record<IPlayerLabel, boolean>,
   );
-  const selectedPlayer = ref<IPlayerLabel | null>(null);
+  const selectedPlayer = ref<IPlayerLabel | typeof LEAD_PLAYER | null>(null);
 
   const getPlayerByName = (name: IPlayerLabel) =>
     playersData.value.find((p) => p.name === name);
+
+  const selectLead = () => {
+    selectedPlayer.value = LEAD_PLAYER;
+  };
 
   const selectPlayer = async (name: IPlayerLabel) => {
     selectedPlayer.value = name;
@@ -98,7 +123,7 @@
     try {
       const getSrc = players[name] as (id: number, api?: string) => string;
       const api = getApiKey(name);
-      const url = getSrc(filmId, api);
+      const url = getSrc(filmId.value, api);
 
       let iframeSrc: string | null = null;
       if (API_PLAYERS.has(name)) {
@@ -139,12 +164,18 @@
   };
 
   const preloadFirstPlayer = async () => {
+    if (props.alternative) {
+      selectedPlayer.value = LEAD_PLAYER;
+      return;
+    }
     selectedPlayer.value = PLAYER_NAMES[0] || null;
     await loadPlayer(PLAYER_NAMES[0]);
   };
 
+  watch(filmId, (id) => filmStore.setFilmPageId(id));
+
   onMounted(() => {
-    filmStore.setFilmPageId(filmId);
+    filmStore.setFilmPageId(filmId.value);
     initializePlayersData();
     preloadFirstPlayer();
   });
