@@ -20,7 +20,9 @@
   const searchInput = ref<HTMLInputElement | null>(null);
 
   const showClearButton = computed(
-    () => inputRawValue.value.trim().length > 0 || localSearchText.value.trim().length > 0,
+    () =>
+      inputRawValue.value.trim().length > 0 ||
+      localSearchText.value.trim().length > 0,
   );
 
   const onInput = (e: Event) => {
@@ -32,9 +34,12 @@
     filmStore.setSearchInputText(localSearchText.value);
   });
 
-  const searchSubmit = () => {
-    const value = searchInput.value?.value ?? localSearchText.value;
-    const trimmed = value.trim();
+  const searchSubmit = (payload?: string | Event) => {
+    const raw =
+      typeof payload === 'string'
+        ? payload
+        : (searchInput.value?.value ?? localSearchText.value);
+    const trimmed = raw.trim();
 
     filmStore.setSearchInputText(trimmed);
     filmLists.addLastSearchList(trimmed);
@@ -60,7 +65,8 @@
 
   const onHistoryClick = (value: string) => {
     localSearchText.value = value;
-    searchSubmit();
+    inputRawValue.value = value;
+    searchSubmit(value);
   };
 </script>
 
@@ -148,6 +154,7 @@
       />
       <ButtonBlue
         :class="['clear-input', { show: showClearButton }]"
+        type="button"
         @click="clearInput"
         >×</ButtonBlue
       >

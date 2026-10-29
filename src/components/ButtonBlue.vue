@@ -1,5 +1,9 @@
 <template>
-  <button :style="svgSize" :class="['button', customClass, { border, isOpen }]">
+  <button
+    :type="type"
+    :style="svgSize"
+    :class="['button', customClass, { border, isOpen }]"
+  >
     <slot></slot>
   </button>
 </template>

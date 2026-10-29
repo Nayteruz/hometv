@@ -6,7 +6,7 @@
     <button type="button" class="close-list" @click="hideLastList">×</button>
     <ul>
       <li v-for="item in filmLists.lastSearchList" :key="item.id">
-        <ButtonBlue @click="clickLastSearch(item.value)">{{
+        <ButtonBlue type="button" @click="clickLastSearch(item.value)">{{
           item.value
         }}</ButtonBlue>
       </li>
