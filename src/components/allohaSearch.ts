@@ -3,9 +3,8 @@ import type { IFilmEntity } from '@/types';
 
 export const ALLOHA_SOURCE = 'alloha';
 
-export const isAllohaFilm = (
-  film?: IFilmEntity | null,
-): film is IFilmEntity => film?.source === ALLOHA_SOURCE;
+export const isAllohaFilm = (film?: IFilmEntity | null): film is IFilmEntity =>
+  film?.source === ALLOHA_SOURCE;
 
 export const allohaFilmKey = (film: IFilmEntity) =>
   film.allohaToken || String(film.id);
