@@ -5,7 +5,7 @@ import { PLAYER_LABELS } from './const';
 export const getFilmPageTitle = (filmInfo?: IFilmEntity): string => {
   const name = filmInfo?.name || '';
   const year = filmInfo?.year || '';
-  const startYear = filmInfo?.startYear || '';
+  const startYear = filmInfo?.startYear || filmInfo?.year || '';
   const endYear = filmInfo?.endYear || '...';
 
   if (filmInfo?.type === FILM_TYPE_LABELS.TV_SERIES) {
