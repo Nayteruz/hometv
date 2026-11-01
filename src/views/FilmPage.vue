@@ -83,7 +83,11 @@
   const showPreload = computed(() => !isAlloha.value && isLoading.value);
   const showError = computed(() => !isAlloha.value && isError.value);
   const showMissing = computed(
-    () => !isAlloha.value && !showPreload.value && !showError.value && !pageFilm.value,
+    () =>
+      !isAlloha.value &&
+      !showPreload.value &&
+      !showError.value &&
+      !pageFilm.value,
   );
   const filmName = computed(() =>
     pageFilm.value
@@ -141,7 +145,7 @@
       :filmInfo="pageFilm"
       :class="{ image: true, unwatch: isUnwatch }"
     />
-    <div class="film__note" v-if="isAlloha || (pageFilm && !showError)">
+    <div class="film__note" v-if="!showError">
       <div class="film__btns">
         <FilmPlayerSelect :alternative="isAlloha" />
       </div>
