@@ -30,6 +30,7 @@ jobs:
           VITE_API_COLL: ${{ secrets.VITE_API_COLL }}
           VITE_API_VIDEOSEED: ${{ secrets.VITE_API_VIDEOSEED }}
           VITE_API_KODI: ${{ secrets.VITE_API_KODI }}
+          VITE_KINOVIBE_API: ${{ secrets.VITE_KINOVIBE_API }}
           VITE_API_FIREBASE_API_KEY: ${{ secrets.VITE_API_FIREBASE_API_KEY }}
           VITE_API_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_API_FIREBASE_AUTH_DOMAIN }}
           VITE_API_FIREBASE_PROJECT_ID: ${{ secrets.VITE_API_FIREBASE_PROJECT_ID }}
