@@ -3,16 +3,16 @@
     <li :class="{ selected: playerNum === 1 }" @click="playerNum = 1">
       Плееры
     </li>
-    <li v-if="!alternative" :class="{ selected: playerNum === 2 }" @click="playerNum = 2">Lumex</li>
+    <li v-if="!alternative" :class="{ selected: playerNum === 2 }" @click="playerNum = 2">Kinovibe</li>
     <li class="actions"><FilmActionList /></li>
   </ul>
   <PlayersList v-if="playerNum === 1" :alternative="alternative" />
-  <FilmPlayerClub v-if="playerNum === 2" />
+  <FilmPlayerKinovibe v-if="playerNum === 2" />
 </template>
 
 <script setup lang="ts">
   import { ref } from 'vue';
-  import FilmPlayerClub from '@/components/FilmPage/FilmPlayerClub.vue';
+  import FilmPlayerKinovibe from '@/components/FilmPage/FilmPlayerKinovibe.vue';
   import PlayersList from '@/components/PlayersList.vue';
   import FilmActionList from './FilmActionList.vue';
 
