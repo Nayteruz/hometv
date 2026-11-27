@@ -2,37 +2,21 @@
   <div class="kinovibe">
     <p v-if="isLoading">Загрузка...</p>
     <p v-else-if="!data">Серии не найдены</p>
-    <template v-else>
-      <div v-if="data.type === 'tv'" class="kinovibe__selects">
-        <button
-          type="button"
-          class="kinovibe__ep-nav"
-          :disabled="!canPrevEpisode"
-          aria-label="Предыдущая серия"
-          @click="prevEpisode"
-        >
-          ‹
-        </button>
+    <div v-else-if="currentFile" class="kinovibe__player">
+      <video ref="videoEl" playsinline></video>
+      <div
+        v-if="data.type === 'tv'"
+        class="kinovibe__chrome-top"
+        :class="{ 'kinovibe__chrome-top--hidden': !chromeVisible }"
+      >
         <SelectDropdown
           :model-value="seasonIndex"
           :options="seasonOptions"
           @update:model-value="onSeasonChange"
         />
         <SelectDropdown v-model="episodeIndex" :options="episodeOptions" />
-        <button
-          type="button"
-          class="kinovibe__ep-nav"
-          :disabled="!canNextEpisode"
-          aria-label="Следующая серия"
-          @click="nextEpisode"
-        >
-          ›
-        </button>
       </div>
-      <div v-if="currentFile" class="kinovibe__player">
-        <video ref="videoEl" playsinline></video>
-      </div>
-    </template>
+    </div>
   </div>
 </template>
 
@@ -47,6 +31,7 @@
   import { getLastWatched, setLastWatched } from '@/components/kinovibeStorage';
 
   const SEEK_SECONDS = 10;
+  const SINGLE_CLICK_DELAY_MS = 220;
 
   const route = useRoute();
   const filmId = Number(route.params.id) || 0;
@@ -60,7 +45,10 @@
   const seasonIndex = ref(0);
   const episodeIndex = ref(0);
   const videoEl = ref<HTMLVideoElement | null>(null);
+  const chromeVisible = ref(true);
   let player: Plyr | null = null;
+  let prevEpBtn: HTMLButtonElement | null = null;
+  let nextEpBtn: HTMLButtonElement | null = null;
 
   const seasonOptions = computed(() => {
     const result = data.value;
@@ -136,11 +124,47 @@
     episodeIndex.value = 0;
   };
 
+  const syncEpisodeControls = () => {
+    if (prevEpBtn) prevEpBtn.disabled = !canPrevEpisode.value;
+    if (nextEpBtn) nextEpBtn.disabled = !canNextEpisode.value;
+  };
+
+  const bindZoneAction = (button: HTMLButtonElement, action: () => void) => {
+    let clickTimer: ReturnType<typeof setTimeout> | undefined;
+
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (clickTimer) clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => {
+        action();
+        clickTimer = undefined;
+      }, SINGLE_CLICK_DELAY_MS);
+    });
+
+    button.addEventListener('dblclick', (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      if (clickTimer) {
+        clearTimeout(clickTimer);
+        clickTimer = undefined;
+      }
+      action();
+    });
+  };
+
   const mountTapZones = (plyr: Plyr) => {
     const wrapper = plyr.elements.container?.querySelector(
       '.plyr__video-wrapper'
     );
     if (!wrapper || wrapper.querySelector('.kinovibe__tap-zones')) return;
+
+    const stopFullscreenDblClick = (event: Event) => {
+      event.stopPropagation();
+      event.preventDefault();
+    };
+
+    wrapper.addEventListener('dblclick', stopFullscreenDblClick, true);
+    plyr.media.addEventListener('dblclick', stopFullscreenDblClick, true);
 
     const zones = document.createElement('div');
     zones.className = 'kinovibe__tap-zones';
@@ -150,22 +174,73 @@
       btn.type = 'button';
       btn.className = `kinovibe__tap-zone kinovibe__tap-zone--${part}`;
       btn.setAttribute('aria-label', label);
-      btn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        if (part === 'back') plyr.rewind(SEEK_SECONDS);
-        else if (part === 'forward') plyr.forward(SEEK_SECONDS);
-        else plyr.togglePlay();
-      });
       return btn;
     };
 
-    zones.append(
-      createZone('back', `Назад ${SEEK_SECONDS} сек`),
-      createZone('center', 'Пауза'),
-      createZone('forward', `Вперёд ${SEEK_SECONDS} сек`)
-    );
+    const back = createZone('back', `Назад ${SEEK_SECONDS} сек`);
+    const center = createZone('center', 'Пауза');
+    const forward = createZone('forward', `Вперёд ${SEEK_SECONDS} сек`);
+
+    bindZoneAction(back, () => plyr.rewind(SEEK_SECONDS));
+    bindZoneAction(center, () => plyr.togglePlay());
+    bindZoneAction(forward, () => plyr.forward(SEEK_SECONDS));
+
+    zones.append(back, center, forward);
     wrapper.appendChild(zones);
   };
+
+  const mountEpisodeControls = (plyr: Plyr) => {
+    if (data.value?.type !== 'tv') return;
+
+    const controls = plyr.elements.controls;
+    const playBtn = controls?.querySelector(
+      'button[data-plyr="play"]'
+    ) as HTMLButtonElement | null;
+    if (!controls || !playBtn || controls.querySelector('[data-kinovibe-ep]')) {
+      return;
+    }
+
+    const makeEpButton = (id: 'prev' | 'next', label: string, icon: string) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'plyr__controls__item plyr__control kinovibe__ep-ctrl';
+      btn.setAttribute('data-kinovibe-ep', id);
+      btn.setAttribute('aria-label', label);
+      btn.innerHTML = `<span class="kinovibe__ep-ctrl-icon" aria-hidden="true">${icon}</span>`;
+      return btn;
+    };
+
+    prevEpBtn = makeEpButton('prev', 'Предыдущая серия', '‹');
+    nextEpBtn = makeEpButton('next', 'Следующая серия', '›');
+
+    prevEpBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      prevEpisode();
+    });
+    nextEpBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      nextEpisode();
+    });
+
+    playBtn.insertAdjacentElement('beforebegin', prevEpBtn);
+    playBtn.insertAdjacentElement('afterend', nextEpBtn);
+    syncEpisodeControls();
+  };
+
+  const bindChromeVisibility = (plyr: Plyr) => {
+    chromeVisible.value = true;
+    plyr.on('pause', () => {
+      chromeVisible.value = true;
+    });
+    plyr.on('controlsshown', () => {
+      chromeVisible.value = true;
+    });
+    plyr.on('controlshidden', () => {
+      chromeVisible.value = false;
+    });
+  };
+
+  watch([canPrevEpisode, canNextEpisode], syncEpisodeControls);
 
   watch(
     data,
@@ -206,9 +281,7 @@
           seekTime: SEEK_SECONDS,
           controls: [
             'play-large',
-            'rewind',
             'play',
-            'fast-forward',
             'progress',
             'current-time',
             'mute',
@@ -220,8 +293,6 @@
           i18n: {
             play: 'Воспроизвести',
             pause: 'Пауза',
-            rewind: `Назад ${SEEK_SECONDS} сек`,
-            fastForward: `Вперёд ${SEEK_SECONDS} сек`,
             mute: 'Выключить звук',
             unmute: 'Включить звук',
             enterFullscreen: 'Полноэкранный режим',
@@ -236,7 +307,10 @@
           },
         });
         player.on('ready', () => {
-          if (player) mountTapZones(player);
+          if (!player) return;
+          mountTapZones(player);
+          mountEpisodeControls(player);
+          bindChromeVisibility(player);
         });
       }
 
@@ -251,6 +325,8 @@
   onBeforeUnmount(() => {
     player?.destroy();
     player = null;
+    prevEpBtn = null;
+    nextEpBtn = null;
   });
 </script>
 
@@ -294,36 +370,79 @@
     :deep(.kinovibe__tap-zone:active) {
       background: rgba(255, 255, 255, 0.06);
     }
+
+    :deep(.kinovibe__ep-ctrl) {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    :deep(.kinovibe__ep-ctrl:disabled) {
+      opacity: 0.35;
+    }
+
+    :deep(.kinovibe__ep-ctrl-icon) {
+      font-size: 18px;
+      line-height: 1;
+    }
   }
 
   .kinovibe__player {
+    position: relative;
     width: 100%;
   }
 
-  .kinovibe__selects {
+  .kinovibe__chrome-top {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 4;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-  }
+    gap: 8px;
+    max-width: calc(100% - 24px);
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    pointer-events: auto;
 
-  .kinovibe__ep-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border: 0;
-    border-radius: 10px;
-    background: var(--color-main-light, #2a4a7a);
-    color: #fff;
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
+    &--hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-    &:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
+    :deep(.select) {
+      min-width: 88px;
+      max-width: min(148px, 36vw);
+    }
+
+    :deep(.select__item) {
+      padding: 4px 8px;
+      font-size: 12px;
+      line-height: 1.2;
+      border-radius: 6px;
+      background: rgba(44, 79, 145, 0.45);
+      backdrop-filter: blur(6px);
+
+      svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      &:hover {
+        background: rgba(7, 31, 58, 0.62);
+      }
+    }
+
+    :deep(.select__drop) {
+      z-index: 30;
+      max-height: 200px;
+      background: rgba(19, 40, 77, 0.88);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    :deep(.select__drop-item) {
+      padding: 6px 8px;
+      font-size: 12px;
     }
   }
 </style>
